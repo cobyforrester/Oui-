@@ -1,5 +1,5 @@
 package com.ouiplusplus.error;
-import com.ouiplusplus.position.Position;
+import com.ouiplusplus.lexer.Position;
 public class Error {
     final private String errorName;
     final private String details;

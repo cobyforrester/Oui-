@@ -1,0 +1,7 @@
+|| : OR
+* : 0 or more of whats before
+
+expr : term ((+||- ) term)*
+term : factor ((*||/) factor)*
+factor : (INT || FLOAT)
+

@@ -1,8 +1,8 @@
 package com.ouiplusplus.lexer;
 
+import com.ouiplusplus.error.Error;
 import com.ouiplusplus.error.UnexpectedChar;
 import com.ouiplusplus.helper.Pair;
-import com.ouiplusplus.position.Position;
 
 import java.util.ArrayList;
 import java.util.List;

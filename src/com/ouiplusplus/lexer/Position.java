@@ -1,4 +1,4 @@
-package com.ouiplusplus.position;
+package com.ouiplusplus.lexer;
 
 public class Position {
     private int index;

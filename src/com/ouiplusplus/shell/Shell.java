@@ -1,8 +1,8 @@
 package com.ouiplusplus.shell;
-import com.ouiplusplus.run.Run;
+import com.ouiplusplus.lexer.*;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.error.Error;
-import com.ouiplusplus.lexer.Token;
+import com.ouiplusplus.parser.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class Shell {
             System.out.print("Oui++> ");
             String input = scanner.nextLine();
             Run run = new Run();
-            Pair<ArrayList<Token>, Error> pair = run.run("Main.fr", input);
+            Pair<Expression, Error> pair = run.run("Main.fr", input);
             Error error = pair.getP2();
             if(error != null) {
                 System.out.println(error);
