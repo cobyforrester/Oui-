@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Run {
     public Run() {
     }
-    public Pair<ArrayList<Token>, Error> run(String text) {
-        Lexer lexer = new Lexer(text);
+    public Pair<ArrayList<Token>, Error> run(String fn, String text) {
+        Lexer lexer = new Lexer(fn, text);
         Pair pair = lexer.make_tokens(); //returns
         return pair;
     }

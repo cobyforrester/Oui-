@@ -2,26 +2,30 @@ package com.ouiplusplus.lexer;
 
 import com.ouiplusplus.error.UnexpectedChar;
 import com.ouiplusplus.helper.Pair;
+import com.ouiplusplus.position.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-    private String text;
-    private int pos;
+    final private String text;
+    private Position pos;
     private char currChar;
+    final private String fn;
 
-    public Lexer(String text) {
+
+    public Lexer(String fn, String text) {
+        this.fn = fn;
         this.text = text;
-        this.pos = -1;
+        this.pos = new Position(-1, 0, -1, this.fn, this.text);
         this.currChar = 0; //initialized to null 0 is ascii for null
         this.advance();
     }
 
     public void advance() {
-        this.pos++;
-        if (this.pos < this.text.length()) {
-            this.currChar = this.text.charAt(pos);
+        this.pos.advance(currChar);
+        if (this.pos.getIndex() < this.text.length()) {
+            this.currChar = this.text.charAt(pos.getIndex());
         } else {
             this.currChar = 0;
         }
@@ -58,7 +62,11 @@ public class Lexer {
                         break;
                     default:
                         String details = "'" + currChar + "'";
-                        return new Pair(new ArrayList<Token>(), new UnexpectedChar(details));
+                        Position start = this.pos.copy();
+                        this.advance();
+                        UnexpectedChar err = new UnexpectedChar(start, this.pos, details);
+                        List<Token> lst = new ArrayList<Token>();
+                        return new Pair(lst, err);
                 }
                 this.advance();
             }

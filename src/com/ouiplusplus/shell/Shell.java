@@ -15,7 +15,7 @@ public class Shell {
             System.out.print("Oui++> ");
             String input = scanner.nextLine();
             Run run = new Run();
-            Pair<ArrayList<Token>, Error> pair = run.run(input);
+            Pair<ArrayList<Token>, Error> pair = run.run("Main.fr", input);
             Error error = pair.getP2();
             if(error != null) {
                 System.out.println(error);
