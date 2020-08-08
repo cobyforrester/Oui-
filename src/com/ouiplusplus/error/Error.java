@@ -16,6 +16,7 @@ public class Error {
         this.details = details;
     }
     public String toString() {
+        if(this.start == null || this.end == null) return "ERROR";
         String result = this.errorName + ":" + this.details;
         result += " File '" + this.start.getFn() + "', line " + (this.start.getLineNumber() + 1);
         return result;
