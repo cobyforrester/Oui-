@@ -5,7 +5,7 @@ public enum TokenType {
     FLOAT,
     PLUS("+"),
     MINUS("-"),
-    MULT("-"),
+    MULT("*"),
     DIV("/"),
     LPAREN("("),
     RPAREN("("),

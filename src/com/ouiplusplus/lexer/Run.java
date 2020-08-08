@@ -20,8 +20,7 @@ public class Run {
         }
 
         Parser parser = new Parser(tmpPair.getP1());
-        String ast = parser.toStringParse();
-        Pair<String, Error> fnlPair = new Pair<String, Error>(ast, null);
-        return fnlPair;
+        Pair<String, Error> stringPair = parser.toStringParse();
+        return stringPair;
     }
 }

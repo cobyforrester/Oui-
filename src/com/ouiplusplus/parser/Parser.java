@@ -1,4 +1,6 @@
 package com.ouiplusplus.parser;
+import com.ouiplusplus.error.Error;
+import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
 import java.util.List;
@@ -10,20 +12,14 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public String toStringParse() {
+    public Pair<String, Error> toStringParse() {
         AST ast = new AST();
-        for(int i = 0; i < tokens.size(); i++) {
-            TokenType tmp = tokens.get(i).getType();
-            if (tmp == TokenType.FLOAT || tmp == TokenType.INT ) {
-                String str = String.valueOf(tokens.get(i).getValue());
-                System.out.println(ast.addVal(str));
-            } else {
-                String str = tokens.get(i).getType().value;
-                System.out.println(ast.addVal(str));
-            }
+        Error err = ast.addList(this.tokens);
+        if(err != null) {
+            return new Pair<String, Error>("", err);
         }
-
-        return "";
+        String str = ast.toString();
+        return new Pair<String, Error>(str, null);
     }
 
 }
