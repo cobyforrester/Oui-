@@ -17,6 +17,7 @@ public class AST {
     }
 
     public Error addVal(TokenType value) { //null for no errors
+        Error err = new Error();
 
         return null;
     }

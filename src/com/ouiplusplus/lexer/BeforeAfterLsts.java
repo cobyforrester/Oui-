@@ -37,14 +37,14 @@ public class BeforeAfterLsts {
 
     // ========================= MULT/DIV ===============================
     final private TokenType[] beforeMULTDIVAdd = {
-            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
-            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.COMMA,
-            TokenType.CARROT, TokenType.EQUALS,
+            TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
+            TokenType.FUNCCALL,
     };
 
     final private TokenType[] afterMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
-            TokenType.FUNCCALL,
+            TokenType.FUNCCALL, TokenType.LPAREN, TokenType.MINUS,
+            TokenType.PLUS,
     };
 
     // ========================= INT/DOUBLE ===============================
@@ -54,7 +54,7 @@ public class BeforeAfterLsts {
     };
 
     final private TokenType[] afterINTDOUBLTAdd = {
-            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.MULT,
             TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.NEWLINE,
     };
 
