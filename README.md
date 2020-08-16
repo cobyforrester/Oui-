@@ -1,2 +1,2 @@
 # Oui++
-French programming language transpiled by Java.
+French programming language interpreted by Java.
