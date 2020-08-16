@@ -1,23 +1,30 @@
 package com.ouiplusplus.lexer;
 
 public enum TokenType {
+    NULL,
     INT,
-    FLOAT,
-    PLUS("+"),
-    MINUS("-"),
-    MULT("*"),
-    DIV("/"),
-    LPAREN("("),
-    RPAREN("("),
-    DIGITS("0123456789");
-
-    public String value;
-
-    private TokenType() {
-    }
-
-    private TokenType(String value) {
-        this.value = value;
-    }
+    DOUBLE,
+    BOOLEAN,
+    STRING,
+    VAR,
+    PLUS,
+    MINUS,
+    MULT,
+    DIV,
+    EQUALS,
+    CARROT,
+    LPAREN,
+    RPAREN,
+    LBRACKET,
+    RBRACKET,
+    LCBRACE,
+    RCBRACE,
+    COMMA,
+    DOT,
+    SEMICOLON,
+    FUNCDECLARE,
+    FUNCCALL,
+    HASH,
+    NEWLINE;
 
 }

@@ -9,7 +9,7 @@ public class Shell {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while(true) {
-            System.out.print("Oui++> ");
+            System.out.print("Oui++>> ");
             String input = scanner.nextLine();
             Run run = new Run();
             Pair<String, Error> pair = run.runToString("Main.fr", input);
