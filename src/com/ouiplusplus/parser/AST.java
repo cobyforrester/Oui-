@@ -58,9 +58,11 @@ public class AST {
     }
 
     public Error addList(List<Token> tokens) {
+        Error err;
         for(Token tok: tokens) {
-            if (this.addVal(tok) != null) {
-                System.out.println("ERROR IN AST");
+            err = this.addVal(tok);
+            if (err != null) {
+                return err;
             }
         }
         return null;
@@ -72,7 +74,7 @@ public class AST {
         if (this.root == null) return nullVal;
         if (this.opened != 0) return err;
         Token fnlVal = this.dfsResolveVal(this.root);
-
+        if (fnlVal == null || fnlVal.getValue() == null) return err;
         return new Pair<>(fnlVal, null);
     }
 
@@ -257,7 +259,7 @@ public class AST {
             else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
             else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
             else if (op.getType() == TokenType.DIV) {
-                if (leftVal == 0) return null;
+                if (rightVal == 0) return null;
                 val = leftVal / rightVal;
             } else return null;
 
@@ -277,7 +279,7 @@ public class AST {
             else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
             else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
             else if (op.getType() == TokenType.DIV) {
-                if (leftVal == 0) return null;
+                if (rightVal == 0) return null;
                 val = leftVal / rightVal;
             } else return null;
 
