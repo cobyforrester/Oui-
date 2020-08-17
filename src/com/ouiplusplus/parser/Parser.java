@@ -21,7 +21,10 @@ public class Parser {
 
         Pair<Token, Error> treeVal = ast.resolveTreeVal();
         if (treeVal.getP2() != null) return new Pair<>(null, treeVal.getP2());
-        return new Pair<>(treeVal.getP1().getValue(), null);
+        String val;
+        if (treeVal.getP1().isNeg()) val = "-" + treeVal.getP1().getValue();
+        else val = treeVal.getP1().getValue();
+        return new Pair<>(val, null);
     }
 
 

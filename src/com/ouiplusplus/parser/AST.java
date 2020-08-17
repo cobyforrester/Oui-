@@ -130,8 +130,9 @@ public class AST {
         TreeNode currNode;
         if (this.opened != 0) {
             currNode = this.returnBottomOpenParen();
+            Token tmp = currNode.token;
             currNode.token = new Token(TokenType.CLOSEDPAREN);
-            if (currNode.token.isNeg()) currNode.token.setNeg(true);
+            if (tmp.isNeg()) currNode.token.setNeg(true);
             this.opened--;
             return null;
         }
@@ -245,7 +246,7 @@ public class AST {
 
     private static Token combineTokens(Token left, Token op, Token right) {
         if (left.isNeg()) left.setValue("-" + left.getValue());
-        if (right.isNeg()) left.setValue("-" + right.getValue());
+        if (right.isNeg()) right.setValue("-" + right.getValue());
 
         if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
             Token rtn = new Token(TokenType.STRING);

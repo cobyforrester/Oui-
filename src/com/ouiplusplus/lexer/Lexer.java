@@ -180,7 +180,6 @@ public class Lexer {
                 }
                 if(negCount % 2 == 1) { //if negative then set next token to negative
                     tokens.get(i + 1).setNeg(true);
-                    System.out.println("TOKEN IS NEGATIVE!");
                 }
             } else {
                 lst.add(tokens.get(i));
