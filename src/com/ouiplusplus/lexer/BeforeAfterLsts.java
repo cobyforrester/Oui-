@@ -38,7 +38,7 @@ public class BeforeAfterLsts {
     // ========================= MULT/DIV ===============================
     final private TokenType[] beforeMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
-            TokenType.FUNCCALL,
+            TokenType.FUNCCALL, TokenType.RPAREN,
     };
 
     final private TokenType[] afterMULTDIVAdd = {

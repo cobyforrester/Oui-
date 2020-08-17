@@ -25,6 +25,7 @@ public enum TokenType {
     FUNCDECLARE,
     FUNCCALL,
     HASH,
-    NEWLINE;
+    NEWLINE,
+    CLOSEDPAREN; // for AST
 
 }

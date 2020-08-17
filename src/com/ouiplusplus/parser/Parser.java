@@ -14,17 +14,10 @@ public class Parser {
 
     public Pair<String, Error> toStringParse() {
         AST ast = new AST(this);
-        Error err = ast.addList(this.allTokens);
-        if(err != null) {
-            return new Pair<String, Error>("", err);
-        }
-        String str = ast.toString();
-        return new Pair<String, Error>(str, null);
+        ast.addList(this.allTokens);
+        System.out.println(ast.toString());
+        return new Pair<>("", null);
     }
 
-    public AST generateGeneralAST (List<Token> tokens) {
-
-        return null;
-    }
 
 }
