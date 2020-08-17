@@ -1,5 +1,6 @@
 package com.ouiplusplus.parser;
 import com.ouiplusplus.error.Error;
+import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
 import javax.sound.midi.Soundbank;
@@ -65,10 +66,24 @@ public class AST {
         return null;
     }
 
+    public Pair<Token, Error> resolveTreeVal() {
+        Pair<Token, Error> err = new Pair<>(null, new Error());
+        Pair<Token, Error> nullVal = new Pair<>(null, null);
+        if (this.root == null) return nullVal;
+        if (this.opened != 0) return err;
+        Token fnlVal = this.dfsResolveVal(this.root);
+
+        return new Pair<>(fnlVal, null);
+    }
+
     @Override
     public String toString() {
         if (this.root == null) return "";
         return this.dfsToString(this.root);
+    }
+
+    public void clearTree() {
+        this.root = null;
     }
 
 
@@ -224,6 +239,72 @@ public class AST {
             return true;
         }
         return false;
+    }
+
+    private static Token combineTokens(Token left, Token op, Token right) {
+        if (left.isNeg()) left.setValue("-" + left.getValue());
+        if (right.isNeg()) left.setValue("-" + right.getValue());
+
+        if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
+            Token rtn = new Token(TokenType.STRING);
+            rtn.setValue(left.getValue() + right.getValue());
+        } else if (left.getType() == TokenType.DOUBLE || right.getType() == TokenType.DOUBLE) {
+            Token rtnTok = new Token(TokenType.DOUBLE);
+            double val;
+            double leftVal = Double.parseDouble(left.getValue());
+            double rightVal = Double.parseDouble(right.getValue());
+            if (op.getType() == TokenType.PLUS) val = leftVal + rightVal;
+            else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
+            else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
+            else if (op.getType() == TokenType.DIV) {
+                if (leftVal == 0) return null;
+                val = leftVal / rightVal;
+            } else return null;
+
+            // if val negative
+            if (val < 0) {
+                val = val * (-1);
+                rtnTok.setNeg(true);
+            }
+            rtnTok.setValue(Double.toString(val));
+            return rtnTok;
+        } else if (left.getType() == TokenType.INT || right.getType() == TokenType.INT) {
+            Token rtnTok = new Token(TokenType.INT);
+            int val;
+            int leftVal = Integer.parseInt(left.getValue());
+            int rightVal = Integer.parseInt(right.getValue());
+            if (op.getType() == TokenType.PLUS) val = leftVal + rightVal;
+            else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
+            else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
+            else if (op.getType() == TokenType.DIV) {
+                if (leftVal == 0) return null;
+                val = leftVal / rightVal;
+            } else return null;
+
+            // if val negative
+            if (val < 0) {
+                val = val * (-1);
+                rtnTok.setNeg(true);
+            }
+            rtnTok.setValue(Integer.toString(val));
+            return rtnTok;
+        }
+
+        return null;
+    }
+
+    private Token dfsResolveVal(TreeNode node) {
+        Token tmp;
+        if (node.right != null && node.left != null) {
+            Token left = this.dfsResolveVal(node.left);
+            Token right = this.dfsResolveVal(node.right);
+            tmp = combineTokens(left, node.token, right);
+        } else if (node.left != null) { // case of ()
+            tmp = node.left.token;
+            tmp.setNeg(!tmp.isNeg());
+        }
+        else return node.token;
+        return tmp;
     }
 
     private String dfsToString(TreeNode node) {

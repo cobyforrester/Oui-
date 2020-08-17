@@ -15,6 +15,7 @@ public class Parser {
     public Pair<String, Error> toStringParse() {
         AST ast = new AST(this);
         ast.addList(this.allTokens);
+        System.out.println(ast.resolveTreeVal().getP1().toString());
         System.out.println(ast.toString());
         return new Pair<>("", null);
     }
