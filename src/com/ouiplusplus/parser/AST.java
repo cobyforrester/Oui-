@@ -172,17 +172,25 @@ public class AST {
                     currNode.left = new TreeNode(tmp);
                 }
                 currNode.left.left = tmpLeft;
-                System.out.println();
-                System.out.println(currNode.token.getType());
-                System.out.println(currNode.left.token.getType());
-                System.out.println();
                 return null;
             }
             currNode = currNode.right;
         }
     }
     private Error casePLUSMINUS(Token token) {
-
+        //setting currNode
+        TreeNode currNode;
+        if (this.opened != 0)  {
+            currNode = this.returnBottomOpenParen();
+            TreeNode tmpLeft = currNode.left;
+            currNode.left = new TreeNode(token);
+            currNode.left.left = tmpLeft;
+        }
+        else {
+            TreeNode tmp = new TreeNode(token);
+            tmp.left = this.root;
+            this.root = tmp;
+        }
         return null;
     }
     // ################# END OF CASES ###########################
@@ -222,11 +230,11 @@ public class AST {
         String tmp = "";
         if (node.right != null && node.left != null) {
             tmp += "("  + this.dfsToString(node.left);
-            tmp += node.token.getType() + this.dfsToString(node.right) + ")";
+            tmp += node.token + this.dfsToString(node.right) + ")";
         } else if (node.left != null) { // case of ()
             tmp += "(" + this.dfsToString(node.left) + ")";
         }
-        else return " " + node.token.getType().toString()+ " ";
+        else return "[" + node.token + "]";
         return tmp;
     }
 
