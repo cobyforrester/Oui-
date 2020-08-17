@@ -20,6 +20,7 @@ public class AST {
     private Parser parser; //for functions and variables
     private int pos;
     private int opened; //number of opened parentheses
+    private int size;
 
     //############## CLASS METHODS #######################
     public AST(Parser parser) {
@@ -32,6 +33,7 @@ public class AST {
     private Error addVal(Token token) { //null for no errors
         Error err = new Error();
         TokenType tt = token.getType();
+        this.size++;
         switch(tt) {
 
             // NUMBERS AND VARS
@@ -130,6 +132,7 @@ public class AST {
         TreeNode currNode;
         if (this.opened != 0) {
             currNode = this.returnBottomOpenParen();
+            if (currNode.left == null) return err; //if parenthese pair with nothing inside
             Token tmp = currNode.token;
             currNode.token = new Token(TokenType.CLOSEDPAREN);
             if (tmp.isNeg()) currNode.token.setNeg(true);
