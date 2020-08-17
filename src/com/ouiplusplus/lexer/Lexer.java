@@ -6,6 +6,7 @@ import com.ouiplusplus.helper.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Lexer {
     final private String text; //all text
@@ -72,10 +73,12 @@ public class Lexer {
                 this.advance();
             }
         }
+        Error valParen = validateParentheses(tokens);
+        if (valParen != null) return new Pair<> (null ,valParen);
         return this.validateTokens(tokens);
     }
 
-    public Token make_number_token() {
+    private Token make_number_token() {
         String num = "";
         int dotCount = 0;
         while (this.currChar != 0 && "0123456789.".indexOf(this.currChar) > -1) {
@@ -98,7 +101,7 @@ public class Lexer {
     }
 
 
-    public Pair<List<Token>, Error> validateTokens(List<Token> tokens) {
+    private Pair<List<Token>, Error> validateTokens(List<Token> tokens) {
         List<Token> lst = new ArrayList<>();
         Pair<List<Token>, Error> err = new Pair<>(null, new Error());
         for (int i = 0; i < tokens.size(); i++) {
@@ -186,6 +189,33 @@ public class Lexer {
             }
         }
         return new Pair<>(lst, null);
+    }
+
+    private static Error validateParentheses(List<Token> tLst) {
+        Error err = new Error();
+        Stack<TokenType> s = new Stack<>();
+        int parenOpen = 0, cBraceOpen = 0, bracketOpen = 0; //implement later for extra cases
+        for (Token t: tLst) {
+            TokenType type = t.getType();
+            switch(type) {
+                case LPAREN:
+                case LCBRACE:
+                case LBRACKET:
+                    s.push(type);
+                    break;
+                case RPAREN:
+                    if(s.pop() != TokenType.LPAREN) return err;
+                    else break;
+                case RBRACKET:
+                    if(s.pop() != TokenType.LBRACKET) return err;
+                    else break;
+                case RCBRACE:
+                    if(s.pop() != TokenType.LCBRACE) return err;
+                    else break;
+            }
+        }
+        if (s.size() != 0) return new Error();
+        return null;
     }
 
     // ==================== HELPER FUNCTIONS ==========================

@@ -19,7 +19,6 @@ public class Shell {
             } else {
                 System.out.println(pair.getP1());
             }
-
         }
     }
 }
