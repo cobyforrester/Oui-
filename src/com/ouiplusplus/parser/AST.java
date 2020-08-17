@@ -300,8 +300,8 @@ public class AST {
             Token right = this.dfsResolveVal(node.right);
             tmp = combineTokens(left, node.token, right);
         } else if (node.left != null) { // case of ()
-            tmp = node.left.token;
-            tmp.setNeg(!tmp.isNeg());
+            tmp = this.dfsResolveVal(node.left);
+            if(node.token.isNeg()) tmp.setNeg(!tmp.isNeg());
         }
         else return node.token;
         return tmp;

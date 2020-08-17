@@ -11,15 +11,12 @@ public class Run {
     public Pair<String, Error> runToString(String fn, String text) {
         Lexer lexer = new Lexer(fn, text);
         Pair<List<Token>, Error> tmpPair = lexer.make_tokens(); //returns
-        System.out.println(tmpPair.getP1());
-        System.out.println(tmpPair.getP2());
         Error error = tmpPair.getP2();
         if(error != null) {
             return new Pair<>(null, error);
         }
 
         Parser parser = new Parser(tmpPair.getP1());
-        Pair<String, Error> stringPair = parser.toStringParse();
-        return stringPair;
+        return parser.toStringParse();
     }
 }

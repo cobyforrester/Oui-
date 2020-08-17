@@ -14,10 +14,14 @@ public class Parser {
 
     public Pair<String, Error> toStringParse() {
         AST ast = new AST(this);
-        ast.addList(this.allTokens);
-        System.out.println(ast.resolveTreeVal().getP1().toString());
-        System.out.println(ast.toString());
-        return new Pair<>("", null);
+
+        //add list
+        Error addErr = ast.addList(this.allTokens);
+        if (addErr != null) return new Pair<>(null, addErr);
+
+        Pair<Token, Error> treeVal = ast.resolveTreeVal();
+        if (treeVal.getP2() != null) return new Pair<>(null, treeVal.getP2());
+        return new Pair<>(treeVal.getP1().getValue(), null);
     }
 
 
