@@ -3,9 +3,9 @@ import com.ouiplusplus.lexer.Position;
 
 public class UnexpectedChar extends Error {
     public UnexpectedChar() {
-        super();
+        super("Unexpected Character");
     }
-    public UnexpectedChar(Position start, Position end, String details) {
-        super(start, end, "Unexpected Character", details);
+    public UnexpectedChar(Position index, String details) {
+        super(index, "Unexpected Character", details);
     }
 }

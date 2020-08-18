@@ -1,7 +1,7 @@
 package com.ouiplusplus.lexer;
 
+import com.ouiplusplus.error.*;
 import com.ouiplusplus.error.Error;
-import com.ouiplusplus.error.UnexpectedChar;
 import com.ouiplusplus.helper.Pair;
 
 import java.util.ArrayList;
@@ -51,38 +51,37 @@ public class Lexer {
 
                     // OPERATIONS AND RELATED TO MATH
                     case '+':
-                        tokens.add(new Token(TokenType.PLUS));
+                        tokens.add(new Token(TokenType.PLUS, "+", this.pos.copy()));
                         break;
                     case '-':
-                        tokens.add(new Token(TokenType.MINUS));
+                        tokens.add(new Token(TokenType.MINUS, "-", this.pos.copy()));
                         break;
                     case '/':
-                        tokens.add(new Token(TokenType.DIV));
+                        tokens.add(new Token(TokenType.DIV, "/", this.pos.copy()));
                         break;
                     case '*':
-                        tokens.add(new Token(TokenType.MULT));
+                        tokens.add(new Token(TokenType.MULT, "*", this.pos.copy()));
                         break;
                     case '=':
-                        tokens.add(new Token(TokenType.EQUALS));
+                        tokens.add(new Token(TokenType.EQUALS, "=", this.pos.copy()));
                         break;
 
                     // (){}[]
                     case '(':
-                        tokens.add(new Token(TokenType.LPAREN));
+                        tokens.add(new Token(TokenType.LPAREN, "(", this.pos.copy()));
                         break;
                     case ')':
-                        tokens.add(new Token(TokenType.RPAREN));
+                        tokens.add(new Token(TokenType.RPAREN, ")", this.pos.copy()));
                         break;
 
                     //SPECIAL CHARACTERS
                     case ';':
-                        tokens.add(new Token(TokenType.SEMICOLON));
+                        tokens.add(new Token(TokenType.SEMICOLON, ";", this.pos.copy()));
                         break;
                     default:
-                        String details = "'" + currChar + "'";
-                        Position start = this.pos.copy();
+                        String details = Character.toString(currChar);
                         this.advance();
-                        UnexpectedChar err = new UnexpectedChar(start, this.pos, details);
+                        UnexpectedChar err = new UnexpectedChar(this.pos, details);
                         List<Token> lst = new ArrayList<>();
                         return new Pair<>(lst, err);
                 }
@@ -111,9 +110,9 @@ public class Lexer {
         }
 
         if (dotCount == 0) {
-            return new Token(TokenType.INT, num);
+            return new Token(TokenType.INT, num, this.pos.copy());
         }
-        return new Token(TokenType.DOUBLE, num);
+        return new Token(TokenType.DOUBLE, num, this.pos.copy());
     }
 
     private Token makeAlphToken() {
@@ -123,14 +122,18 @@ public class Lexer {
             word += currChar; // creating number
             this.advance();
         }
-        return new Token(TokenType.WORD, word);
+        return new Token(TokenType.WORD, word, this.pos.copy());
     }
 
 
     private Pair<List<Token>, Error> validateTokens(List<Token> tokens) {
         List<Token> lst = new ArrayList<>();
-        Pair<List<Token>, Error> err = new Pair<>(null, new Error());
+        Pair<List<Token>, Error> err;
         for (int i = 0; i < tokens.size(); i++) {
+            Token tok = tokens.get(i);
+            if(tok.getValue() != null) {
+                err = new Pair<>(null, new UnexpectedToken(tok.getPos(), tok.getValue()));
+            } else err = new Pair<>(null, new UnexpectedToken(tok.getPos(), tok.getType().toString()));
             TokenType currTT = tokens.get(i).getType();
             // ALL FOR ADD AND SUBTRACT
             if(currTT == TokenType.INT || currTT == TokenType.DOUBLE) {
@@ -180,14 +183,14 @@ public class Lexer {
                         if (isInLst(prevTT, this.ba.getBeforePLUSAdd())) {
                             lst.add(tokens.get(i));
                         } else if (isInLst(prevTT, this.ba.getBeforePLUSErr())) {
-                            return new Pair<>(null, new Error());
+                            return err;
                         }
                     } else { // FOR MINUS
                         if (isInLst(prevTT, this.ba.getBeforeMINUSAdd())) {
                             lst.add(tokens.get(i));
                             negCount--;
                         } else if (isInLst(prevTT, this.ba.getBeforeMINUSErr())) {
-                            return new Pair<>(null, new Error());
+                            return err;
                         }
                     }
                 }
@@ -218,29 +221,42 @@ public class Lexer {
     }
 
     private static Error validateParentheses(List<Token> tLst) {
-        Error err = new Error();
-        Stack<TokenType> s = new Stack<>();
+        Stack<Token> s = new Stack<>();
         int parenOpen = 0, cBraceOpen = 0, bracketOpen = 0; //implement later for extra cases
+        Token tok;
         for (Token t: tLst) {
-            TokenType type = t.getType();
-            switch(type) {
+            switch(t.getType()) {
                 case LPAREN:
                 case LCBRACE:
                 case LBRACKET:
-                    s.push(type);
+                    s.push(t);
                     break;
                 case RPAREN:
-                    if(s.size() == 0 || s.pop() != TokenType.LPAREN) return err;
-                    else break;
+                    if (s.size() != 0) {
+                        tok = s.pop();
+                        if(tok.getType() != TokenType.LPAREN) return new UnexpectedChar(t.getPos(), ")");
+                    } else return new UnclosedParenthesis(t.getPos(), ")");
+                    break;
                 case RBRACKET:
-                    if(s.size() == 0 || s.pop() != TokenType.LBRACKET) return err;
-                    else break;
+                    if (s.size() != 0) {
+                        tok = s.pop();
+                        if(tok.getType() != TokenType.LBRACKET) return new UnexpectedChar(t.getPos(), "]");
+                    } else return new UnclosedBracket(t.getPos(), "]");
+                    break;
                 case RCBRACE:
-                    if(s.size() == 0 || s.pop() != TokenType.LCBRACE) return err;
-                    else break;
+                    if (s.size() != 0) {
+                        tok = s.pop();
+                        if(tok.getType() != TokenType.LCBRACE) return new UnexpectedChar(t.getPos(), "}");
+                    } else return new UnclosedCurlyBrace(t.getPos(), "}");
+                    break;
             }
         }
-        if (s.size() != 0) return new Error();
+        if (s.size() != 0) {
+            Token t = s.pop();
+            if(t.getType() == TokenType.LPAREN) return new UnclosedParenthesis(t.getPos(), "(");
+            else if(t.getType() == TokenType.LBRACKET) return new UnclosedBracket(t.getPos(), "[");
+            else if(t.getType() == TokenType.LCBRACE) return new UnclosedCurlyBrace(t.getPos(), "{");
+        }
         return null;
     }
 

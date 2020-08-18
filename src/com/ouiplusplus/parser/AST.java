@@ -1,5 +1,7 @@
 package com.ouiplusplus.parser;
+import com.ouiplusplus.error.EmptyParenthesis;
 import com.ouiplusplus.error.Error;
+import com.ouiplusplus.error.UnexpectedToken;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
@@ -15,7 +17,12 @@ public class AST {
     /* DETAILS
     * PEMDAS WITH LEFT ON BOTTOM OF TREE
     * LPAREN AND INT/DOUBLE CAN BE NEGATIVE
-    * LPAREN OPEN AT START THEN CLOSED LATER ON */
+    * LPAREN OPEN AT START THEN CLOSED LATER ON
+    *
+    * POSSIBLE ERRORS:
+    * OVERFLOW
+    * DIVIDE BY 0
+    * EMPTY PARENTHESES*/
     public TreeNode root;
     private Parser parser; //for functions and variables
     private int pos;
@@ -31,7 +38,9 @@ public class AST {
 
 
     private Error addVal(Token token) { //null for no errors
-        Error err = new Error();
+        Error err;
+        if(token.getValue() != null) err = new UnexpectedToken(token.getPos(), token.getValue());
+        else err = new UnexpectedToken(token.getPos(), token.getType().toString());
         TokenType tt = token.getType();
         this.size++;
         switch(tt) {
@@ -71,7 +80,7 @@ public class AST {
     }
 
     public Pair<Token, Error> resolveTreeVal() {
-        Pair<Token, Error> err = new Pair<>(null, new Error());
+        Pair<Token, Error> err = new Pair<>(null, new Error("Overflow Error"));
         Pair<Token, Error> nullVal = new Pair<>(null, null);
         if (this.root == null) return nullVal;
         if (this.opened != 0) return err;
@@ -126,13 +135,13 @@ public class AST {
         }
     }
     private Error caseRPAREN(Token token) {
-        Error err = new Error();
+        Error err = new EmptyParenthesis(token.getPos(), "()");
         if (this.root == null) return err;
 
         TreeNode currNode;
         if (this.opened != 0) {
             currNode = this.returnBottomOpenParen();
-            if (currNode.left == null) return err; //if parenthese pair with nothing inside
+            if (currNode.left == null) return err; //if parenthesis pair with nothing inside
             Token tmp = currNode.token;
             currNode.token = new Token(TokenType.CLOSEDPAREN);
             if (tmp.isNeg()) currNode.token.setNeg(true);
