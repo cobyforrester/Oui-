@@ -15,7 +15,7 @@ public class Run {
         if(error != null) {
             return new Pair<>(null, error);
         }
-
+        //System.out.println(tmpPair.getP1());
         Parser parser = new Parser(tmpPair.getP1());
         return parser.toStringParse();
     }

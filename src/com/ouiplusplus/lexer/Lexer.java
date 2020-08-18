@@ -36,14 +36,20 @@ public class Lexer {
 
     public Pair<List<Token>, Error> make_tokens() {
         List<Token> tokens = new ArrayList<>();
+        String alph = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String nums = "0123456789";
         while (this.currChar != 0) {
-            if ("0123456789".indexOf(this.currChar) > -1) {
-                tokens.add(this.make_number_token());
-            } else {
+            if (nums.indexOf(this.currChar) > -1) {
+                tokens.add(this.makeNumberToken());
+            } else if(alph.indexOf(this.currChar) > -1) {
+                tokens.add(this.makeAlphToken());
+            }else {
                 switch (this.currChar) {
                     case ' ':
                     case '\t':
                         break;
+
+                    // OPERATIONS AND RELATED TO MATH
                     case '+':
                         tokens.add(new Token(TokenType.PLUS));
                         break;
@@ -56,11 +62,21 @@ public class Lexer {
                     case '*':
                         tokens.add(new Token(TokenType.MULT));
                         break;
+                    case '=':
+                        tokens.add(new Token(TokenType.EQUALS));
+                        break;
+
+                    // (){}[]
                     case '(':
                         tokens.add(new Token(TokenType.LPAREN));
                         break;
                     case ')':
                         tokens.add(new Token(TokenType.RPAREN));
+                        break;
+
+                    //SPECIAL CHARACTERS
+                    case ';':
+                        tokens.add(new Token(TokenType.SEMICOLON));
                         break;
                     default:
                         String details = "'" + currChar + "'";
@@ -78,7 +94,7 @@ public class Lexer {
         return this.validateTokens(tokens);
     }
 
-    private Token make_number_token() {
+    private Token makeNumberToken() {
         String num = "";
         int dotCount = 0;
         while (this.currChar != 0 && "0123456789.".indexOf(this.currChar) > -1) {
@@ -98,6 +114,16 @@ public class Lexer {
             return new Token(TokenType.INT, num);
         }
         return new Token(TokenType.DOUBLE, num);
+    }
+
+    private Token makeAlphToken() {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        String word = "";
+        while (this.currChar != 0 && chars.indexOf(this.currChar) > -1) {
+            word += currChar; // creating number
+            this.advance();
+        }
+        return new Token(TokenType.WORD, word);
     }
 
 
@@ -204,13 +230,13 @@ public class Lexer {
                     s.push(type);
                     break;
                 case RPAREN:
-                    if(s.pop() != TokenType.LPAREN) return err;
+                    if(s.size() == 0 || s.pop() != TokenType.LPAREN) return err;
                     else break;
                 case RBRACKET:
-                    if(s.pop() != TokenType.LBRACKET) return err;
+                    if(s.size() == 0 || s.pop() != TokenType.LBRACKET) return err;
                     else break;
                 case RCBRACE:
-                    if(s.pop() != TokenType.LCBRACE) return err;
+                    if(s.size() == 0 || s.pop() != TokenType.LCBRACE) return err;
                     else break;
             }
         }

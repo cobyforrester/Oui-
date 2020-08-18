@@ -50,7 +50,7 @@ public class BeforeAfterLsts {
     // ========================= INT/DOUBLE ===============================
     final private TokenType[] beforeINTDOUBLTAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
-            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.NEWLINE,
+            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.NEWLINE, TokenType.EQUALS,
     };
 
     final private TokenType[] afterINTDOUBLTAdd = {
