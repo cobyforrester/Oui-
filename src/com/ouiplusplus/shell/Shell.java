@@ -12,7 +12,7 @@ public class Shell {
             System.out.print("Oui++>> ");
             String input = scanner.nextLine();
             Run run = new Run();
-            Pair<String, Error> pair = run.runToString("Main.fr", input);
+            Pair<String, Error> pair = run.runToString("Main.ouipp", input);
             Error error = pair.getP2();
             if(error != null) {
                 System.out.println(error);

@@ -1,12 +1,11 @@
 package com.ouiplusplus.parser;
 import com.ouiplusplus.error.EmptyParenthesis;
 import com.ouiplusplus.error.Error;
+import com.ouiplusplus.error.OverFlow;
 import com.ouiplusplus.error.UnexpectedToken;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
-import javax.sound.midi.Soundbank;
-import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -25,51 +24,39 @@ public class AST {
     * EMPTY PARENTHESES*/
     public TreeNode root;
     private Parser parser; //for functions and variables
-    private int pos;
     private int opened; //number of opened parentheses
+    private Position start;
+    private Position end;
     private int size;
 
     //############## CLASS METHODS #######################
     public AST(Parser parser) {
         this.parser = parser;
-        this.pos = -1;
         this.opened = 0;
     }
 
 
     private Error addVal(Token token) { //null for no errors
-        Error err;
-        if(token.getValue() != null) err = new UnexpectedToken(token.getPos(), token.getValue());
-        else err = new UnexpectedToken(token.getPos(), token.getType().toString());
+        Error err = new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
+
         TokenType tt = token.getType();
         this.size++;
-        switch(tt) {
-
-            // NUMBERS AND VARS
-            case VAR: //FALLS TO INT
-            case FUNCCALL:
-            case DOUBLE:
-            case INT: return caseNUM(token);
-
-            // OPERATIONS
-            case MULT://FALLS TO DOUBLE
-            case DIV: return caseMULTDIV(token);
-            case PLUS:
-            case MINUS: return casePLUSMINUS(token);
-
-            // PARENTHESIS
-            case LPAREN: return caseLPAREN(token);
-            case RPAREN: return caseRPAREN(token);
-
-            // DEFAULT RETURN ERROR
-            default: return err;
-
-
-        }
+        return switch (tt) {
+            case VAR, FUNCCALL, DOUBLE, INT -> caseNUM(token);
+            case MULT, DIV -> caseMULTDIV(token);
+            case PLUS, MINUS -> casePLUSMINUS(token);
+            case LPAREN -> caseLPAREN(token);
+            case RPAREN -> caseRPAREN(token);
+            default -> err;
+        };
     }
 
     public Error addList(List<Token> tokens) {
         Error err;
+        if (!tokens.isEmpty()) {
+            this.start = tokens.get(0).getStart();
+            this.end = tokens.get(tokens.size() - 1).getEnd();
+        }
         for(Token tok: tokens) {
             err = this.addVal(tok);
             if (err != null) {
@@ -80,7 +67,8 @@ public class AST {
     }
 
     public Pair<Token, Error> resolveTreeVal() {
-        Pair<Token, Error> err = new Pair<>(null, new Error("Overflow Error"));
+        OverFlow over = new OverFlow(this.start.copy(),this.end.copy(), null);
+        Pair<Token, Error> err = new Pair<>(null, over);
         Pair<Token, Error> nullVal = new Pair<>(null, null);
         if (this.root == null) return nullVal;
         if (this.opened != 0) return err;
@@ -135,7 +123,7 @@ public class AST {
         }
     }
     private Error caseRPAREN(Token token) {
-        Error err = new EmptyParenthesis(token.getPos(), "()");
+        Error err = new EmptyParenthesis(token.getStart(), token.getEnd(), "()");
         if (this.root == null) return err;
 
         TreeNode currNode;
@@ -247,13 +235,10 @@ public class AST {
     }
 
     private static boolean isOp(TokenType tt) {
-        if (tt == TokenType.MULT
+        return tt == TokenType.MULT
                 || tt == TokenType.DIV
                 || tt == TokenType.MINUS
-                || tt == TokenType.PLUS) {
-            return true;
-        }
-        return false;
+                || tt == TokenType.PLUS;
     }
 
     private static Token combineTokens(Token left, Token op, Token right) {

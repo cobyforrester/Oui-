@@ -3,16 +3,19 @@ public class Token {
     private TokenType type;
     private String value;
     private boolean isNeg;
-    private Position pos;
-    public Token(TokenType type, String value, Position pos) {//for when initialized with a value
+    private Position start;
+    private Position end;
+    public Token(TokenType type, String value, Position start, Position end) {//for when initialized with a value
         this.type = type;
         this.value = value;
         this.isNeg = false;
-        this.pos = pos;
+        this.start = start;
+        this.end = end;
     }
-    public Token(TokenType type, Position pos) { //for when initialized with no value
+    public Token(TokenType type, Position start, Position end) { //for when initialized with no value
         this.type = type;
-        this.pos = pos;
+        this.start = start;
+        this.end = end;
         this.value = null;
     }
 
@@ -52,7 +55,11 @@ public class Token {
         isNeg = neg;
     }
 
-    public Position getPos() {
-        return pos;
+    public Position getStart() {
+        return start;
+    }
+
+    public Position getEnd() {
+        return end;
     }
 }

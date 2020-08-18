@@ -44,6 +44,7 @@ public class Lexer {
             } else if(alph.indexOf(this.currChar) > -1) {
                 tokens.add(this.makeAlphToken());
             }else {
+                Position p = this.pos.copy();
                 switch (this.currChar) {
                     case ' ':
                     case '\t':
@@ -51,37 +52,36 @@ public class Lexer {
 
                     // OPERATIONS AND RELATED TO MATH
                     case '+':
-                        tokens.add(new Token(TokenType.PLUS, "+", this.pos.copy()));
+                        tokens.add(new Token(TokenType.PLUS, "+", p, p));
                         break;
                     case '-':
-                        tokens.add(new Token(TokenType.MINUS, "-", this.pos.copy()));
+                        tokens.add(new Token(TokenType.MINUS, "-", p, p));
                         break;
                     case '/':
-                        tokens.add(new Token(TokenType.DIV, "/", this.pos.copy()));
+                        tokens.add(new Token(TokenType.DIV, "/", p, p));
                         break;
                     case '*':
-                        tokens.add(new Token(TokenType.MULT, "*", this.pos.copy()));
+                        tokens.add(new Token(TokenType.MULT, "*", p, p));
                         break;
                     case '=':
-                        tokens.add(new Token(TokenType.EQUALS, "=", this.pos.copy()));
+                        tokens.add(new Token(TokenType.EQUALS, "=", p, p));
                         break;
 
                     // (){}[]
                     case '(':
-                        tokens.add(new Token(TokenType.LPAREN, "(", this.pos.copy()));
+                        tokens.add(new Token(TokenType.LPAREN, "(", p, p));
                         break;
                     case ')':
-                        tokens.add(new Token(TokenType.RPAREN, ")", this.pos.copy()));
+                        tokens.add(new Token(TokenType.RPAREN, ")", p, p));
                         break;
 
                     //SPECIAL CHARACTERS
                     case ';':
-                        tokens.add(new Token(TokenType.SEMICOLON, ";", this.pos.copy()));
+                        tokens.add(new Token(TokenType.SEMICOLON, ";", p, p));
                         break;
                     default:
                         String details = Character.toString(currChar);
-                        this.advance();
-                        UnexpectedChar err = new UnexpectedChar(this.pos, details);
+                        UnexpectedChar err = new UnexpectedChar(p, p, details);
                         List<Token> lst = new ArrayList<>();
                         return new Pair<>(lst, err);
                 }
@@ -94,9 +94,12 @@ public class Lexer {
     }
 
     private Token makeNumberToken() {
+        Position start = this.pos.copy();
+        Position end = this.pos.copy();
         String num = "";
         int dotCount = 0;
         while (this.currChar != 0 && "0123456789.".indexOf(this.currChar) > -1) {
+            end = this.pos.copy();
             if ('.' == currChar) {
                 if (dotCount == 1) break; //we cant have more than one '.' in number
                 dotCount++;
@@ -110,19 +113,23 @@ public class Lexer {
         }
 
         if (dotCount == 0) {
-            return new Token(TokenType.INT, num, this.pos.copy());
+            return new Token(TokenType.INT, num, start, end);
         }
-        return new Token(TokenType.DOUBLE, num, this.pos.copy());
+        return new Token(TokenType.DOUBLE, num, start, end);
     }
 
     private Token makeAlphToken() {
+        Position start = this.pos.copy();
+        Position end = this.pos.copy();
+
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         String word = "";
         while (this.currChar != 0 && chars.indexOf(this.currChar) > -1) {
+            end = this.pos.copy();
             word += currChar; // creating number
             this.advance();
         }
-        return new Token(TokenType.WORD, word, this.pos.copy());
+        return new Token(TokenType.WORD, word, start, end);
     }
 
 
@@ -131,9 +138,10 @@ public class Lexer {
         Pair<List<Token>, Error> err;
         for (int i = 0; i < tokens.size(); i++) {
             Token tok = tokens.get(i);
-            if(tok.getValue() != null) {
-                err = new Pair<>(null, new UnexpectedToken(tok.getPos(), tok.getValue()));
-            } else err = new Pair<>(null, new UnexpectedToken(tok.getPos(), tok.getType().toString()));
+            Position start = tok.getStart();
+            Position end = tok.getEnd();
+            Error unexpected = new UnexpectedToken(start, end, tok.getValue());
+            err = new Pair<>(null, unexpected);
             TokenType currTT = tokens.get(i).getType();
             // ALL FOR ADD AND SUBTRACT
             if(currTT == TokenType.INT || currTT == TokenType.DOUBLE) {
@@ -225,6 +233,8 @@ public class Lexer {
         int parenOpen = 0, cBraceOpen = 0, bracketOpen = 0; //implement later for extra cases
         Token tok;
         for (Token t: tLst) {
+            Position start = t.getStart();
+            Position end = t.getEnd();
             switch(t.getType()) {
                 case LPAREN:
                 case LCBRACE:
@@ -234,28 +244,30 @@ public class Lexer {
                 case RPAREN:
                     if (s.size() != 0) {
                         tok = s.pop();
-                        if(tok.getType() != TokenType.LPAREN) return new UnexpectedChar(t.getPos(), ")");
-                    } else return new UnclosedParenthesis(t.getPos(), ")");
+                        if(tok.getType() != TokenType.LPAREN) return new UnexpectedChar(start, end, ")");
+                    } else return new UnclosedParenthesis(start, end, ")");
                     break;
                 case RBRACKET:
                     if (s.size() != 0) {
                         tok = s.pop();
-                        if(tok.getType() != TokenType.LBRACKET) return new UnexpectedChar(t.getPos(), "]");
-                    } else return new UnclosedBracket(t.getPos(), "]");
+                        if(tok.getType() != TokenType.LBRACKET) return new UnexpectedChar(start, end, "]");
+                    } else return new UnclosedBracket(start, end, "]");
                     break;
                 case RCBRACE:
                     if (s.size() != 0) {
                         tok = s.pop();
-                        if(tok.getType() != TokenType.LCBRACE) return new UnexpectedChar(t.getPos(), "}");
-                    } else return new UnclosedCurlyBrace(t.getPos(), "}");
+                        if(tok.getType() != TokenType.LCBRACE) return new UnexpectedChar(start, end, "}");
+                    } else return new UnclosedCurlyBrace(start, end, "}");
                     break;
             }
         }
         if (s.size() != 0) {
             Token t = s.pop();
-            if(t.getType() == TokenType.LPAREN) return new UnclosedParenthesis(t.getPos(), "(");
-            else if(t.getType() == TokenType.LBRACKET) return new UnclosedBracket(t.getPos(), "[");
-            else if(t.getType() == TokenType.LCBRACE) return new UnclosedCurlyBrace(t.getPos(), "{");
+            Position start = t.getStart();
+            Position end = t.getEnd();
+            if(t.getType() == TokenType.LPAREN) return new UnclosedParenthesis(start, end, "(");
+            else if(t.getType() == TokenType.LBRACKET) return new UnclosedBracket(start, end, "[");
+            else if(t.getType() == TokenType.LCBRACE) return new UnclosedCurlyBrace(start, end, "{");
         }
         return null;
     }
