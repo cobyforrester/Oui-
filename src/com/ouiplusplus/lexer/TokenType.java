@@ -23,7 +23,7 @@ public enum TokenType {
     RBRACKET,
     LCBRACE,
     RCBRACE,
-    CLOSEDPAREN, // for AST
+    CLOSEDPAREN, // for ASTExpression
 
     //SPECIAL CHARACTERS
     COMMA,
@@ -33,7 +33,6 @@ public enum TokenType {
     SEMICOLON,
 
     // FUNCTIONS
-    FUNCDECLARE,
     FUNCCALL,
 
     //LIST OF KEYWORDS

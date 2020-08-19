@@ -16,6 +16,9 @@ public class Run {
             return new Pair<>(null, error);
         }
         //System.out.println(tmpPair.getP1());
+        Pair<List<Token>, Error> test = TokenGroup.cleanTokenLst(tmpPair.getP1());
+        if (test.getP1() != null) System.out.println(test.getP1());
+        else System.out.println(test.getP2());
         Parser parser = new Parser(tmpPair.getP1());
         return parser.toStringParse();
     }

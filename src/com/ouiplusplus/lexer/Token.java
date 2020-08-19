@@ -12,12 +12,7 @@ public class Token {
         this.start = start;
         this.end = end;
     }
-    public Token(TokenType type, Position start, Position end) { //for when initialized with no value
-        this.type = type;
-        this.start = start;
-        this.end = end;
-        this.value = null;
-    }
+
 
     public Token(TokenType type) { //for when mutated in syntax trees
         this.type = type;

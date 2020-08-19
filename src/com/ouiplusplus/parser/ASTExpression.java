@@ -1,8 +1,6 @@
 package com.ouiplusplus.parser;
-import com.ouiplusplus.error.EmptyParenthesis;
+import com.ouiplusplus.error.*;
 import com.ouiplusplus.error.Error;
-import com.ouiplusplus.error.OverFlow;
-import com.ouiplusplus.error.UnexpectedToken;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
@@ -12,7 +10,7 @@ import java.util.Queue;
 
 import java.util.List;
 
-public class AST {
+public class ASTExpression {
     /* DETAILS
     * PEMDAS WITH LEFT ON BOTTOM OF TREE
     * LPAREN AND INT/DOUBLE CAN BE NEGATIVE
@@ -30,7 +28,7 @@ public class AST {
     private int size;
 
     //############## CLASS METHODS #######################
-    public AST(Parser parser) {
+    public ASTExpression(Parser parser) {
         this.parser = parser;
         this.opened = 0;
     }
@@ -67,10 +65,11 @@ public class AST {
     }
 
     public Pair<Token, Error> resolveTreeVal() {
+        Pair<Token, Error> nullVal = new Pair<>(null, new Error("No Input Given"));
+        if (this.root == null) return nullVal;
+
         OverFlow over = new OverFlow(this.start.copy(),this.end.copy(), null);
         Pair<Token, Error> err = new Pair<>(null, over);
-        Pair<Token, Error> nullVal = new Pair<>(null, null);
-        if (this.root == null) return nullVal;
         if (this.opened != 0) return err;
         Token fnlVal = this.dfsResolveVal(this.root);
         if (fnlVal == null || fnlVal.getValue() == null) return err;
@@ -123,15 +122,16 @@ public class AST {
         }
     }
     private Error caseRPAREN(Token token) {
-        Error err = new EmptyParenthesis(token.getStart(), token.getEnd(), "()");
+        Error err = new UnclosedParenthesis(token.getStart(), token.getEnd(), "()");
         if (this.root == null) return err;
 
         TreeNode currNode;
         if (this.opened != 0) {
             currNode = this.returnBottomOpenParen();
-            if (currNode.left == null) return err; //if parenthesis pair with nothing inside
+            Error unexpected = new UnclosedParenthesis(currNode.token.getStart(), token.getEnd(), "()");
+            if (currNode.left == null) return unexpected; //if parenthesis pair with nothing inside
             Token tmp = currNode.token;
-            currNode.token = new Token(TokenType.CLOSEDPAREN);
+            currNode.token = new Token(TokenType.CLOSEDPAREN, "()", currNode.token.getStart(), token.getEnd());
             if (tmp.isNeg()) currNode.token.setNeg(true);
             this.opened--;
             return null;

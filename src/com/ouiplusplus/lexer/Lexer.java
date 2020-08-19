@@ -79,6 +79,11 @@ public class Lexer {
                     case ';':
                         tokens.add(new Token(TokenType.SEMICOLON, ";", p, p));
                         break;
+                    case '\n':
+                        tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                        break;
+
+                    // DEFAULT
                     default:
                         String details = Character.toString(currChar);
                         UnexpectedChar err = new UnexpectedChar(p, p, details);
@@ -271,6 +276,8 @@ public class Lexer {
         }
         return null;
     }
+
+
 
     // ==================== HELPER FUNCTIONS ==========================
     public static boolean isInLst(TokenType tt, TokenType[] ttList) {

@@ -13,7 +13,7 @@ public class Parser {
     }
 
     public Pair<String, Error> toStringParse() {
-        AST ast = new AST(this);
+        ASTExpression ast = new ASTExpression(this);
 
         //add list
         Error addErr = ast.addList(this.allTokens);
