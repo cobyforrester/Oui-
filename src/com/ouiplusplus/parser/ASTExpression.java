@@ -21,15 +21,18 @@ public class ASTExpression {
     * DIVIDE BY 0
     * EMPTY PARENTHESES*/
     public TreeNode root;
-    private Parser parser; //for functions and variables
+    private TGParser tgparser; //for functions and variables
     private int opened; //number of opened parentheses
     private Position start;
     private Position end;
     private int size;
 
     //############## CLASS METHODS #######################
-    public ASTExpression(Parser parser) {
-        this.parser = parser;
+    public ASTExpression(TGParser parser) {
+        this.tgparser = parser;
+        this.opened = 0;
+    }
+    public ASTExpression() {
         this.opened = 0;
     }
 
@@ -84,6 +87,7 @@ public class ASTExpression {
 
     public void clearTree() {
         this.root = null;
+        this.opened = 0;
     }
 
 
@@ -154,7 +158,6 @@ public class ASTExpression {
             currNode.left = new TreeNode(token);
             return null;
         }
-
 
         //finding entry point and adding in value
         // Traverses down right side of tree until null right leaf found

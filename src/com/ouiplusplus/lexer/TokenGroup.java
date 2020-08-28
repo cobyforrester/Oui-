@@ -12,14 +12,16 @@ public class TokenGroup {
     private TokenGroupType type;
     private List<Token> tokens; //for variables and no shell expressions
     private List<TokenGroup> tokenGroups; //for if statements for loops functions
+    private String name;
 
-    public TokenGroup(TokenGroupType type, List<Token> tokens) { //for variables and no shell expressions
+    public TokenGroup(TokenGroupType type, List<Token> tokens, String name) { //for variables and no shell expressions
         this.type = type;
         this.tokens = tokens;
+        this.name = name;
     }
 
-    public static Pair<List<Token>, Error> cleanTokenLst (List<Token> lst) { // WORD->VAR etc
-        List<Token> newLst = new ArrayList<>();
+    public static Pair<List<TokenGroup>, Error> cleanTokenLst (List<Token> lst) { // WORD->VAR etc
+        List<TokenGroup> newLst = new ArrayList<>();
         List<String> vars = new ArrayList<>();
         Error err;
 ;        for(int i = 0; i < lst.size(); i++) {
@@ -48,23 +50,22 @@ public class TokenGroup {
                                 innerWhileLst.add(innerWhileTok);
                             j++;
                         }
-                        vars.add(lst.get(i + 1).getValue());
+                        String name = lst.get(i + 1).getValue();
+                        vars.add(name);
                         i = j;
-                        System.out.println("=============");
-                        System.out.println(innerWhileLst);
-                        System.out.println("=============");
+                        newLst.add(new TokenGroup(TokenGroupType.VARDECLARE, innerWhileLst, name));
                     }
-                } else {
-                    if (vars.contains(currVal)) {
+                    // ===================== ADD ALL THIS LATER ================================
+                } else if (curr.getType() == TokenType.WORD) {
+                    if (vars.contains(currVal)) { // ADD ALL THIS LATER
                         curr.setType(TokenType.VAR);
-                        newLst.add(curr);
                     } else {
                         err = new UnresolvedName(curr.getStart(), curr.getEnd(), currVal);
                         return new Pair<>(null, err);
                     }
                 }
             } else {
-                newLst.add(curr);
+                System.out.println("IN TOKENGROUP SHOULD NOT BE PRINTING");
             }
         }
         return new Pair<>(newLst, null);
@@ -74,4 +75,27 @@ public class TokenGroup {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "TokenGroup{" +
+                "type=" + type +
+                ", tokens=" + tokens +
+                '}';
+    }
+
+    public TokenGroupType getType() {
+        return type;
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public List<TokenGroup> getTokenGroups() {
+        return tokenGroups;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

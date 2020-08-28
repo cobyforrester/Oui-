@@ -60,6 +60,26 @@ public class BeforeAfterLsts {
             TokenType.SEMICOLON,
     };
 
+    // ========================= SEMICOLON ===============================
+    final private TokenType[] beforeSEMICOLONAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.DOUBLE,
+            TokenType.INT, TokenType.STRING, TokenType.WORD
+    };
+
+    final private TokenType[] afterSEMICOLONAdd = {
+            TokenType.NEWLINE
+    };
+
+    // ========================= NEWLINE ===============================
+    final private TokenType[] beforeNEWLINEAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.DOUBLE,
+            TokenType.INT, TokenType.STRING, TokenType.WORD, TokenType.NEWLINE,
+            TokenType.SEMICOLON
+    };
+
+    final private TokenType[] afterNEWLINEAdd = {
+            TokenType.NEWLINE, TokenType.WORD,
+    };
 
 
 
@@ -107,5 +127,21 @@ public class BeforeAfterLsts {
 
     public TokenType[] getAfterINTDOUBLTAdd() {
         return afterINTDOUBLTAdd;
+    }
+
+    public TokenType[] getBeforeSEMICOLONAdd() {
+        return beforeSEMICOLONAdd;
+    }
+
+    public TokenType[] getAfterSEMICOLONAdd() {
+        return afterSEMICOLONAdd;
+    }
+
+    public TokenType[] getBeforeNEWLINEAdd() {
+        return beforeNEWLINEAdd;
+    }
+
+    public TokenType[] getAfterNEWLINEAdd() {
+        return afterNEWLINEAdd;
     }
 }

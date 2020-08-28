@@ -187,6 +187,36 @@ public class Lexer {
                     }
                 }
             }
+            else if(currTT == TokenType.SEMICOLON) {
+                if (i == 0) return err;
+                TokenType prev = tokens.get(i - 1).getType();
+                if (i == tokens.size() - 1) {
+                    if(isInLst(prev, this.ba.getBeforeSEMICOLONAdd())) lst.add(tokens.get(i));
+                    else return err;
+                }
+                else {
+                    TokenType next = tokens.get(i + 1).getType();
+                    if(isInLst(prev, this.ba.getBeforeSEMICOLONAdd())
+                            && isInLst(next, this.ba.getAfterSEMICOLONAdd())) {
+                        lst.add(tokens.get(i));
+                    } else {
+                        return err;
+                    }
+                }
+            }
+            else if(currTT == TokenType.NEWLINE) {
+                if (i == 0 || i == tokens.size() - 1) lst.add(tokens.get(i));
+                else {
+                    TokenType prev = tokens.get(i - 1).getType();
+                    TokenType next = tokens.get(i + 1).getType();
+                    if(isInLst(prev, this.ba.getBeforeNEWLINEAdd())
+                            && isInLst(next, this.ba.getAfterNEWLINEAdd())) {
+                        lst.add(tokens.get(i));
+                    } else {
+                        return err;
+                    }
+                }
+            }
             else if (currTT == TokenType.PLUS || currTT == TokenType.MINUS) {
                 /* THIS IS FOR WHEN A PLUS OR MINUS IS ENCOUNTERED */
                 int negCount = 0;

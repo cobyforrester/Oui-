@@ -3,17 +3,17 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    private List<Token> allTokens;
+    private List<Token> allTokens = new ArrayList<>();
+    ASTExpression ast = new ASTExpression();
 
-    public Parser(List<Token> allTokens) {
-        this.allTokens = allTokens;
+    public Parser() {
     }
 
     public Pair<String, Error> toStringParse() {
-        ASTExpression ast = new ASTExpression(this);
 
         //add list
         Error addErr = ast.addList(this.allTokens);
@@ -22,10 +22,15 @@ public class Parser {
         Pair<Token, Error> treeVal = ast.resolveTreeVal();
         if (treeVal.getP2() != null) return new Pair<>(null, treeVal.getP2());
         String val;
-        if (treeVal.getP1().isNeg()) val = "-" + treeVal.getP1().getValue();
+        if (treeVal.getP1().isNeg() && !treeVal.getP1().getValue().equals("0")) {
+            val = "-" + treeVal.getP1().getValue();
+        }
         else val = treeVal.getP1().getValue();
+        ast.clearTree();
         return new Pair<>(val, null);
     }
 
-
+    public void setAllTokens(List<Token> allTokens) {
+        this.allTokens = allTokens;
+    }
 }
