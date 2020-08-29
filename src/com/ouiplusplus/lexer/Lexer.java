@@ -82,6 +82,10 @@ public class Lexer {
                     case '\n':
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         break;
+                    case '#':
+                        tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                        while (this.currChar != '\n') this.advance();
+                        break;
 
                     // DEFAULT
                     default:
@@ -105,11 +109,11 @@ public class Lexer {
         int dotCount = 0;
         while (this.currChar != 0 && "0123456789.".indexOf(this.currChar) > -1) {
             end = this.pos.copy();
-            if ('.' == currChar) {
+            if ('.' == this.currChar) {
                 if (dotCount == 1) break; //we cant have more than one '.' in number
                 dotCount++;
             }
-            num += currChar; // creating number
+            num += this.currChar; // creating number
             this.advance();
         }
         if (num.charAt(num.length() - 1) == '.') {
