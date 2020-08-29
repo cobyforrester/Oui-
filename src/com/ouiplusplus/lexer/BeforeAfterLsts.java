@@ -10,9 +10,11 @@ public class BeforeAfterLsts {
     final private TokenType[] beforePLUSAdd = {
             TokenType.FUNCCALL, TokenType.INT, TokenType.DOUBLE,
             TokenType.STRING, TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
+            TokenType.EQUALS,
     };
     final private TokenType[] beforePLUSErr = {
             TokenType.NULL, TokenType.BOOLEAN, TokenType.SEMICOLON,
+            TokenType.NEWLINE,
     };
     final private TokenType[] afterPLUSErr = {
             TokenType.NULL, TokenType.MULT, TokenType.DIV, TokenType.RPAREN,
@@ -23,11 +25,12 @@ public class BeforeAfterLsts {
     // ========================= MINUS ===============================
     final private TokenType[] beforeMINUSAdd = {
             TokenType.FUNCCALL, TokenType.INT, TokenType.DOUBLE,
-            TokenType.STRING, TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
+            TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
+            TokenType.EQUALS,
     };
     final private TokenType[] beforeMINUSErr = {
             TokenType.NULL, TokenType.BOOLEAN, TokenType.SEMICOLON,
-            TokenType.STRING,
+            TokenType.STRING, TokenType.NEWLINE,
     };
     final private TokenType[] afterMINUSErr = {
             TokenType.NULL, TokenType.MULT, TokenType.DIV, TokenType.RPAREN,
@@ -48,22 +51,23 @@ public class BeforeAfterLsts {
     };
 
     // ========================= INT/DOUBLE ===============================
-    final private TokenType[] beforeINTDOUBLTAdd = {
+    final private TokenType[] beforeINTDOUBLEAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
-            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.NEWLINE, TokenType.WORD,
+            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.WORD,
             TokenType.EQUALS,
     };
 
-    final private TokenType[] afterINTDOUBLTAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.MULT,
-            TokenType.DIV, TokenType.PLUS, TokenType.MINUS, TokenType.NEWLINE,
-            TokenType.SEMICOLON,
+    final private TokenType[] afterINTDOUBLEAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.MULT, TokenType.DIV, TokenType.PLUS,
+            TokenType.MINUS, TokenType.NEWLINE, TokenType.SEMICOLON,
     };
 
     // ========================= SEMICOLON ===============================
     final private TokenType[] beforeSEMICOLONAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.DOUBLE,
-            TokenType.INT, TokenType.STRING, TokenType.WORD
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
+            TokenType.WORD
     };
 
     final private TokenType[] afterSEMICOLONAdd = {
@@ -72,13 +76,29 @@ public class BeforeAfterLsts {
 
     // ========================= NEWLINE ===============================
     final private TokenType[] beforeNEWLINEAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE, TokenType.DOUBLE,
-            TokenType.INT, TokenType.STRING, TokenType.WORD, TokenType.NEWLINE,
-            TokenType.SEMICOLON
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
+            TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON
     };
 
     final private TokenType[] afterNEWLINEAdd = {
             TokenType.NEWLINE, TokenType.WORD,
+    };
+
+    // ========================= WORD ===============================
+    final private TokenType[] beforeWORDAdd = {
+            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
+            TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
+            TokenType.MULT, TokenType.DIV, TokenType.PLUS, TokenType.MINUS,
+    };
+
+    final private TokenType[] afterWORDAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
+            TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
+            TokenType.MULT, TokenType.DIV, TokenType.PLUS,
+            TokenType.MINUS, TokenType.SEMICOLON,
+
     };
 
 
@@ -121,12 +141,12 @@ public class BeforeAfterLsts {
         return afterMULTDIVAdd;
     }
 
-    public TokenType[] getBeforeINTDOUBLTAdd() {
-        return beforeINTDOUBLTAdd;
+    public TokenType[] getBeforeINTDOUBLEAdd() {
+        return beforeINTDOUBLEAdd;
     }
 
-    public TokenType[] getAfterINTDOUBLTAdd() {
-        return afterINTDOUBLTAdd;
+    public TokenType[] getAfterINTDOUBLEAdd() {
+        return afterINTDOUBLEAdd;
     }
 
     public TokenType[] getBeforeSEMICOLONAdd() {
@@ -143,5 +163,13 @@ public class BeforeAfterLsts {
 
     public TokenType[] getAfterNEWLINEAdd() {
         return afterNEWLINEAdd;
+    }
+
+    public TokenType[] getBeforeWORDAdd() {
+        return beforeWORDAdd;
+    }
+
+    public TokenType[] getAfterWORDAdd() {
+        return afterWORDAdd;
     }
 }

@@ -151,23 +151,17 @@ public class Lexer {
             // ALL FOR ADD AND SUBTRACT
             if(currTT == TokenType.INT || currTT == TokenType.DOUBLE) {
                 /* THIS IS FOR WHEN A INT OR DOUBLE IS ENCOUNTERED */
-                if (i == 0) {
-                    if (i != tokens.size() - 1) {
-                        TokenType next = tokens.get(i + 1).getType();
-                        if(isInLst(next, this.ba.getAfterINTDOUBLTAdd())) lst.add(tokens.get(i));
-                        else return err;
-                    } else lst.add(tokens.get(i));
-                }
+                if (i == 0) return err;
                 else if(i == tokens.size() - 1) {
                     TokenType prev = tokens.get(i - 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeINTDOUBLTAdd())) lst.add(tokens.get(i));
+                    if(isInLst(prev, this.ba.getBeforeINTDOUBLEAdd())) lst.add(tokens.get(i));
                     else return err;
                 }
                 else {
                     TokenType prev = tokens.get(i - 1).getType();
                     TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeINTDOUBLTAdd())
-                            && isInLst(next, this.ba.getAfterINTDOUBLTAdd())) {
+                    if(isInLst(prev, this.ba.getBeforeINTDOUBLEAdd())
+                            && isInLst(next, this.ba.getAfterINTDOUBLEAdd())) {
                         lst.add(tokens.get(i));
                     } else {
                         return err;
@@ -217,9 +211,33 @@ public class Lexer {
                     }
                 }
             }
+            else if(currTT == TokenType.WORD) {
+                if (i == 0 && i == tokens.size() - 1) return err;
+                else if (i == 0) {
+                    TokenType next = tokens.get(i + 1).getType();
+                    if(isInLst(next, this.ba.getAfterWORDAdd())) lst.add(tokens.get(i));
+                    else return err;
+                }
+                else if (i == tokens.size() - 1) {
+                    TokenType prev = tokens.get(i - 1).getType();
+                    if(isInLst(prev, this.ba.getBeforeWORDAdd())) lst.add(tokens.get(i));
+                    else return err;
+                }
+                else {
+                    TokenType prev = tokens.get(i - 1).getType();
+                    TokenType next = tokens.get(i + 1).getType();
+                    if(isInLst(prev, this.ba.getBeforeWORDAdd())
+                            && isInLst(next, this.ba.getAfterWORDAdd())) {
+                        lst.add(tokens.get(i));
+                    } else {
+                        return err;
+                    }
+                }
+            }
             else if (currTT == TokenType.PLUS || currTT == TokenType.MINUS) {
                 /* THIS IS FOR WHEN A PLUS OR MINUS IS ENCOUNTERED */
                 int negCount = 0;
+                if(i == 0) return err;
                 if (i > 0) {
                     TokenType prevTT = tokens.get(i - 1).getType();
                     if(currTT == TokenType.PLUS) {
@@ -263,7 +281,7 @@ public class Lexer {
         return new Pair<>(lst, null);
     }
 
-    private static Error validateParentheses(List<Token> tLst) {
+    public static Error validateParentheses(List<Token> tLst) {
         Stack<Token> s = new Stack<>();
         int parenOpen = 0, cBraceOpen = 0, bracketOpen = 0; //implement later for extra cases
         Token tok;

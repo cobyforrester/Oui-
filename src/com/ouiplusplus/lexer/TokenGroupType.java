@@ -4,7 +4,9 @@ package com.ouiplusplus.lexer;
 public enum TokenGroupType {
     EXPR,
     VARDECLARE,
-    FUNCDECLARE;
+    FUNCDECLARE,
+    FUNCGROUP,
+    VARGROUP;
 
     //ADD LOOPS AND IF STATEMENTS
 

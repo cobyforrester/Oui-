@@ -15,7 +15,13 @@ public class Shell {
         Scanner sf = new Scanner(file);
         sf.useDelimiter("\\Z");
         String input = sf.next();
-        Pair<String, Error> pair = run.runToString("main.ouipp", input);
+        Pair<String, Error> pair = run.generateOutput("main.ouipp", input);
+        Error error = pair.getP2();
+        if(error != null) {
+            System.out.println(error);
+        } else {
+            System.out.println(pair.getP1());
+        }
         /*
         Run run = new Run();
         Scanner scanner = new Scanner(System.in);
