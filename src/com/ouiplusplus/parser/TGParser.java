@@ -2,57 +2,120 @@ package com.ouiplusplus.parser;
 
 import com.ouiplusplus.error.Error;
 import com.ouiplusplus.error.InvalidVariableDec;
+import com.ouiplusplus.error.UndeclaredVariableReference;
 import com.ouiplusplus.helper.Pair;
-import com.ouiplusplus.lexer.Token;
-import com.ouiplusplus.lexer.TokenGroup;
-import com.ouiplusplus.lexer.TokenGroupType;
+import com.ouiplusplus.lexer.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TGParser {
-    private List<TokenGroup> allTGs = new ArrayList<>();
+    private Map<String,Token> vars = new HashMap<>(); // [VAL_NAME : Token]
     private ASTExpression ast = new ASTExpression(this);
-    private Map<String,String> vars = new HashMap<>();
 
     public TGParser() {
     }
 
-    public Pair<String, Error> process() {
-        String fnl = "";
-        Pair<String, Error> val;
-        for (TokenGroup tg: this.allTGs) {
-            if (tg.getType() == TokenGroupType.VAR_DECLARE) {
-                if(vars.containsKey(tg.getName())) return new Pair<>(null, new InvalidVariableDec());
-                val = getVal(tg.getTokens());
+    public Pair<String, Error> process(List<TokenGroup> tgLst) {
+        /*
+        PROCESS TokenGroup VALUES TO FIND OUTPUT WITH ASTExpression
+         */
+
+        // DECLARING VARS
+        String output = "";
+        Pair<Token, Error> val;
+
+        for (TokenGroup tg: tgLst) {
+            Position start = tg.getStartTok().getStart();
+            // If variable declared
+            if (tg.getType() == TokenGroupType.PRINT) {
+                Position end;
+                if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
+                else end = tg.getStartTok().getEnd();
+
+                // Generate resolved Token
+                val = this.getResolvedToken(tg.getTokens());
                 if(val.getP2() != null) return new Pair<>(null, val.getP2());
-                vars.put(tg.getName(), val.getP1());
-                fnl = fnl + val.getP1();
+
+                output = output + this.getValue(val.getP1()) + '\n';
+
+
+            } else if (tg.getType() == TokenGroupType.VAR_DECLARE) {
+                // Checking for error
+                Position end;
+                if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
+                else end = tg.getStartTok().getEnd();
+                if(this.vars.containsKey(tg.getStartTok().getValue()))
+                    return new Pair<>(null, new InvalidVariableDec(start, end, tg.getStartTok().getValue()));
+
+                // Generate resolved Token
+                val = this.getResolvedToken(tg.getTokens());
+                if(val.getP2() != null) return new Pair<>(null, val.getP2());
+
+                // If no errors add to vars hashmap
+                this.vars.put(tg.getStartTok().getValue(), val.getP1());
+
+            } else if (tg.getType() == TokenGroupType.VAR_NEW_ASSIGN) {
+                // Checking for error
+                Position end;
+                if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
+                else end = tg.getStartTok().getEnd();
+                if(!this.vars.containsKey(tg.getStartTok().getValue()))
+                    return new Pair<>(null, new UndeclaredVariableReference(start, end, tg.getStartTok().getValue()));
+
+                // Generate resolved Token
+                val = this.getResolvedToken(tg.getTokens());
+                if(val.getP2() != null) return new Pair<>(null, val.getP2());
+
+                // If no errors add to vars hashmap
+                this.vars.put(tg.getStartTok().getValue(), val.getP1());
             }
         }
 
-        return new Pair<>(fnl, null);
+        return new Pair<>(output, null);
     }
 
-    public Pair<String, Error> getVal(List<Token> lst) {
+    private Pair<Token, Error> getResolvedToken(List<Token> lst) {
+        /*
+        Pair returned consists of (Token, Error)
+        Uses ASTExpression to get value and resolved token
+         */
 
-        //add list
+        // Add list to ASTExpression
         Error addErr = ast.addList(lst);
         if (addErr != null) return new Pair<>(null, addErr);
 
+        // Get token from tree
         Pair<Token, Error> treeVal = ast.resolveTreeVal();
         if (treeVal.getP2() != null) return new Pair<>(null, treeVal.getP2());
-        String val;
-        if (treeVal.getP1().isNeg() && !treeVal.getP1().getValue().equals("0")) {
-            val = "-" + treeVal.getP1().getValue();
-        }
-        else val = treeVal.getP1().getValue();
 
+        // Clear tree and return
         ast.clearTree();
-        return new Pair<>(val, null);
+        return new Pair<>(treeVal.getP1(), null);
     }
 
+    private String getValue(Token token) {
+        /*
+        returns value with negative sign if negative
+         */
+        String val;
+        if (token.isNeg() && !token.getValue().equals("0") &&
+                token.getType() != TokenType.STRING && token.getType() != TokenType.BOOLEAN) {
+            val = "-" + token.getValue();
+        }
+        else val = token.getValue();
 
+        return val;
+    }
+
+    //============================== GETTERS =============================
+
+    public Map<String, Token> getVars() {
+        return vars;
+    }
+
+    public ASTExpression getAst() {
+        return ast;
+    }
 }

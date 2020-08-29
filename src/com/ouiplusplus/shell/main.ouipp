@@ -1,10 +1,11 @@
 
+
+print(100*10+(6))
+
 var x = 100 * 100--9
 
-print(x-100*10+(6))
+imprimer(100 + x / 100);
 
-imprimer()
+var y = 100  + 2;
 
-var y = 100 + x + 2;
-
-x = 100 + y + x * 2
+x = 100 + 2

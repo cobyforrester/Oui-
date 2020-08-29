@@ -1,27 +1,17 @@
 package com.ouiplusplus.lexer;
 
-import com.ouiplusplus.error.Error;
-import com.ouiplusplus.error.InvalidVariableDec;
-import com.ouiplusplus.error.UnresolvedName;
-import com.ouiplusplus.helper.Pair;
-import com.ouiplusplus.helper.Trio;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class TokenGroup {
     private TokenGroupType type;
     private List<Token> tokens; //for variables and no shell expressions
     private List<TokenGroup> tokenGroups; //for if statements for loops functions
-    private String name;
+    private Token startTok;
 
-    public TokenGroup(TokenGroupType type) { //for variables and no shell expressions
-        this.type = type;
-    }
 
-    public TokenGroup(TokenGroupType type, String name) { //for variables and no shell expressions
+    public TokenGroup(TokenGroupType type, Token startTok) { //for variables and no shell expressions
         this.type = type;
-        this.name = name;
+        this.startTok = startTok;
     }
 
 
@@ -30,11 +20,12 @@ public class TokenGroup {
 
     @Override
     public String toString() {
-        return "\nTokenGroup{" +
-                "type=" + type +
-                ", tokens=" + tokens +
-                ", name='" + name + '\'' +
-                "}";
+        String rtn = "\nTokenGroup{" +
+                    "type=" + type +
+                    ", tokens=" + tokens;
+
+        if (startTok != null) return rtn + ", name='" + startTok.getValue() + '\'' + "}";
+        return rtn + "}";
     }
 
     //============================== GETTERS/SETTERS =============================
@@ -50,8 +41,8 @@ public class TokenGroup {
         return tokenGroups;
     }
 
-    public String getName() {
-        return name;
+    public Token getStartTok() {
+        return startTok;
     }
 
     public void setType(TokenGroupType type) {
@@ -66,7 +57,7 @@ public class TokenGroup {
         this.tokenGroups = tokenGroups;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStartTok(Token startTok) {
+        this.startTok = startTok;
     }
 }

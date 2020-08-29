@@ -39,7 +39,10 @@ public class ASTExpression {
 
     private Error addVal(Token token) { //null for no errors
         Error err = new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
-
+        if (token.getType() == TokenType.VAR) {
+            if (!tgparser.getVars().containsKey(token.getValue())) return err;
+            token = tgparser.getVars().get(token.getValue());
+        }
         TokenType tt = token.getType();
         this.size++;
         return switch (tt) {
@@ -117,12 +120,22 @@ public class ASTExpression {
         //finding entry point and adding in value
         // Traverses down right side of tree until null right leaf found
         while (true) {
-            if (currNode.right == null) {
+            if (currNode.right == null && isOp(currNode.token.getType())) {
                 currNode.right = new TreeNode(token);
                 this.opened++;
                 return null;
             }
-            currNode = currNode.right;
+            if(currNode.left == null && !isOp(currNode.token.getType())) {
+                currNode.left = new TreeNode(token);
+                this.opened++;
+                return null;
+            }
+            if (isOp(currNode.token.getType())) {
+                currNode = currNode.right;
+            } else{
+                currNode = currNode.left;
+            }
+
         }
     }
     private Error caseRPAREN(Token token) {

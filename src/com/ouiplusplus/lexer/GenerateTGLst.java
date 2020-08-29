@@ -31,7 +31,7 @@ public class GenerateTGLst {
                         return new Pair<>(null, err);
                     } else {
                         //SEE IF ALREADY DECLARED
-                        String name = lst.get(i + 1).getValue();
+                        Token name = lst.get(i + 1);
                         if(vars.contains(name)) return new Pair<>(null, err);
 
                         // GENERATE TOKENS LIST
@@ -41,11 +41,13 @@ public class GenerateTGLst {
                         if(tknsErr != null) return new Pair<>(null, tknsErr);
 
                         // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
-                        vars.add(name);
-                        i = tkns.getT2();
+                        vars.add(name.getValue());
+
                         TokenGroup tg = new TokenGroup(TokenGroupType.VAR_DECLARE, name);
                         tg.setTokens(tkns.getT1());
                         newLst.add(tg);
+
+                        i = tkns.getT2();
                     }
                 } else if(vars.contains(currVal)) {
                     err = new InvalidVariableAssignment(curr.getStart(), curr.getEnd(), currVal);
@@ -60,18 +62,18 @@ public class GenerateTGLst {
                         if(tknsErr != null) return new Pair<>(null, tknsErr);
 
                         // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
-                        String name = lst.get(i).getValue();
-                        i = tkns.getT2();
-                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_NEW_ASSIGN, name);
+                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_NEW_ASSIGN, curr);
                         tg.setTokens(tkns.getT1());
                         newLst.add(tg);
+
+                        i = tkns.getT2();
                     }
 
 
                 } else if (currVal.equals("print") || currVal.equals("imprimer")) {
                     // GENERATE TOKENS LIST
-                    err = new InvalidPrintStatement(curr.getStart(), curr.getEnd(), currVal);
                     if (i + 2 >= lst.size()) {
+                        err = new InvalidPrintStatement(curr.getStart(), lst.get(lst.size() - 1).getEnd(), currVal);
                         return new Pair<>(null, err);
                     } else {
                         Trio<List<Token>, Integer, Error> tkns =
@@ -80,20 +82,28 @@ public class GenerateTGLst {
                     if(tknsErr != null) return new Pair<>(null, tknsErr);
 
                     // CHECK IF TOKENS LIST IS VALID
-                    if (tkns.getT1().size() < 2) return new Pair<>(null, err);
+                    if (tkns.getT1().size() == 0) {
+                        err = new InvalidPrintStatement(curr.getStart(), curr.getEnd(), currVal);
+                        return new Pair<>(null, err);
+                    } else if (tkns.getT1().size() == 1) {
+                        err = new InvalidPrintStatement(curr.getStart(),
+                                tkns.getT1().get(tkns.getT1().size() - 1).getEnd(), currVal);
+                        return new Pair<>(null, err);
+                    }
+
+                    // Error message for print including last and first positions
+                    err = new InvalidPrintStatement(curr.getStart(),
+                            tkns.getT1().get(tkns.getT1().size() - 1).getEnd(), currVal);
+
                     if (tkns.getT1().get(0).getType() != TokenType.LPAREN
                             || tkns.getT1().get(tkns.getT1().size() - 1).getType() != TokenType.RPAREN)
                         return new Pair<>(null, err);
-
-                    // REMOVE () FROM PRINT
-                    tkns.getT1().remove(0);
-                    tkns.getT1().remove(tkns.getT1().size() - 1);
 
                     // SET i
                     i = tkns.getT2();
 
                     // ADD TG
-                    TokenGroup tg = new TokenGroup(TokenGroupType.PRINT);
+                    TokenGroup tg = new TokenGroup(TokenGroupType.PRINT, curr);
                     tg.setTokens(tkns.getT1());
                     newLst.add(tg);
                 }
