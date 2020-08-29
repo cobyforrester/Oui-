@@ -24,7 +24,7 @@ public class TGParser {
         String fnl = "";
         Pair<String, Error> val;
         for (TokenGroup tg: this.allTGs) {
-            if (tg.getType() == TokenGroupType.VARDECLARE) {
+            if (tg.getType() == TokenGroupType.VAR_DECLARE) {
                 if(vars.containsKey(tg.getName())) return new Pair<>(null, new InvalidVariableDec());
                 val = getVal(tg.getTokens());
                 if(val.getP2() != null) return new Pair<>(null, val.getP2());
