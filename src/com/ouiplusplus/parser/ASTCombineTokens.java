@@ -11,8 +11,6 @@ public class ASTCombineTokens {
 
     public static Pair<Token, Error> combine(Token left, Token op, Token right, Position start, Position end) {
 
-        if (left.isNeg()) left.setValue("-" + left.getValue());
-        if (right.isNeg()) right.setValue("-" + right.getValue());
 
         if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
             Token rtnTkn = new Token(TokenType.STRING);
@@ -78,12 +76,6 @@ public class ASTCombineTokens {
                     Error invOper = new InvalidOperation(start, end, op.getValue());
                     return new Pair<>(null, invOper);
                 }
-
-                // if val negative
-                if (val < 0) {
-                    val = val * (-1);
-                    rtnTok.setNeg(true);
-                }
                 rtnTok.setValue(Double.toString(val));
                 return new Pair<>(rtnTok, null);
             } catch(Exception e) {
@@ -111,11 +103,6 @@ public class ASTCombineTokens {
                     return new Pair<>(null, invOper);
                 }
 
-                // if val negative
-                if (val < 0) {
-                    val = val * (-1);
-                    rtnTok.setNeg(true);
-                }
                 rtnTok.setValue(Integer.toString(val));
                 return new Pair<>(rtnTok, null);
             } catch(Exception e) {

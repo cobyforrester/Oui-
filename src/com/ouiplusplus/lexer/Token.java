@@ -7,10 +7,14 @@ public class Token {
     private Position end;
     public Token(TokenType type, String value, Position start, Position end) {//for when initialized with a value
         this.type = type;
-        this.value = value;
-        this.isNeg = false;
         this.start = start;
         this.end = end;
+
+        if (value.indexOf ('-') == 0 && (type == TokenType.INT || type == TokenType.DOUBLE)) {
+            this.isNeg = true;
+            value = value.substring(1);
+        } else this.isNeg = false;
+        this.value = value;
     }
 
 
@@ -21,7 +25,7 @@ public class Token {
     @Override
     public String toString() {
         if (this.value != null) {
-            return this.type.toString() + ":" + this.value;
+            return this.type.toString() + ":" + this.getValue();
         }
         return this.type.toString();
     }
@@ -35,10 +39,16 @@ public class Token {
     }
 
     public String getValue() {
+        if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
+                || this.type == TokenType.DOUBLE)) return "-" + value;
         return value;
     }
 
     public void setValue(String value) {
+        if (value.indexOf ('-') == 0 && (type == TokenType.INT || type == TokenType.DOUBLE)) {
+            this.isNeg = true;
+            value = value.substring(1);
+        } else this.isNeg = false;
         this.value = value;
     }
 
