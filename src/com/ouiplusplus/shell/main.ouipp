@@ -1,12 +1,9 @@
 
-print(10 + 5);
+# printing here 4t4vthv ytr
 
-var x = 100 * 3
+y = 100 * 100
+x = 100
+z = 39
 
-print(x + 50)
-
-
-
-
-
+print(y+x+z)
 

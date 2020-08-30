@@ -22,54 +22,8 @@ public class GenerateTGLst {
             Token curr = lst.get(i);
             String currVal = curr.getValue().toLowerCase();
             if(curr.getType() == TokenType.WORD) {
-                if (currVal.equals("var")) {
-                    //Validate
-                    err = new InvalidVariableDec(curr.getStart(), curr.getEnd(), currVal);
-                    if (i + 3 >= lst.size()
-                            || lst.get(i + 1).getType() != TokenType.WORD
-                            || lst.get(i + 2).getType() != TokenType.EQUALS) {
-                        return new Pair<>(null, err);
-                    } else {
-                        //SEE IF ALREADY DECLARED
-                        Token name = lst.get(i + 1);
-                        if(vars.contains(name)) return new Pair<>(null, err);
-
-                        // GENERATE TOKENS LIST
-                        Trio<List<Token>, Integer, Error> tkns =
-                                generateToknsLst(i+3, lst, vars, functions);
-                        Error tknsErr = tkns.getT3();
-                        if(tknsErr != null) return new Pair<>(null, tknsErr);
-
-                        // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
-                        vars.add(name.getValue());
-
-                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_DECLARE, name);
-                        tg.setTokens(tkns.getT1());
-                        newLst.add(tg);
-
-                        i = tkns.getT2();
-                    }
-                } else if(vars.contains(currVal)) {
-                    err = new InvalidVariableAssignment(curr.getStart(), curr.getEnd(), currVal);
-                    if (i + 2 >= lst.size() || lst.get(i + 1).getType() != TokenType.EQUALS) {
-                        return new Pair<>(null, err);
-                    } else {
-
-                        // GENERATE TOKENS LIST
-                        Trio<List<Token>, Integer, Error> tkns =
-                                generateToknsLst(i + 2, lst, vars, functions);
-                        Error tknsErr = tkns.getT3();
-                        if(tknsErr != null) return new Pair<>(null, tknsErr);
-
-                        // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
-                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_NEW_ASSIGN, curr);
-                        tg.setTokens(tkns.getT1());
-                        newLst.add(tg);
-
-                        i = tkns.getT2();
-                    }
-
-
+                if(functions.contains(currVal)) {
+                    // IMPLEMENT LATER
                 } else if (currVal.equals("print") || currVal.equals("imprimer")) {
                     // GENERATE TOKENS LIST
                     if (i + 2 >= lst.size()) {
@@ -109,8 +63,27 @@ public class GenerateTGLst {
                 }
 
                 } else {
-                    err = new UndeclaredVariableReference(curr.getStart(), curr.getEnd(), currVal);
-                    return new Pair<>(null, err);
+                    err = new InvalidVariableAssignment(curr.getStart(), curr.getEnd(), currVal);
+                    if (i + 2 >= lst.size() || lst.get(i + 1).getType() != TokenType.EQUALS) {
+                        return new Pair<>(null, err);
+                    } else {
+
+                        // GENERATE TOKENS LIST
+                        Trio<List<Token>, Integer, Error> tkns =
+                                generateToknsLst(i + 2, lst, vars, functions);
+                        Error tknsErr = tkns.getT3();
+                        if(tknsErr != null) return new Pair<>(null, tknsErr);
+
+                        // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
+                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_ASSIGN, curr);
+                        tg.setTokens(tkns.getT1());
+                        newLst.add(tg);
+
+                        // Add to vars if not already added
+                        if(!vars.contains(currVal)) vars.add(tg.getStartTok().getValue());
+
+                        i = tkns.getT2();
+                    }
                 }
             } else if(curr.getType() != TokenType.NEWLINE) {
                 System.out.println("IN TOKENGROUP SHOULD NOT BE PRINTING");
@@ -147,7 +120,7 @@ public class GenerateTGLst {
             index++;
         }
 
-        Error parenErr = Lexer.validateParentheses(fnl);
+        Error parenErr = ValidateLexTokens.validateParentheses(fnl);
         if (parenErr != null) return new Trio<>(null, null, parenErr);
         return new Trio<>(fnl, index, null); //plus 1 because of semicolon or newline
     }

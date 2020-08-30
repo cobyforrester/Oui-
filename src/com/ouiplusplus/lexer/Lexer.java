@@ -13,7 +13,6 @@ public class Lexer {
     private Position pos;
     private char currChar;
     final private String fn; // file name
-    final private BeforeAfterLsts ba; //lists for legal characters before and after token
 
 
     public Lexer(String fn, String text) {
@@ -21,7 +20,6 @@ public class Lexer {
         this.text = text;
         this.pos = new Position(-1, 0, -1, this.fn, this.text);
         this.currChar = 0; //initialized to null 0 is ascii for null
-        this.ba = new BeforeAfterLsts();
         this.advance();
     }
 
@@ -43,7 +41,7 @@ public class Lexer {
                 tokens.add(this.makeNumberToken());
             } else if(alph.indexOf(this.currChar) > -1) {
                 tokens.add(this.makeAlphToken());
-            }else {
+            } else {
                 Position p = this.pos.copy();
                 switch (this.currChar) {
                     case ' ':
@@ -65,6 +63,15 @@ public class Lexer {
                         break;
                     case '=':
                         tokens.add(new Token(TokenType.EQUALS, "=", p, p));
+                        break;
+
+                    // Strings
+                    case '\'':
+                    case '\"':
+                        Pair<Token, Error> strPair = this.makeStringToken();
+                        Error strErr = strPair.getP2();
+                        if (strErr != null) return new Pair<>(null, strErr);
+                        tokens.add(strPair.getP1());
                         break;
 
                     // (){}[]
@@ -97,9 +104,9 @@ public class Lexer {
                 this.advance();
             }
         }
-        Error valParen = validateParentheses(tokens);
+        Error valParen = ValidateLexTokens.validateParentheses(tokens);
         if (valParen != null) return new Pair<> (null ,valParen);
-        return this.validateTokens(tokens);
+        return ValidateLexTokens.validateTokens(tokens);
     }
 
     private Token makeNumberToken() {
@@ -135,208 +142,47 @@ public class Lexer {
         String word = "";
         while (this.currChar != 0 && chars.indexOf(this.currChar) > -1) {
             end = this.pos.copy();
-            word += currChar; // creating number
+            word += currChar; // creating word
             this.advance();
         }
         return new Token(TokenType.WORD, word, start, end);
     }
 
+    private Pair<Token, Error> makeStringToken() {
+        char quoteType = this.currChar;
+        Position start = this.pos.copy();
+        Position end = this.pos.copy();
+        String str = "";
+        this.advance();
 
-    private Pair<List<Token>, Error> validateTokens(List<Token> tokens) {
-        List<Token> lst = new ArrayList<>();
-        Pair<List<Token>, Error> err;
-        for (int i = 0; i < tokens.size(); i++) {
-            Token tok = tokens.get(i);
-            Position start = tok.getStart();
-            Position end = tok.getEnd();
-            Error unexpected = new UnexpectedToken(start, end, tok.getValue());
-            err = new Pair<>(null, unexpected);
-            TokenType currTT = tokens.get(i).getType();
-            // ALL FOR ADD AND SUBTRACT
-            if(currTT == TokenType.INT || currTT == TokenType.DOUBLE) {
-                /* THIS IS FOR WHEN A INT OR DOUBLE IS ENCOUNTERED */
-                if (i == 0) return err;
-                else if(i == tokens.size() - 1) {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeINTDOUBLEAdd())) lst.add(tokens.get(i));
-                    else return err;
+        while (this.currChar != 0 && this.currChar != quoteType) {
+            end = this.pos.copy();
+            if (this.currChar == '\\') {
+                this.advance();
+                switch (this.currChar) {
+                    case 'n':
+                        str += '\n';
+                        break;
+                    case 't':
+                        str += '\t';
+                        break;
+                    default:
+                        str += this.currChar;
+                        break;
                 }
-                else {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeINTDOUBLEAdd())
-                            && isInLst(next, this.ba.getAfterINTDOUBLEAdd())) {
-                        lst.add(tokens.get(i));
-                    } else {
-                        return err;
-                    }
-                }
-            }
-            else if(currTT == TokenType.MULT || currTT == TokenType.DIV) {
-                if (i == 0 || i == tokens.size() - 1) return err;
-                else {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeMULTDIVAdd())
-                            && isInLst(next, this.ba.getAfterMULTDIVAdd())) {
-                        lst.add(tokens.get(i));
-                    } else {
-                        return err;
-                    }
-                }
-            }
-            else if(currTT == TokenType.SEMICOLON) {
-                if (i == 0) return err;
-                TokenType prev = tokens.get(i - 1).getType();
-                if (i == tokens.size() - 1) {
-                    if(isInLst(prev, this.ba.getBeforeSEMICOLONAdd())) lst.add(tokens.get(i));
-                    else return err;
-                }
-                else {
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeSEMICOLONAdd())
-                            && isInLst(next, this.ba.getAfterSEMICOLONAdd())) {
-                        lst.add(tokens.get(i));
-                    } else {
-                        return err;
-                    }
-                }
-            }
-            else if(currTT == TokenType.NEWLINE) {
-                if (i == 0 || i == tokens.size() - 1) lst.add(tokens.get(i));
-                else {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeNEWLINEAdd())
-                            && isInLst(next, this.ba.getAfterNEWLINEAdd())) {
-                        lst.add(tokens.get(i));
-                    } else {
-                        return err;
-                    }
-                }
-            }
-            else if(currTT == TokenType.WORD) {
-                if (i == 0 && i == tokens.size() - 1) return err;
-                else if (i == 0) {
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(next, this.ba.getAfterWORDAdd())) lst.add(tokens.get(i));
-                    else return err;
-                }
-                else if (i == tokens.size() - 1) {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeWORDAdd())) lst.add(tokens.get(i));
-                    else return err;
-                }
-                else {
-                    TokenType prev = tokens.get(i - 1).getType();
-                    TokenType next = tokens.get(i + 1).getType();
-                    if(isInLst(prev, this.ba.getBeforeWORDAdd())
-                            && isInLst(next, this.ba.getAfterWORDAdd())) {
-                        lst.add(tokens.get(i));
-                    } else {
-                        return err;
-                    }
-                }
-            }
-            else if (currTT == TokenType.PLUS || currTT == TokenType.MINUS) {
-                /* THIS IS FOR WHEN A PLUS OR MINUS IS ENCOUNTERED */
-                int negCount = 0;
-                if(i == 0) return err;
-                if (i > 0) {
-                    TokenType prevTT = tokens.get(i - 1).getType();
-                    if(currTT == TokenType.PLUS) {
-                        if (isInLst(prevTT, this.ba.getBeforePLUSAdd())) {
-                            lst.add(tokens.get(i));
-                        } else if (isInLst(prevTT, this.ba.getBeforePLUSErr())) {
-                            return err;
-                        }
-                    } else { // FOR MINUS
-                        if (isInLst(prevTT, this.ba.getBeforeMINUSAdd())) {
-                            lst.add(tokens.get(i));
-                            negCount--;
-                        } else if (isInLst(prevTT, this.ba.getBeforeMINUSErr())) {
-                            return err;
-                        }
-                    }
-                }
-                while (currTT == TokenType.PLUS || currTT == TokenType.MINUS) {
-                    if(i+1 >= tokens.size()) return err;
-                    TokenType nextTT = tokens.get(i + 1).getType();
-                    if(currTT == TokenType.PLUS) {
-                        if (isInLst(nextTT, this.ba.getAfterPLUSErr())) {
-                            return err;
-                        }
-                    } else { // FOR MINUS
-                        negCount++;
-                        if (isInLst(nextTT, this.ba.getAfterMINUSErr())) {
-                            return err;
-                        }
-                    }
-                    if (nextTT == TokenType.PLUS || nextTT == TokenType.MINUS) i++; //keep going
-                    currTT = nextTT;
-                }
-                if(negCount % 2 == 1) { //if negative then set next token to negative
-                    tokens.get(i + 1).setNeg(true);
-                }
+                this.advance();
             } else {
-                lst.add(tokens.get(i));
+                str += currChar; // creating string
+                this.advance();
             }
-        }
-        return new Pair<>(lst, null);
-    }
-
-    public static Error validateParentheses(List<Token> tLst) {
-        Stack<Token> s = new Stack<>();
-        int parenOpen = 0, cBraceOpen = 0, bracketOpen = 0; //implement later for extra cases
-        Token tok;
-        for (Token t: tLst) {
-            Position start = t.getStart();
-            Position end = t.getEnd();
-            switch(t.getType()) {
-                case LPAREN:
-                case LCBRACE:
-                case LBRACKET:
-                    s.push(t);
-                    break;
-                case RPAREN:
-                    if (s.size() != 0) {
-                        tok = s.pop();
-                        if(tok.getType() != TokenType.LPAREN) return new UnexpectedChar(start, end, ")");
-                    } else return new UnclosedParenthesis(start, end, ")");
-                    break;
-                case RBRACKET:
-                    if (s.size() != 0) {
-                        tok = s.pop();
-                        if(tok.getType() != TokenType.LBRACKET) return new UnexpectedChar(start, end, "]");
-                    } else return new UnclosedBracket(start, end, "]");
-                    break;
-                case RCBRACE:
-                    if (s.size() != 0) {
-                        tok = s.pop();
-                        if(tok.getType() != TokenType.LCBRACE) return new UnexpectedChar(start, end, "}");
-                    } else return new UnclosedCurlyBrace(start, end, "}");
-                    break;
+            // If no closing tag found
+            if (this.currChar == 0) {
+                Error err = new UnclosedString(start, end, Character.toString(quoteType));
+                return new Pair<>(null, err);
             }
+            this.advance();
         }
-        if (s.size() != 0) {
-            Token t = s.pop();
-            Position start = t.getStart();
-            Position end = t.getEnd();
-            if(t.getType() == TokenType.LPAREN) return new UnclosedParenthesis(start, end, "(");
-            else if(t.getType() == TokenType.LBRACKET) return new UnclosedBracket(start, end, "[");
-            else if(t.getType() == TokenType.LCBRACE) return new UnclosedCurlyBrace(start, end, "{");
-        }
-        return null;
+        return new Pair<>(new Token(TokenType.WORD, str, start, end), null);
     }
 
-
-
-    // ==================== HELPER FUNCTIONS ==========================
-    public static boolean isInLst(TokenType tt, TokenType[] ttList) {
-        for (TokenType elemTokenType : ttList) {
-            if (tt == elemTokenType) return true;
-        }
-        return false;
-    }
-    // ==================== END HELPER FUNCTIONS ==========================
 }

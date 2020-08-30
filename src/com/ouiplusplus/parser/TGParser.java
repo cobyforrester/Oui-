@@ -41,29 +41,7 @@ public class TGParser {
                 output = output + this.getValue(val.getP1()) + '\n';
 
 
-            } else if (tg.getType() == TokenGroupType.VAR_DECLARE) {
-                // Checking for error
-                Position end;
-                if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
-                else end = tg.getStartTok().getEnd();
-                if(this.vars.containsKey(tg.getStartTok().getValue()))
-                    return new Pair<>(null, new InvalidVariableDec(start, end, tg.getStartTok().getValue()));
-
-                // Generate resolved Token
-                val = this.getResolvedToken(tg.getTokens());
-                if(val.getP2() != null) return new Pair<>(null, val.getP2());
-
-                // If no errors add to vars hashmap
-                this.vars.put(tg.getStartTok().getValue(), val.getP1());
-
-            } else if (tg.getType() == TokenGroupType.VAR_NEW_ASSIGN) {
-                // Checking for error
-                Position end;
-                if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
-                else end = tg.getStartTok().getEnd();
-                if(!this.vars.containsKey(tg.getStartTok().getValue()))
-                    return new Pair<>(null, new UndeclaredVariableReference(start, end, tg.getStartTok().getValue()));
-
+            }  else if (tg.getType() == TokenGroupType.VAR_ASSIGN) {
                 // Generate resolved Token
                 val = this.getResolvedToken(tg.getTokens());
                 if(val.getP2() != null) return new Pair<>(null, val.getP2());
