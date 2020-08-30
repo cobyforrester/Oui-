@@ -26,7 +26,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeMINUSAdd = {
             TokenType.FUNCCALL, TokenType.INT, TokenType.DOUBLE,
             TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
-            TokenType.EQUALS,
+
     };
     final private TokenType[] beforeMINUSErr = {
             TokenType.NULL, TokenType.BOOLEAN, TokenType.SEMICOLON,

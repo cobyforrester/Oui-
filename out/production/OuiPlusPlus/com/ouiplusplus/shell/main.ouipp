@@ -1,4 +1,4 @@
 
-x = "Hello, World!" + "\n"
+x = -10
 
-imprimer(x * 10)
+print(x)

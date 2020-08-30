@@ -1,8 +1,6 @@
 package com.ouiplusplus.parser;
 
 import com.ouiplusplus.error.Error;
-import com.ouiplusplus.error.InvalidVariableDec;
-import com.ouiplusplus.error.UndeclaredVariableReference;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
