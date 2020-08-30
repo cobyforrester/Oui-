@@ -42,7 +42,6 @@ public class Run {
             System.out.println(error);
             return new Pair<>(null, error);
         }
-        System.out.println(lexerPair.getP1());
         Pair<List<TokenGroup>, Error> test = GenerateTGLst.generateTokenLst(lexerPair.getP1());
         if (test.getP1() != null) System.out.println(test.getP1());
         else System.out.println(test.getP2());

@@ -42,12 +42,13 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
             TokenType.FUNCCALL, TokenType.RPAREN, TokenType.WORD,
+            TokenType.STRING,
     };
 
     final private TokenType[] afterMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
             TokenType.FUNCCALL, TokenType.LPAREN, TokenType.MINUS,
-            TokenType.PLUS, TokenType.WORD,
+            TokenType.PLUS, TokenType.WORD, TokenType.STRING,
     };
 
     // ========================= INT/DOUBLE ===============================

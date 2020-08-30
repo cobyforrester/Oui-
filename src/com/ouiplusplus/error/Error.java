@@ -20,7 +20,7 @@ public class Error {
         String result = "";
 
         // if details null
-        if(this.details == null) result += this.errorName + ":";
+        if(this.details == null || this.details.equals("")) result += this.errorName + ":";
         else result += this.errorName + ":" + "'" + this.details + "'";
 
         //if start line num same as end line num

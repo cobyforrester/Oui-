@@ -1,10 +1,4 @@
 
-# hello 3244432/
+x = "Hello, World!" + "\n"
 
-y = 100 * 100
-x = 100
-z = 39
-
-print(y+x+z)
-
-# var x = hello
+imprimer(x * 10)

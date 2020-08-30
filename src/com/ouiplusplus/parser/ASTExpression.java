@@ -77,9 +77,9 @@ public class ASTExpression {
         OverFlow over = new OverFlow(this.start.copy(),this.end.copy(), null);
         Pair<Token, Error> err = new Pair<>(null, over);
         if (this.opened != 0) return err;
-        Token fnlVal = this.dfsResolveVal(this.root);
-        if (fnlVal == null || fnlVal.getValue() == null) return err;
-        return new Pair<>(fnlVal, null);
+
+        // Gets Value for tree and then returns it
+        return this.dfsResolveVal(this.root);
     }
 
     @Override
@@ -258,18 +258,30 @@ public class ASTExpression {
     }
 
 
-    private Token dfsResolveVal(TreeNode node) {
-        if (node == null) return null; //for overflowError
-        Token tmp;
+    private Pair<Token, Error> dfsResolveVal(TreeNode node) {
+        if (node == null) return new Pair<>(null, new Error("Empty Tree"));
+        Pair<Token, Error> tmp;
+        Error err;
         if (node.right != null && node.left != null) {
-            Token left = this.dfsResolveVal(node.left);
-            Token right = this.dfsResolveVal(node.right);
-            tmp = ASTCombineTokens.combine(left, node.token, right);
+            // Left tree traversal
+            Pair<Token, Error> left = this.dfsResolveVal(node.left);
+            err = left.getP2();
+            if (err != null) return new Pair<>(null, err);
+
+            //Right Tree Traversal
+            Pair<Token, Error> right = this.dfsResolveVal(node.right);
+            err = right.getP2();
+            if (err != null) return new Pair<>(null, err);
+
+            //Combine Tokens
+            tmp = ASTCombineTokens.combine(left.getP1(), node.token, right.getP1(), this.start, this.end);
         } else if (node.left != null) { // case of ()
             tmp = this.dfsResolveVal(node.left);
-            if(node.token.isNeg()) tmp.setNeg(!tmp.isNeg());
+            err = tmp.getP2();
+            if(err != null) return new Pair<>(null, err);
+            if(node.token.isNeg()) tmp.getP1().setNeg(!tmp.getP1().isNeg());
         }
-        else return node.token;
+        else return new Pair<>(node.token, null);
         return tmp;
     }
 

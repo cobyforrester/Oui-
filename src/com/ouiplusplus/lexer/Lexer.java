@@ -37,11 +37,17 @@ public class Lexer {
         String alph = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String nums = "0123456789";
         while (this.currChar != 0) {
-            if (nums.indexOf(this.currChar) > -1) {
+            if (nums.indexOf(this.currChar) > -1) { // Numbers
                 tokens.add(this.makeNumberToken());
-            } else if(alph.indexOf(this.currChar) > -1) {
+            } else if(alph.indexOf(this.currChar) > -1) { // Variables
                 tokens.add(this.makeAlphToken());
-            } else {
+
+            } else if(this.currChar == '\'' || this.currChar == '\"') { // Strings
+                Pair<Token, Error> strPair = this.makeStringToken();
+                Error strErr = strPair.getP2();
+                if (strErr != null) return new Pair<>(null, strErr);
+                tokens.add(strPair.getP1());
+            }else {
                 Position p = this.pos.copy();
                 switch (this.currChar) {
                     case ' ':
@@ -63,15 +69,6 @@ public class Lexer {
                         break;
                     case '=':
                         tokens.add(new Token(TokenType.EQUALS, "=", p, p));
-                        break;
-
-                    // Strings
-                    case '\'':
-                    case '\"':
-                        Pair<Token, Error> strPair = this.makeStringToken();
-                        Error strErr = strPair.getP2();
-                        if (strErr != null) return new Pair<>(null, strErr);
-                        tokens.add(strPair.getP1());
                         break;
 
                     // (){}[]
