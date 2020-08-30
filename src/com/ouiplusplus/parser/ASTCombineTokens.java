@@ -11,7 +11,6 @@ public class ASTCombineTokens {
 
     public static Pair<Token, Error> combine(Token left, Token op, Token right, Position start, Position end) {
 
-
         if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
             Token rtnTkn = new Token(TokenType.STRING);
             if (op.getType() == TokenType.PLUS) {

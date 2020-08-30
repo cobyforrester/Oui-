@@ -1,5 +1,4 @@
 
-x = -10 + 4
-imprimer(x)
-print()
+x = 100
+imprimer(--x)
 print(x)

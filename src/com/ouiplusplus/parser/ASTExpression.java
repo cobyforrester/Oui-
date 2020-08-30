@@ -40,8 +40,10 @@ public class ASTExpression {
     private Error addVal(Token token) { //null for no errors
         Error err = new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
         if (token.getType() == TokenType.VAR) { //converts variable to primitive type
-            if (!tgparser.getVars().containsKey(token.getValue())) return err;
-            token = tgparser.getVars().get(token.getValue());
+            if (!this.tgparser.getVars().containsKey(token.getValue())) return err;
+            boolean isNeg = token.isNeg();
+            token = this.tgparser.getVars().get(token.getValue());
+            token.setNeg(isNeg);
         }
         TokenType tt = token.getType();
         this.size++;
@@ -260,6 +262,10 @@ public class ASTExpression {
 
     private Pair<Token, Error> dfsResolveVal(TreeNode node) {
         if (node == null) return new Pair<>(null, new Error("Empty Tree"));
+        if (node.token.isNeg() && (node.token.getType() == TokenType.BOOLEAN
+                || node.token.getType() == TokenType.STRING
+                || node.token.getType() == TokenType.NULL))
+            return new Pair<>(null, new InvalidOperation(node.token.getStart(), node.token.getEnd(), "-"));
         Pair<Token, Error> tmp;
         Error err;
         if (node.right != null && node.left != null) {

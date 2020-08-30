@@ -32,7 +32,7 @@ public class TGParser {
                 if (tg.getTokens().size() != 0) end = tg.getTokens().get(tg.getTokens().size() - 1).getEnd();
                 else end = tg.getStartTok().getEnd();
 
-                if (tg.getTokens().size() == 2) {
+                if (tg.getTokens().size() == 2) { // for ()
                     output += '\n';
                 } else {
                     // Generate resolved Token
@@ -59,7 +59,6 @@ public class TGParser {
         Pair returned consists of (Token, Error)
         Uses ASTExpression to get value and resolved token
          */
-
         // Add list to ASTExpression
         Error addErr = ast.addList(lst);
         if (addErr != null) return new Pair<>(null, addErr);
@@ -73,19 +72,6 @@ public class TGParser {
         return new Pair<>(treeVal.getP1(), null);
     }
 
-    private String getValue(Token token) {
-        /*
-        returns value with negative sign if negative
-         */
-        String val;
-        if (token.isNeg() && !token.getValue().equals("0") &&
-                token.getType() != TokenType.STRING && token.getType() != TokenType.BOOLEAN) {
-            val = "-" + token.getValue();
-        }
-        else val = token.getValue();
-
-        return val;
-    }
 
     //============================== GETTERS =============================
 

@@ -105,8 +105,10 @@ public class GenerateTGLst {
         while(index < lst.size() && lst.get(index).getType() != TokenType.NEWLINE ) {
             if (lst.get(index).getType() == TokenType.WORD) {
                 if (vars.contains(lst.get(index).getValue())) {
-                    fnl.add(new Token(TokenType.VAR, lst.get(index).getValue(),
-                            lst.get(index).getStart(), lst.get(index).getEnd()));
+                    Token tmp = new Token(TokenType.VAR, lst.get(index).getValue(),
+                            lst.get(index).getStart(), lst.get(index).getEnd());
+                    tmp.setNeg(lst.get(index).isNeg());
+                    fnl.add(tmp);
                 } else if (functions.contains(lst.get(index).getValue())) {
                     // DO THIS LATER and increment index everytime
                 } else {
