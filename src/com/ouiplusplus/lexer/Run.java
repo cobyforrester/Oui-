@@ -27,7 +27,6 @@ public class Run {
         Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenLst(lexerPair.getP1());
         error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
-
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN
         TGParser tgparser = new TGParser();
         return tgparser.process(tgPair.getP1());

@@ -5,6 +5,8 @@ public class Token {
     private boolean isNeg;
     private Position start;
     private Position end;
+
+    //======================== CONSTRUCTORS ========================
     public Token(TokenType type, String value, Position start, Position end) {//for when initialized with a value
         this.type = type;
         this.start = start;
@@ -22,6 +24,12 @@ public class Token {
         this.type = type;
         this.value = null;
     }
+
+    //======================== CLASS METHODS ========================
+    public Token copy () {
+        return new Token(type, value, start, end);
+    }
+
     @Override
     public String toString() {
         if (this.value != null) {
@@ -29,6 +37,8 @@ public class Token {
         }
         return this.type.toString();
     }
+
+    //======================== GETTERS/SETTERS ========================
 
     public TokenType getType() {
         return type;

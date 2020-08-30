@@ -1,4 +1,4 @@
 
 x = 100
-imprimer(--x)
-print(x)
+imprimer()
+print(x + -x)

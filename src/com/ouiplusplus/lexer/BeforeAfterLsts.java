@@ -8,8 +8,8 @@ public class BeforeAfterLsts {
 
     // ========================= PLUS ===============================
     final private TokenType[] beforePLUSAdd = {
-            TokenType.FUNCCALL, TokenType.INT, TokenType.DOUBLE,
-            TokenType.STRING, TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.STRING, TokenType.RPAREN,  TokenType.WORD,
             TokenType.EQUALS,
     };
     final private TokenType[] beforePLUSErr = {
@@ -24,8 +24,8 @@ public class BeforeAfterLsts {
 
     // ========================= MINUS ===============================
     final private TokenType[] beforeMINUSAdd = {
-            TokenType.FUNCCALL, TokenType.INT, TokenType.DOUBLE,
-            TokenType.RPAREN, TokenType.VAR, TokenType.WORD,
+             TokenType.INT, TokenType.DOUBLE,
+            TokenType.RPAREN,  TokenType.WORD,
 
     };
     final private TokenType[] beforeMINUSErr = {
@@ -40,14 +40,14 @@ public class BeforeAfterLsts {
 
     // ========================= MULT/DIV ===============================
     final private TokenType[] beforeMULTDIVAdd = {
-            TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
-            TokenType.FUNCCALL, TokenType.RPAREN, TokenType.WORD,
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING,
     };
 
     final private TokenType[] afterMULTDIVAdd = {
-            TokenType.INT, TokenType.DOUBLE, TokenType.VAR,
-            TokenType.FUNCCALL, TokenType.LPAREN, TokenType.MINUS,
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
     };
 
@@ -111,6 +111,19 @@ public class BeforeAfterLsts {
     final private TokenType[] afterSTRINGAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE, TokenType.SEMICOLON,
+    };
+
+    // ========================= MULT/DIV ===============================
+    final private TokenType[] beforeBOOLOPAdd = {
+            TokenType.INT, TokenType.DOUBLE,
+             TokenType.RPAREN, TokenType.WORD,
+            TokenType.STRING,
+    };
+
+    final private TokenType[] afterBOOLOPAdd = {
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.LPAREN, TokenType.MINUS,
+            TokenType.PLUS, TokenType.WORD, TokenType.STRING,
     };
 
 

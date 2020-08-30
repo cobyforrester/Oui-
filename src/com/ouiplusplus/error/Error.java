@@ -30,10 +30,15 @@ public class Error {
             result += " File '" + this.start.getFn() + "', Lines " + (this.start.getLineNumber() + 1) +"-" + (this.end.getLineNumber() + 1);
 
         //if start col num same as end col num
-        if(this.start.getCol() == this.end.getCol())
-            result += ", Character " + (this.start.getCol() + 1);
-        else
-            result += ", Characters " + (this.start.getCol() + 1) + "-" + (this.end.getCol() + 1);
+        if (this.start.getLineNumber() == this.end.getLineNumber()) {
+            if (this.start.getCol() == this.end.getCol())
+                result += ", Character " + (this.start.getCol() + 1);
+            else
+                result += ", Characters " + (this.start.getCol() + 1) + "-" + (this.end.getCol() + 1);
+        } else {
+            result += ", Starting At Character " + (this.start.getCol() + 1);
+        }
+
         return result;
     }
 }

@@ -4,12 +4,14 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TGParser {
     private Map<String,Token> vars = new HashMap<>(); // [VAL_NAME : Token]
+    //private List<Token> vars = new ArrayList<>();
     private ASTExpression ast = new ASTExpression(this);
 
     public TGParser() {
