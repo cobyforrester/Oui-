@@ -24,13 +24,14 @@ public class Run {
         if(error != null) return new Pair<>(null, error);
 
         // GROUPING TOKENS
-        Pair<List<TokenGroup>, Error> tgLst = GenerateTGLst.generateTokenLst(lexerPair.getP1());
-        error = tgLst.getP2();
+        Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenLst(lexerPair.getP1());
+        error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
+
 
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN
         TGParser tgparser = new TGParser();
-        return tgparser.process(tgLst.getP1());
+        return tgparser.process(tgPair.getP1());
     }
 
     public Pair<String, Error> runShell(String fn, String text) {

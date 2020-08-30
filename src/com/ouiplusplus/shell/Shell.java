@@ -13,7 +13,7 @@ public class Shell {
         String fname = "/Users/cobyforrester/Desktop/Professional/Projects/JavaProjects/out/production/OuiPlusPlus/com/ouiplusplus/shell/main.ouipp";
         File file = new File(fname);
         Scanner sf = new Scanner(file);
-        sf.useDelimiter("\\Z");
+        sf.useDelimiter("\\Z"); // gets whole file as one string
         String input = sf.next();
         Pair<String, Error> pair = run.generateOutput("main.ouipp", input);
         Error error = pair.getP2();

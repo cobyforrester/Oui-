@@ -40,6 +40,25 @@ public class ValidateLexTokens {
                     }
                 }
             }
+            else if(currTT == TokenType.STRING) {
+                /* THIS IS FOR WHEN A INT OR DOUBLE IS ENCOUNTERED */
+                if (i == 0) return err;
+                else if(i == tokens.size() - 1) {
+                    TokenType prev = tokens.get(i - 1).getType();
+                    if(isInLst(prev, ba.getBeforeSTRINGAdd())) lst.add(tokens.get(i));
+                    else return err;
+                }
+                else {
+                    TokenType prev = tokens.get(i - 1).getType();
+                    TokenType next = tokens.get(i + 1).getType();
+                    if(isInLst(prev, ba.getBeforeSTRINGAdd())
+                            && isInLst(next, ba.getAfterSTRINGAdd())) {
+                        lst.add(tokens.get(i));
+                    } else {
+                        return err;
+                    }
+                }
+            }
             else if(currTT == TokenType.MULT || currTT == TokenType.DIV) {
                 if (i == 0 || i == tokens.size() - 1) return err;
                 else {

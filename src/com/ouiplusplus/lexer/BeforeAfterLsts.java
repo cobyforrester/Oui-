@@ -101,6 +101,16 @@ public class BeforeAfterLsts {
 
     };
 
+    // ========================= STRING ===============================
+    final private TokenType[] beforeSTRINGAdd = {
+            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
+            TokenType.PLUS, TokenType.WORD, TokenType.EQUALS,
+    };
+
+    final private TokenType[] afterSTRINGAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE, TokenType.SEMICOLON,
+    };
 
 
     // ========================= CONSTRUCTOR ===============================
@@ -171,5 +181,13 @@ public class BeforeAfterLsts {
 
     public TokenType[] getAfterWORDAdd() {
         return afterWORDAdd;
+    }
+
+    public TokenType[] getBeforeSTRINGAdd() {
+        return beforeSTRINGAdd;
+    }
+
+    public TokenType[] getAfterSTRINGAdd() {
+        return afterSTRINGAdd;
     }
 }

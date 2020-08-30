@@ -39,14 +39,14 @@ public class ASTExpression {
 
     private Error addVal(Token token) { //null for no errors
         Error err = new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
-        if (token.getType() == TokenType.VAR) {
+        if (token.getType() == TokenType.VAR) { //converts variable to primitive type
             if (!tgparser.getVars().containsKey(token.getValue())) return err;
             token = tgparser.getVars().get(token.getValue());
         }
         TokenType tt = token.getType();
         this.size++;
         return switch (tt) {
-            case VAR, FUNCCALL, DOUBLE, INT -> caseNUM(token);
+            case STRING, DOUBLE, INT -> casePrimitiveType(token);
             case MULT, DIV -> caseMULTDIV(token);
             case PLUS, MINUS -> casePLUSMINUS(token);
             case LPAREN -> caseLPAREN(token);
@@ -155,7 +155,7 @@ public class ASTExpression {
         }
         return err;
     }
-    private Error caseNUM(Token token) {
+    private Error casePrimitiveType(Token token) {
         if (this.root == null) { //case root null
             this.root = new TreeNode(token);
             return null;
@@ -257,68 +257,6 @@ public class ASTExpression {
                 || tt == TokenType.PLUS;
     }
 
-    private static Token combineTokens(Token left, Token op, Token right) {
-        if (left == null || op == null || right == null) return null; //case of overflowError
-
-        if (left.isNeg()) left.setValue("-" + left.getValue());
-        if (right.isNeg()) right.setValue("-" + right.getValue());
-
-        if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
-            Token rtn = new Token(TokenType.STRING);
-            rtn.setValue(left.getValue() + right.getValue());
-        } else if (left.getType() == TokenType.DOUBLE || right.getType() == TokenType.DOUBLE) {
-            Token rtnTok = new Token(TokenType.DOUBLE);
-            try {
-                double val;
-                double leftVal = Double.parseDouble(left.getValue());
-                double rightVal = Double.parseDouble(right.getValue());
-                if (op.getType() == TokenType.PLUS) val = leftVal + rightVal;
-                else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
-                else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
-                else if (op.getType() == TokenType.DIV) {
-                    if (rightVal == 0) return null;
-                    val = leftVal / rightVal;
-                } else return null;
-
-                // if val negative
-                if (val < 0) {
-                    val = val * (-1);
-                    rtnTok.setNeg(true);
-                }
-                rtnTok.setValue(Double.toString(val));
-                return rtnTok;
-            } catch(Exception e) {
-                return null;
-            }
-
-        } else if (left.getType() == TokenType.INT || right.getType() == TokenType.INT) {
-            Token rtnTok = new Token(TokenType.INT);
-            try{
-                int val;
-                int leftVal = Integer.parseInt(left.getValue());
-                int rightVal = Integer.parseInt(right.getValue());
-                if (op.getType() == TokenType.PLUS) val = leftVal + rightVal;
-                else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
-                else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
-                else if (op.getType() == TokenType.DIV) {
-                    if (rightVal == 0) return null;
-                    val = leftVal / rightVal;
-                } else return null;
-
-                // if val negative
-                if (val < 0) {
-                    val = val * (-1);
-                    rtnTok.setNeg(true);
-                }
-                rtnTok.setValue(Integer.toString(val));
-                return rtnTok;
-            } catch(Exception e) {
-                return null;
-            }
-        }
-
-        return null;
-    }
 
     private Token dfsResolveVal(TreeNode node) {
         if (node == null) return null; //for overflowError
@@ -326,7 +264,7 @@ public class ASTExpression {
         if (node.right != null && node.left != null) {
             Token left = this.dfsResolveVal(node.left);
             Token right = this.dfsResolveVal(node.right);
-            tmp = combineTokens(left, node.token, right);
+            tmp = ASTCombineTokens.combine(left, node.token, right);
         } else if (node.left != null) { // case of ()
             tmp = this.dfsResolveVal(node.left);
             if(node.token.isNeg()) tmp.setNeg(!tmp.isNeg());

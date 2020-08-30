@@ -91,7 +91,7 @@ public class Lexer {
                         break;
                     case '#':
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
-                        while (this.currChar != '\n') this.advance();
+                        while (this.currChar != '\n' && this.currChar != 0) this.advance();
                         break;
 
                     // DEFAULT
@@ -138,7 +138,7 @@ public class Lexer {
         Position start = this.pos.copy();
         Position end = this.pos.copy();
 
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_";
         String word = "";
         while (this.currChar != 0 && chars.indexOf(this.currChar) > -1) {
             end = this.pos.copy();
@@ -175,14 +175,15 @@ public class Lexer {
                 str += currChar; // creating string
                 this.advance();
             }
-            // If no closing tag found
-            if (this.currChar == 0) {
-                Error err = new UnclosedString(start, end, Character.toString(quoteType));
-                return new Pair<>(null, err);
-            }
-            this.advance();
         }
-        return new Pair<>(new Token(TokenType.WORD, str, start, end), null);
+
+        // If no closing tag found
+        if (this.currChar == 0) {
+            Error err = new UnclosedString(start, end, Character.toString(quoteType));
+            return new Pair<>(null, err);
+        }
+        this.advance();
+        return new Pair<>(new Token(TokenType.STRING, str, start, end), null);
     }
 
 }

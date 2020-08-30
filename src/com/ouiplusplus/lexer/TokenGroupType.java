@@ -3,9 +3,8 @@ package com.ouiplusplus.lexer;
 
 public enum TokenGroupType {
     EXPR,
-    VAR_DECLARE,
     FUNC_DECLARE,
-    FUNC_GROUP,
+    FUNC_CALL,
     VAR_ASSIGN,
     PRINT;
 
