@@ -294,4 +294,28 @@ public class BeforeAfterLsts {
     public TokenType[] getAfterBOOL_COMP_Add() {
         return afterBOOL_COMP_Add;
     }
+
+    public TokenType[] getBeforeAND_OR_Add() {
+        return beforeAND_OR_Add;
+    }
+
+    public TokenType[] getAfterAND_OR_Add() {
+        return afterAND_OR_Add;
+    }
+
+    public TokenType[] getBeforeNOTAdd() {
+        return beforeNOTAdd;
+    }
+
+    public TokenType[] getAfterNOTAdd() {
+        return afterNOTAdd;
+    }
+
+    public TokenType[] getBeforeBOOLEANAdd() {
+        return beforeBOOLEANAdd;
+    }
+
+    public TokenType[] getAfterBOOLEANAdd() {
+        return afterBOOLEANAdd;
+    }
 }

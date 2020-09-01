@@ -77,4 +77,12 @@ public class Token {
     public Position getEnd() {
         return end;
     }
+
+    public void setStart(Position start) {
+        this.start = start;
+    }
+
+    public void setEnd(Position end) {
+        this.end = end;
+    }
 }

@@ -41,11 +41,11 @@ public class ASTExpression {
         Error err = new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
         if (token.getType() == TokenType.VAR) { //converts variable to primitive type
             if (!this.tgparser.getVars().containsKey(token.getValue())) return err;
-            boolean tknIsNeg = token.isNeg();
+            Position s = token.getStart();
 
             // Making copy so i dont override the variable, just getting from map in TGParser
             token = this.tgparser.getVars().get(token.getValue()).copy();
-
+            token.setStart(s);
         }
         TokenType tt = token.getType();
         this.size++;
