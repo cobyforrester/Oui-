@@ -6,7 +6,6 @@ import com.ouiplusplus.helper.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class Lexer {
     final private String text; //all text
@@ -36,19 +35,25 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         String alph = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String nums = "0123456789";
+        String quotes = "\'\"";
+        String boolOps = "=><&|!";
         while (this.currChar != 0) {
             if (nums.indexOf(this.currChar) > -1) { // Numbers
                 tokens.add(this.makeNumberToken());
             } else if(alph.indexOf(this.currChar) > -1) { // Variables
                 tokens.add(this.makeAlphToken());
-
-            } else if(this.currChar == '\'' || this.currChar == '\"') { // Strings
+            } else if(quotes.indexOf(this.currChar) > -1) { // Strings
                 Pair<Token, Error> strPair = this.makeStringToken();
                 Error strErr = strPair.getP2();
                 if (strErr != null) return new Pair<>(null, strErr);
                 tokens.add(strPair.getP1());
-            }else {
+            } else if(boolOps.indexOf(this.currChar) > -1) { //Boolean Operators
+                tokens.add(makeBoolOppToken());
+            }
+
+            else {
                 Position p = this.pos.copy();
+
                 switch (this.currChar) {
                     case ' ':
                     case '\t':
@@ -87,16 +92,16 @@ public class Lexer {
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         break;
                     case '#':
-                        tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         while (this.currChar != '\n' && this.currChar != 0) this.advance();
+                        if (this.currChar != 0)
+                            tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         break;
 
                     // DEFAULT
                     default:
                         String details = Character.toString(currChar);
                         UnexpectedChar err = new UnexpectedChar(p, p, details);
-                        List<Token> lst = new ArrayList<>();
-                        return new Pair<>(lst, err);
+                        return new Pair<>(null, err);
                 }
                 this.advance();
             }
@@ -145,6 +150,58 @@ public class Lexer {
         return new Token(TokenType.WORD, word, start, end);
     }
 
+    private Token makeBoolOppToken() {
+        Position start = this.pos.copy();
+        Position end = this.pos.copy();
+        Token token;
+        switch (this.currChar) {
+            // = OPERATOR
+            case '=':
+                this.advance();
+                if (this.currChar == '=') {
+                    end = this.pos;
+                    token = new Token(TokenType.BOOL_OPERATOR, "==",  start, end);
+                    this.advance();
+                } else
+                    token = new Token(TokenType.EQUALS, "=",  start, end);
+                break;
+            // > OPERATOR
+            case '>':
+                this.advance();
+                if (this.currChar == '=') {
+                    end = this.pos;
+                    token = new Token(TokenType.BOOL_OPERATOR, ">=",  start, end);
+                    this.advance();
+                } else
+                    token = new Token(TokenType.BOOL_OPERATOR, ">",  start, end);
+                break;
+            // < OPERATOR
+            case '<':
+                this.advance();
+                if (this.currChar == '=') {
+                    end = this.pos;
+                    token = new Token(TokenType.BOOL_OPERATOR, "<=",  start, end);
+                    this.advance();
+                } else
+                    token = new Token(TokenType.BOOL_OPERATOR, "<",  start, end);
+                break;
+            // ! OPERATOR
+            case '!':
+                this.advance();
+                if (this.currChar == '=') {
+                    end = this.pos;
+                    token = new Token(TokenType.BOOL_OPERATOR, "!=",  start, end);
+                    this.advance();
+                } else
+                    token = new Token(TokenType.NOT_OPERATOR, "!",  start, end);
+                break;
+            default: return null;
+
+        }
+
+        return token;
+    }
+
     private Pair<Token, Error> makeStringToken() {
         char quoteType = this.currChar;
         Position start = this.pos.copy();
@@ -169,7 +226,7 @@ public class Lexer {
                 }
                 this.advance();
             } else {
-                str += currChar; // creating string
+                str += this.currChar; // creating string
                 this.advance();
             }
         }

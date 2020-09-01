@@ -2,7 +2,7 @@ package com.ouiplusplus.lexer;
 public class Token {
     private TokenType type;
     private String value;
-    private boolean isNeg;
+    private boolean isNeg; // for if INT/DOUBLE/LPAREN/VAR/FUNCCALL are negative
     private Position start;
     private Position end;
 

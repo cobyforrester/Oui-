@@ -16,6 +16,10 @@ public enum TokenType {
     EQUALS,
     CARROT,
 
+    // BOOLEAN OPERATORS
+    BOOL_OPERATOR,
+    NOT_OPERATOR,
+
     // (){}[]
     LPAREN,
     RPAREN,
