@@ -46,9 +46,6 @@ public class ASTExpression {
             // Making copy so i dont override the variable, just getting from map in TGParser
             token = this.tgparser.getVars().get(token.getValue()).copy();
 
-            //setting correct negative value for it
-            if (tknIsNeg) token.setNeg(!token.isNeg());
-            else token.setNeg(token.isNeg());
         }
         TokenType tt = token.getType();
         this.size++;

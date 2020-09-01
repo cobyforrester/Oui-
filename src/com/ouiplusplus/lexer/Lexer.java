@@ -48,7 +48,9 @@ public class Lexer {
                 if (strErr != null) return new Pair<>(null, strErr);
                 tokens.add(strPair.getP1());
             } else if(boolOps.indexOf(this.currChar) > -1) { //Boolean Operators
-                tokens.add(makeBoolOppToken());
+                Pair<Token, Error> boolPair = makeBoolOppToken();
+                if (boolPair.getP2() != null) return new Pair<>(null, boolPair.getP2());
+                tokens.add(boolPair.getP1());
             }
 
             else {
@@ -150,7 +152,7 @@ public class Lexer {
         return new Token(TokenType.WORD, word, start, end);
     }
 
-    private Token makeBoolOppToken() {
+    private Pair<Token, Error> makeBoolOppToken() {
         Position start = this.pos.copy();
         Position end = this.pos.copy();
         Token token;
@@ -160,7 +162,7 @@ public class Lexer {
                 this.advance();
                 if (this.currChar == '=') {
                     end = this.pos;
-                    token = new Token(TokenType.BOOL_OPERATOR, "==",  start, end);
+                    token = new Token(TokenType.DOUBLE_EQUALS, "==",  start, end);
                     this.advance();
                 } else
                     token = new Token(TokenType.EQUALS, "=",  start, end);
@@ -170,36 +172,61 @@ public class Lexer {
                 this.advance();
                 if (this.currChar == '=') {
                     end = this.pos;
-                    token = new Token(TokenType.BOOL_OPERATOR, ">=",  start, end);
+                    token = new Token(TokenType.GREATER_THAN_OR_EQUALS, ">=",  start, end);
                     this.advance();
                 } else
-                    token = new Token(TokenType.BOOL_OPERATOR, ">",  start, end);
+                    token = new Token(TokenType.GREATER_THAN, ">",  start, end);
                 break;
             // < OPERATOR
             case '<':
                 this.advance();
                 if (this.currChar == '=') {
                     end = this.pos;
-                    token = new Token(TokenType.BOOL_OPERATOR, "<=",  start, end);
+                    token = new Token(TokenType.LESS_THAN_OR_EQUALS, "<=",  start, end);
                     this.advance();
                 } else
-                    token = new Token(TokenType.BOOL_OPERATOR, "<",  start, end);
+                    token = new Token(TokenType.LESS_THAN, "<",  start, end);
                 break;
             // ! OPERATOR
             case '!':
                 this.advance();
                 if (this.currChar == '=') {
                     end = this.pos;
-                    token = new Token(TokenType.BOOL_OPERATOR, "!=",  start, end);
+                    token = new Token(TokenType.NOT_EQUAL, "!=",  start, end);
                     this.advance();
                 } else
-                    token = new Token(TokenType.NOT_OPERATOR, "!",  start, end);
+                    token = new Token(TokenType.NOT, "!",  start, end);
                 break;
-            default: return null;
+            case '&':
+                this.advance();
+                if (this.currChar == '&') {
+                    end = this.pos;
+                    token = new Token(TokenType.AND, "&&",  start, end);
+                    this.advance();
+                } else {
+                    Error err = new InvalidOperation(start, end, "&");
+                    return new Pair<>(null, err);
+                }
+                break;
+            case '|':
+                this.advance();
+                if (this.currChar == '|') {
+                    end = this.pos;
+                    token = new Token(TokenType.OR, "||",  start, end);
+                    this.advance();
+                } else {
+                    Error err = new InvalidOperation(start, end, "|");
+                    return new Pair<>(null, err);
+                }
+                break;
+
+            default:
+                return new Pair<>(null,
+                        new InvalidOperation(start, end,"Invalid Boolean Type"));
 
         }
 
-        return token;
+        return new Pair<>(token, null);
     }
 
     private Pair<Token, Error> makeStringToken() {

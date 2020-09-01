@@ -58,14 +58,20 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.WORD, TokenType.EQUALS,
-            TokenType.BOOL_OPERATOR,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
     };
 
     final private TokenType[] afterINTDOUBLEAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.NEWLINE, TokenType.SEMICOLON,
-            TokenType.BOOL_OPERATOR,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
     };
 
     // ========================= SEMICOLON ===============================
@@ -95,7 +101,10 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS, TokenType.MINUS,
-            TokenType.BOOL_OPERATOR,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
     };
 
     final private TokenType[] afterWORDAdd = {
@@ -103,30 +112,42 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
-            TokenType.MINUS, TokenType.SEMICOLON, TokenType.BOOL_OPERATOR,
+            TokenType.MINUS, TokenType.SEMICOLON,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
 
     };
 
     // ========================= STRING ===============================
     final private TokenType[] beforeSTRINGAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
-            TokenType.PLUS, TokenType.WORD, TokenType.EQUALS, TokenType.BOOL_OPERATOR,
+            TokenType.PLUS, TokenType.WORD, TokenType.EQUALS,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
     };
 
     final private TokenType[] afterSTRINGAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE,
-            TokenType.SEMICOLON, TokenType.BOOL_OPERATOR,
+            TokenType.SEMICOLON,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
     };
 
-    // ========================= BOOL_OPS ===============================
-    final private TokenType[] beforeBOOLOPAdd = {
+    // ========================= BOOL_COMP_OPS ===============================
+    final private TokenType[] beforeBOOL_COMP_Add = {
             TokenType.INT, TokenType.DOUBLE,
              TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING,
     };
 
-    final private TokenType[] afterBOOLOPAdd = {
+    final private TokenType[] afterBOOL_COMP_Add = {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
@@ -211,11 +232,11 @@ public class BeforeAfterLsts {
         return afterSTRINGAdd;
     }
 
-    public TokenType[] getBeforeBOOLOPAdd() {
-        return beforeBOOLOPAdd;
+    public TokenType[] getBeforeBOOL_COMP_Add() {
+        return beforeBOOL_COMP_Add;
     }
 
-    public TokenType[] getAfterBOOLOPAdd() {
-        return afterBOOLOPAdd;
+    public TokenType[] getAfterBOOL_COMP_Add() {
+        return afterBOOL_COMP_Add;
     }
 }

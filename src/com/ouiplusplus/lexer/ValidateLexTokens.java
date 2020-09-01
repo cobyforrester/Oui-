@@ -169,6 +169,7 @@ public class ValidateLexTokens {
                 lst.add(tokens.get(i));
             }
         }
+        System.out.println(lst);
         return new Pair<>(lst, null);
     }
 

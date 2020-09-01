@@ -27,7 +27,7 @@ public class Token {
 
     //======================== CLASS METHODS ========================
     public Token copy () {
-        return new Token(type, value, start, end);
+        return new Token(type, getValue(), start, end);
     }
 
     @Override

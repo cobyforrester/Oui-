@@ -16,9 +16,21 @@ public enum TokenType {
     EQUALS,
     CARROT,
 
-    // BOOLEAN OPERATORS
-    BOOL_OPERATOR,
-    NOT_OPERATOR,
+    /*
+    BOOLEAN OPERATORS
+     */
+    // COMP
+    DOUBLE_EQUALS,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUALS,
+    LESS_THAN,
+    LESS_THAN_OR_EQUALS,
+    NOT_EQUAL,
+    // AND_OR
+    AND,
+    OR,
+    // NOT
+    NOT,
 
     // (){}[]
     LPAREN,
