@@ -62,6 +62,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.NOT, TokenType.AND, TokenType.OR,
     };
 
     final private TokenType[] afterINTDOUBLEAdd = {
@@ -72,13 +73,14 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.NOT, TokenType.AND, TokenType.OR,
     };
 
     // ========================= SEMICOLON ===============================
     final private TokenType[] beforeSEMICOLONAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
-            TokenType.WORD
+            TokenType.WORD, TokenType.BOOLEAN,
     };
 
     final private TokenType[] afterSEMICOLONAdd = {
@@ -89,7 +91,8 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeNEWLINEAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
-            TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON
+            TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON,
+            TokenType.BOOLEAN,
     };
 
     final private TokenType[] afterNEWLINEAdd = {
@@ -105,6 +108,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.NOT, TokenType.AND, TokenType.OR,
     };
 
     final private TokenType[] afterWORDAdd = {
@@ -117,6 +121,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.AND, TokenType.OR,
 
     };
 
@@ -128,6 +133,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.AND, TokenType.OR,
     };
 
     final private TokenType[] afterSTRINGAdd = {
@@ -138,19 +144,68 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.AND, TokenType.OR,
     };
 
     // ========================= BOOL_COMP_OPS ===============================
     final private TokenType[] beforeBOOL_COMP_Add = {
             TokenType.INT, TokenType.DOUBLE,
              TokenType.RPAREN, TokenType.WORD,
-            TokenType.STRING,
+            TokenType.STRING, TokenType.BOOLEAN,
     };
 
     final private TokenType[] afterBOOL_COMP_Add = {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
+            TokenType.BOOLEAN,
+    };
+
+    // ========================= AND_OR_OPS ===============================
+    final private TokenType[] beforeAND_OR_Add = {
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.RPAREN, TokenType.WORD,
+            TokenType.STRING, TokenType.BOOLEAN,
+            TokenType.BOOLEAN,
+    };
+
+    final private TokenType[] afterAND_OR_Add = {
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.LPAREN, TokenType.MINUS,
+            TokenType.PLUS, TokenType.WORD, TokenType.STRING,
+            TokenType.BOOLEAN, TokenType.NOT,
+    };
+
+    // ========================= NOT_OP ===============================
+    final private TokenType[] beforeNOTAdd = {
+            TokenType.LPAREN, TokenType.EQUALS,
+            TokenType.AND, TokenType.OR,
+    };
+
+    final private TokenType[] afterNOTAdd = {
+            TokenType.INT, TokenType.DOUBLE,
+            TokenType.LPAREN, TokenType.MINUS,
+            TokenType.PLUS, TokenType.WORD, TokenType.STRING,
+            TokenType.BOOLEAN,
+    };
+
+    // ========================= BOOLEAN ===============================
+    final private TokenType[] beforeBOOLEANAdd = {
+            TokenType.LPAREN, TokenType.EQUALS,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.AND, TokenType.OR,
+    };
+
+    final private TokenType[] afterBOOLEANAdd = {
+            TokenType.NEWLINE, TokenType.SEMICOLON,
+
+            //BOOLEAN COMP OPERATORS
+            TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
+            TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
+            TokenType.AND, TokenType.OR, TokenType.NOT,
     };
 
 

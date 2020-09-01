@@ -149,6 +149,11 @@ public class Lexer {
             word += currChar; // creating word
             this.advance();
         }
+        if(word.toLowerCase().equals("true") || word.toLowerCase().equals("vrai")) {
+            return new Token(TokenType.BOOLEAN, "true", start, end);
+        } else if (word.toLowerCase().equals("false") || word.toLowerCase().equals("faux")) {
+            return new Token(TokenType.BOOLEAN, "false", start, end);
+        }
         return new Token(TokenType.WORD, word, start, end);
     }
 
