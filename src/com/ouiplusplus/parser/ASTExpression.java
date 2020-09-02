@@ -20,7 +20,7 @@ public class ASTExpression {
     * OVERFLOW
     * DIVIDE BY 0
     * EMPTY PARENTHESES*/
-    public TreeNode root;
+    private TreeNode root;
     private TGParser tgparser; //for functions and variables
     private int opened; //number of opened parentheses
     private Position start;
@@ -59,7 +59,7 @@ public class ASTExpression {
         };
     }
 
-    public Error addList(List<Token> tokens) {
+    public Pair<Token, Error> process(List<Token> tokens) {
         Error err;
         if (!tokens.isEmpty()) {
             this.start = tokens.get(0).getStart();
@@ -68,12 +68,15 @@ public class ASTExpression {
         for(Token tok: tokens) {
             err = this.addVal(tok);
             if (err != null) {
-                return err;
+                return new Pair<>(null, err);
             }
         }
-        return null;
+        Pair<Token, Error> rtnPair = this.dfsResolveVal(this.root);
+        this.clearTree();
+        return rtnPair;
     }
 
+    /*
     public Pair<Token, Error> resolveTreeVal() {
         Pair<Token, Error> nullVal = new Pair<>(null, new Error("No Input Given"));
         if (this.root == null) return nullVal;
@@ -85,6 +88,7 @@ public class ASTExpression {
         // Gets Value for tree and then returns it
         return this.dfsResolveVal(this.root);
     }
+     */
 
     @Override
     public String toString() {
@@ -192,27 +196,47 @@ public class ASTExpression {
         }
     }
     private Error caseMULTDIV(Token token) {
+
         //setting currNode
         TreeNode currNode;
         if (this.opened != 0) currNode = this.returnBottomOpenParen();
         else currNode = this.root;
 
-        //finding entry point and adding in value
-        // Traverses down right side of tree until null right leaf found
+        // Loops through tree for place to add
         while (true) {
             if (currNode.right == null) {
-                TreeNode tmpLeft = currNode.left;
+                TreeNode left = null;
+                if (currNode.left != null) left = currNode.left.copy();
                 if (currNode.token.getType() == TokenType.LPAREN) {
-                    currNode.left = new TreeNode(token);
+                    if (left.token.getType() != TokenType.PLUS
+                            && left.token.getType() != TokenType.MINUS) {
+                        currNode.left = new TreeNode(token);
+                        currNode.left.left = left;
+                        return null;
+                    } else currNode = currNode.left;
+
                 } else {
                     Token tmp = currNode.token;
                     currNode.token = token;
                     currNode.left = new TreeNode(tmp);
+                    currNode.left.left = left;
+                    return null;
                 }
-                currNode.left.left = tmpLeft;
+            } else if (currNode.token.getType() == TokenType.MULT
+                    || currNode.token.getType() == TokenType.DIV) {
+                TreeNode tmp = currNode.copy();
+                currNode = new TreeNode(token);
+                currNode.left = tmp;
+                this.root = currNode;
+                return null;
+            }else if (currNode.right.token.getType() == TokenType.MULT
+                    || currNode.right.token.getType() == TokenType.DIV) {
+                TreeNode right = currNode.right.copy();
+                currNode.right = new TreeNode(token);
+                currNode.right.left = right;
                 return null;
             }
-            currNode = currNode.right;
+             else currNode = currNode.right;
         }
     }
     private Error casePLUSMINUS(Token token) {
@@ -315,6 +339,16 @@ public class ASTExpression {
 
         public TreeNode(Token token) {
             this.token = token;
+        }
+
+        public TreeNode(Token token, TreeNode right, TreeNode left) {
+            this.token = token;
+            this.right = right;
+            this.left = left;
+        }
+
+        public TreeNode copy() {
+            return new TreeNode(token, right, left);
         }
     }
     // #################### END TREE CLASS ###########################

@@ -1,4 +1,4 @@
-package com.ouiplusplus.shell;
+package com.ouiplusplus.start;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.Run;
 import com.ouiplusplus.error.Error;
@@ -7,10 +7,10 @@ import java.io.FileNotFoundException;
 
 import java.util.Scanner;
 
-public class Shell {
+public class Start {
     public static void main(String[] args) throws FileNotFoundException {
         Run run = new Run();
-        String fname = "/Users/cobyforrester/Desktop/Professional/Projects/JavaProjects/out/production/OuiPlusPlus/com/ouiplusplus/shell/main.ouipp";
+        String fname = "/Users/cobyforrester/Desktop/Professional/Projects/JavaProjects/out/production/OuiPlusPlus/com/ouiplusplus/start/main.ouipp";
         File file = new File(fname);
         Scanner sf = new Scanner(file);
         sf.useDelimiter("\\Z"); // gets whole file as one string
@@ -22,21 +22,5 @@ public class Shell {
         } else {
             System.out.println(pair.getP1());
         }
-        /*
-        Run run = new Run();
-        Scanner scanner = new Scanner(System.in);
-        while(true) {
-
-            System.out.print("Oui++>> ");
-            String input = scanner.nextLine();
-            Pair<String, Error> pair = run.runToString("Main.ouipp", input);
-            Error error = pair.getP2();
-            if(error != null) {
-                System.out.println(error);
-            } else {
-                System.out.println(pair.getP1());
-            }
-        }
-        */
     }
 }

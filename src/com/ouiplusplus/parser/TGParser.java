@@ -36,14 +36,14 @@ public class TGParser {
                     output += '\n';
                 } else {
                     // Generate resolved Token
-                    val = this.getResolvedToken(tg.getTokens());
+                    val = this.ast.process(tg.getTokens());
                     if (val.getP2() != null) return new Pair<>(null, val.getP2());
 
                     output = output + val.getP1().getValue() + '\n';
                 }
             } else if (tg.getType() == TokenGroupType.VAR_ASSIGN) {
                 // Generate resolved Token
-                val = this.getResolvedToken(tg.getTokens());
+                val = this.ast.process(tg.getTokens());
                 if(val.getP2() != null) return new Pair<>(null, val.getP2());
 
                 // If no errors add to vars hashmap
@@ -53,25 +53,6 @@ public class TGParser {
 
         return new Pair<>(output, null);
     }
-
-    private Pair<Token, Error> getResolvedToken(List<Token> lst) {
-        /*
-        Pair returned consists of (Token, Error)
-        Uses ASTExpression to get value and resolved token
-         */
-        // Add list to ASTExpression
-        Error addErr = ast.addList(lst);
-        if (addErr != null) return new Pair<>(null, addErr);
-
-        // Get token from tree
-        Pair<Token, Error> treeVal = ast.resolveTreeVal();
-        if (treeVal.getP2() != null) return new Pair<>(null, treeVal.getP2());
-
-        // Clear tree and return
-        ast.clearTree();
-        return new Pair<>(treeVal.getP1(), null);
-    }
-
 
     //============================== GETTERS =============================
 
