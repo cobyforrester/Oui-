@@ -150,9 +150,13 @@ public class Lexer {
             this.advance();
         }
         if(word.toLowerCase().equals("true") || word.toLowerCase().equals("vrai")) {
-            return new Token(TokenType.BOOLEAN, "true", start, end);
+            Token tmp = new Token(TokenType.BOOLEAN, "true", start, end);
+            tmp.setBoolVal(true);
+            return tmp;
         } else if (word.toLowerCase().equals("false") || word.toLowerCase().equals("faux")) {
-            return new Token(TokenType.BOOLEAN, "false", start, end);
+            Token tmp = new Token(TokenType.BOOLEAN, "false", start, end);
+            tmp.setBoolVal(false);
+            return tmp;
         }
         return new Token(TokenType.WORD, word, start, end);
     }

@@ -2,9 +2,12 @@ package com.ouiplusplus.lexer;
 public class Token {
     private TokenType type;
     private String value;
-    private boolean isNeg; // for if INT/DOUBLE/LPAREN/VAR/FUNCCALL are negative
     private Position start;
     private Position end;
+
+    //specific
+    private boolean isNeg; // for if INT/DOUBLE/LPAREN/VAR/FUNCCALL are negative
+    private boolean boolVal;
 
     //======================== CONSTRUCTORS ========================
     public Token(TokenType type, String value, Position start, Position end) {//for when initialized with a value
@@ -84,5 +87,13 @@ public class Token {
 
     public void setEnd(Position end) {
         this.end = end;
+    }
+
+    public boolean getBoolVal() {
+        return boolVal;
+    }
+
+    public void setBoolVal(boolean boolVal) {
+        this.boolVal = boolVal;
     }
 }
