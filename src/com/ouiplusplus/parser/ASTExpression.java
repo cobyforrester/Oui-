@@ -65,7 +65,6 @@ public class ASTExpression {
         // checks if boolean
         if (isBoolTok(tokens)) {
             ASTBoolean astBool = new ASTBoolean(this, this.tgparser);
-            System.out.println(astBool.process(tokens).getP1());
             return astBool.process(tokens);
         }
         if (!tokens.isEmpty()) {
@@ -337,7 +336,7 @@ public class ASTExpression {
                 tmp = this.tgparser.getVars().get(t.getValue()).copy();
             }
             if(boolOps.contains(t.getType())
-                    || (tmp!= null && boolOps.contains(tmp))) {
+                    || (tmp!= null && boolOps.contains(tmp.getType()))) {
                 return true;
             }
         }
