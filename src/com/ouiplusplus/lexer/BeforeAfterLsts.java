@@ -66,9 +66,9 @@ public class BeforeAfterLsts {
     };
 
     final private TokenType[] afterINTDOUBLEAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
-            TokenType.MINUS, TokenType.NEWLINE, TokenType.SEMICOLON,
+            TokenType.MINUS, TokenType.NEWLINE,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -92,11 +92,12 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
             TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON,
-            TokenType.BOOLEAN,
+            TokenType.BOOLEAN, TokenType.LCBRACE,
     };
 
     final private TokenType[] afterNEWLINEAdd = {
-            TokenType.NEWLINE, TokenType.WORD,
+            TokenType.NEWLINE, TokenType.WORD, TokenType.LCBRACE,
+            TokenType.RCBRACE,
     };
 
     // ========================= WORD ===============================
@@ -112,11 +113,11 @@ public class BeforeAfterLsts {
     };
 
     final private TokenType[] afterWORDAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
-            TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.LPAREN,
+            TokenType.LBRACKET, TokenType.LCBRACE, TokenType.SEMICOLON,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
-            TokenType.MINUS, TokenType.SEMICOLON,
+            TokenType.MINUS,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -137,9 +138,8 @@ public class BeforeAfterLsts {
     };
 
     final private TokenType[] afterSTRINGAdd = {
-            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE,
-            TokenType.SEMICOLON,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,

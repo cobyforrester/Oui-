@@ -1,9 +1,8 @@
-
-x =  100 == 100
-
-y = ! faux
-
-z = (false || 3 < 9.0)
-
-
-print(x && y && z)
+x = 10
+if (10 == 10) {
+    print('here')
+    x = 4
+    if (x == 4 + 0) {
+        print('i did it')
+    }
+}

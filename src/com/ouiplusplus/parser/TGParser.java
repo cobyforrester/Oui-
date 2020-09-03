@@ -1,6 +1,7 @@
 package com.ouiplusplus.parser;
 
 import com.ouiplusplus.error.Error;
+import com.ouiplusplus.error.InvalidConditional;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
@@ -48,6 +49,20 @@ public class TGParser {
 
                 // If no errors add to vars hashmap
                 this.vars.put(tg.getStartTok().getValue(), val.getP1());
+            } else if (tg.getType() == TokenGroupType.IF) {
+                // Generate resolved Token
+                val = this.ast.process(tg.getTokens()); // boolean val
+                if(val.getP2() != null) return new Pair<>(null, val.getP2());
+                if (val.getP1().getType() != TokenType.BOOLEAN){
+                    Error inv =
+                            new InvalidConditional(val.getP1().getStart(), val.getP1().getEnd(), "");
+                    return new Pair<>(null, inv);
+                }
+                if (val.getP1().getBoolVal()) { // if statement true run it
+                    Pair<String, Error> rec = this.process(tg.getTokenGroups());
+                    if (rec.getP2() != null) return rec;
+                    output += rec.getP1();
+                }
             }
         }
 

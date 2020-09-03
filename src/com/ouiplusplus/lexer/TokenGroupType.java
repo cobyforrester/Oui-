@@ -6,8 +6,8 @@ public enum TokenGroupType {
     FUNC_DECLARE,
     FUNC_CALL,
     VAR_ASSIGN,
-    PRINT;
+    PRINT,
 
     //ADD LOOPS AND IF STATEMENTS
-
+    IF;
 }

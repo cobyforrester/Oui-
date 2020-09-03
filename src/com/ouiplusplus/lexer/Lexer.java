@@ -74,9 +74,6 @@ public class Lexer {
                     case '*':
                         tokens.add(new Token(TokenType.MULT, "*", p, p));
                         break;
-                    case '=':
-                        tokens.add(new Token(TokenType.EQUALS, "=", p, p));
-                        break;
 
                     // (){}[]
                     case '(':
@@ -84,6 +81,12 @@ public class Lexer {
                         break;
                     case ')':
                         tokens.add(new Token(TokenType.RPAREN, ")", p, p));
+                        break;
+                    case '{':
+                        tokens.add(new Token(TokenType.LCBRACE, "{", p, p));
+                        break;
+                    case '}':
+                        tokens.add(new Token(TokenType.RCBRACE, "}", p, p));
                         break;
 
                     //SPECIAL CHARACTERS

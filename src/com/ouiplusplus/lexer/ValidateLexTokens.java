@@ -115,8 +115,7 @@ public class ValidateLexTokens {
                 } else {
                     return err;
                 }
-            }
-            else if (currTT == TokenType.OR || currTT == TokenType.AND) {
+            } else if (currTT == TokenType.OR || currTT == TokenType.AND) {
                 if (i == 0 || i == tokens.size() - 1) return err;
                 TokenType prev = tokens.get(i - 1).getType();
                 TokenType next = tokens.get(i + 1).getType();
@@ -126,8 +125,7 @@ public class ValidateLexTokens {
                 } else {
                     return err;
                 }
-            }
-            else if (currTT == TokenType.NOT) {
+            } else if (currTT == TokenType.NOT) {
                 if (i == 0 || i == tokens.size() - 1) return err;
                 TokenType prev = tokens.get(i - 1).getType();
                 TokenType next = tokens.get(i + 1).getType();
@@ -173,21 +171,21 @@ public class ValidateLexTokens {
                 /* THIS IS FOR WHEN A PLUS OR MINUS IS ENCOUNTERED */
                 int negCount = 0;
                 if (i == 0) return err;
-                if (i > 0) {
-                    TokenType prevTT = tokens.get(i - 1).getType();
-                    if (currTT == TokenType.PLUS) {
-                        if (isInLst(prevTT, ba.getBeforePLUSAdd())) {
-                            lst.add(tokens.get(i));
-                        } else if (isInLst(prevTT, ba.getBeforePLUSErr())) {
-                            return err;
-                        }
-                    } else { // FOR MINUS
-                        if (isInLst(prevTT, ba.getBeforeMINUSAdd())) {
-                            lst.add(tokens.get(i));
-                            negCount--;
-                        } else if (isInLst(prevTT, ba.getBeforeMINUSErr())) {
-                            return err;
-                        }
+                if (i == lst.size() - 1) return err;
+
+                TokenType prevTT = tokens.get(i - 1).getType();
+                if (currTT == TokenType.PLUS) {
+                    if (isInLst(prevTT, ba.getBeforePLUSAdd())) {
+                        lst.add(tokens.get(i));
+                    } else if (isInLst(prevTT, ba.getBeforePLUSErr())) {
+                        return err;
+                    }
+                } else { // FOR MINUS
+                    if (isInLst(prevTT, ba.getBeforeMINUSAdd())) {
+                        lst.add(tokens.get(i));
+                        negCount--;
+                    } else if (isInLst(prevTT, ba.getBeforeMINUSErr())) {
+                        return err;
                     }
                 }
                 while (currTT == TokenType.PLUS || currTT == TokenType.MINUS) {

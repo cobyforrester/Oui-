@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TokenGroup {
     private TokenGroupType type;
-    private List<Token> tokens; //for variables and no shell expressions
+    private List<Token> tokens; //for variables, also if statements conditional, while loop cond.
     private List<TokenGroup> tokenGroups; //for if statements for loops functions
     private Token startTok;
 

@@ -3,6 +3,7 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.parser.TGParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Run {
@@ -21,7 +22,10 @@ public class Run {
         if(error != null) return new Pair<>(null, error);
 
         // GROUPING TOKENS
-        Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenLst(lexerPair.getP1());
+        List<String> vars = new ArrayList<>();
+        List<String> functions = new ArrayList<>();
+        Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenGroupLst
+                (lexerPair.getP1(), vars, functions);
         error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN
