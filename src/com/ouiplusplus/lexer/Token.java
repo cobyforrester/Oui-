@@ -22,6 +22,19 @@ public class Token {
         this.value = value;
     }
 
+    public Token(TokenType type, String value, Position start, Position end, boolean boolVal) {//for when initialized with a value
+        this.type = type;
+        this.start = start;
+        this.end = end;
+        this.boolVal = boolVal;
+
+        if (value.indexOf ('-') == 0 && (type == TokenType.INT || type == TokenType.DOUBLE)) {
+            this.isNeg = true;
+            value = value.substring(1);
+        } else this.isNeg = false;
+        this.value = value;
+    }
+
 
     public Token(TokenType type) { //for when mutated in syntax trees
         this.type = type;
@@ -30,7 +43,7 @@ public class Token {
 
     //======================== CLASS METHODS ========================
     public Token copy () {
-        return new Token(type, getValue(), start, end);
+        return new Token(type, getValue(), start, end, boolVal);
     }
 
     @Override
@@ -54,6 +67,10 @@ public class Token {
     public String getValue() {
         if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
                 || this.type == TokenType.DOUBLE)) return "-" + value;
+        if (this.type == TokenType.BOOLEAN) {
+            if (this.boolVal) return "true";
+            else return "false";
+        }
         return value;
     }
 

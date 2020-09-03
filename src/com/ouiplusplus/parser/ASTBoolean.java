@@ -129,12 +129,14 @@ public class ASTBoolean {
                 else if (lst.get(i).getType() == TokenType.RPAREN) st.pop();
 
                 // recursive aspect, does comparison
-                if (st.size() == 0 && (boolOpsTmp.contains(lst.get(0).getType()))) {
+                if (st.size() == 0 && (boolOpsTmp.contains(lst.get(i).getType()))) {
+                    if (indexCompOp != 0) {
+                        Error err = new InvalidOperation(start, end, lst.get(i).getValue());
+                        return new Pair<>(null, err);
+                    }
                     Pair<Token, Error> rtnPair = this.process(lst.subList(indexCompOp, i));
                     if (rtnPair.getP2() != null) return rtnPair;
-                    if (indexCompOp == 0) {
                         prevCompToken = rtnPair.getP1();
-                    }
                     indexCompOp = i + 1;
                 }
             }
@@ -209,24 +211,23 @@ public class ASTBoolean {
                             return new Pair<>(null, err);
                         }
                     }
+                    // !!!!!! If after everything ==, &&, ||, !=, ! still inside then return error !!!!!!
+                    // else put into ast if not a boolean, because by here we are with an expression
+                    // adding on () if isNeg == true and then sending
+                    // send to ast and then return token
+                    if (isNot) {
+                        Error err = new InvalidOperation(start, end, "!");
+                        return new Pair<>(null, err);
+                    }
+                    List<Token> newList = new ArrayList<>();
+                    Token LParen = new Token(TokenType.LPAREN, "(", start, start);
+                    LParen.setNeg(isNeg);
+                    newList.add(LParen);
+                    newList.addAll(lst);
+                    newList.add(new Token(TokenType.RPAREN, ")", end, end));
+                    return this.astExpr.process(newList);
                 }
             }
-
-            // !!!!!! If after everything ==, &&, ||, !=, ! still inside then return error !!!!!!
-            // else put into ast if not a boolean, because by here we are with an expression
-            // adding on () if isNeg == true and then sending
-            // send to ast and then return token
-            if (isNot) {
-                Error err = new InvalidOperation(start, end, "!");
-                return new Pair<>(null, err);
-            }
-            List<Token> newList = new ArrayList<>();
-            Token LParen = new Token(TokenType.LPAREN, "(", start, start);
-            LParen.setNeg(isNeg);
-            newList.add(LParen);
-            newList.addAll(lst);
-            newList.add(new Token(TokenType.RPAREN, ")", end, end));
-            return this.astExpr.process(newList);
         }
     }
 

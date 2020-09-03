@@ -51,7 +51,7 @@ public class BooleanTokenOps {
                 return new Pair<>(null, err);
             }
         }
-        if (left.getType() == TokenType.INT) {
+        if (right.getType() == TokenType.INT) {
             try {
                 ri = Integer.parseInt(right.getValue());
                 rInt = true;
