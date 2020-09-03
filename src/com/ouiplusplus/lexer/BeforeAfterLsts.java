@@ -133,7 +133,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
-            TokenType.AND, TokenType.OR,
+            TokenType.AND, TokenType.OR, TokenType.NOT,
     };
 
     final private TokenType[] afterSTRINGAdd = {
@@ -196,7 +196,7 @@ public class BeforeAfterLsts {
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
             TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS, TokenType.NOT_EQUAL,
-            TokenType.AND, TokenType.OR,
+            TokenType.AND, TokenType.OR, TokenType.NOT,
     };
 
     final private TokenType[] afterBOOLEANAdd = {

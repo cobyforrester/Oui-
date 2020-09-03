@@ -33,16 +33,22 @@ public class ASTBoolean {
          */
         boolean isNot = false;
         boolean isNeg = false;
-        while (lst.get(0).getType() == TokenType.LPAREN
+        while ((lst.get(0).getType() == TokenType.LPAREN
                 && lst.get(lst.size() - 1).getType() == TokenType.RPAREN
-                && ValidateLexTokens.validateParentheses(lst.subList(1, lst.size() - 1)) == null) {
+                && ValidateLexTokens.validateParentheses(lst.subList(1, lst.size() - 1)) == null)
+                || lst.get(0).getType() == TokenType.NOT) {
             start = lst.get(0).getStart();
             end = lst.get(lst.size() - 1).getEnd();
-            if (lst.get(0).isNeg()) isNeg = !isNeg;
-            lst = lst.subList(1, lst.size() - 1);
-            if (lst.size() == 0) {
-                Error err = new EmptyParenthesis(start, end, "()");
-                return new Pair<>(null, err);
+            if (lst.get(0).getType() == TokenType.NOT) {
+                lst = lst.subList(1, lst.size());
+                isNot = !isNot;
+            } else{
+                if (lst.get(0).isNeg()) isNeg = !isNeg;
+                lst = lst.subList(1, lst.size() - 1);
+                if (lst.size() == 0) {
+                    Error err = new EmptyParenthesis(start, end, "()");
+                    return new Pair<>(null, err);
+                }
             }
         }
 
@@ -104,7 +110,9 @@ public class ASTBoolean {
                 return new Pair<>(null, err);
             }
             Token tmp = new Token(TokenType.BOOLEAN, Boolean.toString(bool), start, end);
-            tmp.setBoolVal(bool);
+            if (isNot) tmp.setBoolVal(!bool);
+            else tmp.setBoolVal(bool);
+
             return new Pair<>(tmp, null);
         } else {
             /*
@@ -178,6 +186,10 @@ public class ASTBoolean {
                         Error err = new InvalidOperation(start, end, "-");
                         return new Pair<>(null, err);
                     } else if (isNeg) token.setNeg(!token.isNeg());
+                    if (isNot && token.getType() != TokenType.BOOLEAN) {
+                        Error err = new InvalidOperation(start, end, "-");
+                        return new Pair<>(null, err);
+                    } else if (isNot) token.setBoolVal(!token.getBoolVal());
                     return new Pair<>(token, null);
                 } else {
                 /*

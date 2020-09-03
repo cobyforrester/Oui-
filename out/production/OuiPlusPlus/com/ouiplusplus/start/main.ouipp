@@ -1,5 +1,9 @@
 
-x = 'true' >= 'gg'
+x =  100 == 100
+
+y = ! faux
+
+z = (false || 3 < 9.0)
 
 
-print(x)
+print(x && y && z)
