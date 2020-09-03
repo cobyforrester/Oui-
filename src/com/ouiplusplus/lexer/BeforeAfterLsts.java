@@ -200,7 +200,7 @@ public class BeforeAfterLsts {
     };
 
     final private TokenType[] afterBOOLEANAdd = {
-            TokenType.NEWLINE, TokenType.SEMICOLON,
+            TokenType.NEWLINE, TokenType.SEMICOLON, TokenType.RPAREN,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,

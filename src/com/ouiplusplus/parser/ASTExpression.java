@@ -4,6 +4,7 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -61,6 +62,12 @@ public class ASTExpression {
 
     public Pair<Token, Error> process(List<Token> tokens) {
         Error err;
+        // checks if boolean
+        if (isBoolTok(tokens)) {
+            ASTBoolean astBool = new ASTBoolean(this, this.tgparser);
+            System.out.println(astBool.process(tokens).getP1());
+            return astBool.process(tokens);
+        }
         if (!tokens.isEmpty()) {
             this.start = tokens.get(0).getStart();
             this.end = tokens.get(tokens.size() - 1).getEnd();
@@ -75,20 +82,6 @@ public class ASTExpression {
         this.clearTree();
         return rtnPair;
     }
-
-    /*
-    public Pair<Token, Error> resolveTreeVal() {
-        Pair<Token, Error> nullVal = new Pair<>(null, new Error("No Input Given"));
-        if (this.root == null) return nullVal;
-
-        OverFlow over = new OverFlow(this.start.copy(),this.end.copy(), null);
-        Pair<Token, Error> err = new Pair<>(null, over);
-        if (this.opened != 0) return err;
-
-        // Gets Value for tree and then returns it
-        return this.dfsResolveVal(this.root);
-    }
-     */
 
     @Override
     public String toString() {
@@ -327,6 +320,28 @@ public class ASTExpression {
         }
         else return "[" + node.token + "]";
         return tmp;
+    }
+
+    public boolean isBoolTok(List<Token> lst) {
+        List<TokenType> boolOps = Arrays.asList(TokenType.BOOLEAN,
+                TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN,
+                TokenType.GREATER_THAN_OR_EQUALS,
+                TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUALS,
+                TokenType.NOT_EQUAL, TokenType.NOT,
+                TokenType.AND, TokenType.OR);
+        for(Token t : lst) {
+            // if variable convert to type
+            Token tmp = null;
+            if (t.getType() == TokenType.VAR) { //converts variable to primitive type
+
+                tmp = this.tgparser.getVars().get(t.getValue()).copy();
+            }
+            if(boolOps.contains(t.getType())
+                    || (tmp!= null && boolOps.contains(tmp))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ################### END HELPER METHODS #####################
