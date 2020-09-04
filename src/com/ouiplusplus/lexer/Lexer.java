@@ -122,9 +122,46 @@ public class Lexer {
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         break;
                     case '#':
-                        while (this.currChar != '\n' && this.currChar != 0) this.advance();
-                        if (this.currChar != 0)
+                        String multiLine = "#";
+                        this.advance();
+                        p = this.pos.copy();
+                        if (this.currChar == '\n') {
                             tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                            break;
+                        }
+                        else multiLine += Character.toString(this.currChar);
+                        this.advance();
+                        p = this.pos.copy();
+                        if (this.currChar == '\n') {
+                            tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                            break;
+                        }
+                        else multiLine += Character.toString(this.currChar);
+
+                        if (multiLine.equals("###")) {
+                            boolean endFound = false;
+                            while (!endFound && this.currChar != 0) {
+                                this.advance();
+                                if (this.currChar == '#') {
+                                    this.advance();
+                                    if (this.currChar == '#') {
+                                        this.advance();
+                                        if (this.currChar == '#') {
+                                            endFound = true;
+                                        }
+                                    }
+                                }
+                            }
+                            p = this.pos.copy();
+                            tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                            break;
+                        }
+
+                        while (this.currChar != '\n' && this.currChar != 0) this.advance();
+                        if (this.currChar != 0) {
+                            p = this.pos.copy();
+                            tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                        }
                         break;
 
                     // DEFAULT

@@ -20,8 +20,7 @@ public class ASTCombineTokens {
                     && right.getType() != TokenType.DOUBLE)) {
                 Error invOper = new InvalidOperation(start, end, op.getValue());
                 return new Pair<>(null, invOper);
-            }
-            try {
+            } try {
                 double rightDouble = Double.parseDouble(right.getValue());
                 double leftDouble = Double.parseDouble(left.getValue());
                 double result = Math.pow(leftDouble, rightDouble);
@@ -39,7 +38,6 @@ public class ASTCombineTokens {
                 String val = String.format("%.12f", result);
                 Token token = new Token(TokenType.DOUBLE, val, start, end);
                 return new Pair<>(token, null);
-
             } catch (Exception e) {
                 Error overflow = new OverFlow(start, end, "");
                 return new Pair<>(null, overflow);

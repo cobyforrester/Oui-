@@ -17,9 +17,10 @@ while (i < n + 1) {
     }
     i+=1
 }
-#print(s)
-#x = 5 ^ 64.01
-#print(x)
+
+print(s)
+x = 5 ^ 64.01
+print(x)
 
 
 imprimer('#########################')
