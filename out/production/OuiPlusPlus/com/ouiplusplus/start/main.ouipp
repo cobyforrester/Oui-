@@ -1,17 +1,14 @@
 imprimer('#########################')
 
-x = (10.0 == 10 && true) && (5 < 10) && ('julie' == 'julie')
-print(x)
-if (5 == 51) {
-    print('if')
-} elif (3 == 31) {
-    print('elif')
+
+if (!true) {
+
+} elif (!true) {
+
+} else if (!true) {
 }
-elif (3 == 31) {
-    print('elif2')
-}
-elif (3 == 3) {
-    print('elif3')
+else {
+    print('yo')
 }
 
 

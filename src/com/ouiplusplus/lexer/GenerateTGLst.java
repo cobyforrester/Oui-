@@ -26,12 +26,26 @@ public class GenerateTGLst {
                 if (functions.contains(currVal)) {
                     // IMPLEMENT LATER
                 } else if (currVal.equals("if") || currVal.equals("si")
-                        || currVal.equals("elif") || currVal.equals("alors")) {
+                        || currVal.equals("elif") || currVal.equals("alors")
+                        || (currVal.equals("else")
+                        && (i + 1 < lst.size()
+                        && lst.get(i + 1).getValue().toLowerCase().equals("if")))) {
                     // VARIABLES
                     boolean isIf = currVal.equals("if") || currVal.equals("si");
+                    boolean isElseIf = (currVal.equals("else")
+                            && (i + 1 < lst.size()
+                            && lst.get(i + 1).getValue().toLowerCase().equals("if")));
                     if (isIf)
                         err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
-                    else err = new InvalidElifDeclare(curr.getStart(), curr.getEnd(), currVal);
+                    else {
+                        if (isElseIf) {
+                            err = new InvalidElifDeclare(
+                                    curr.getStart(), curr.getEnd(), "else if");
+                            i++;
+                        }
+                        else err = new InvalidElifDeclare(
+                                curr.getStart(), curr.getEnd(), currVal);
+                    }
 
                     // Lots of error checking
                     if (!isIf && (newLst.size() == 0
@@ -56,9 +70,6 @@ public class GenerateTGLst {
                         }
 
 
-                        // Error message for print including last and first positions
-                        err = new InvalidPrintStatement(curr.getStart(),
-                                tkns.getT1().get(tkns.getT1().size() - 1).getEnd(), currVal);
 
                         if (tkns.getT1().get(0).getType() != TokenType.LPAREN
                                 || tkns.getT1().get(tkns.getT1().size() - 1).getType() != TokenType.RPAREN)
@@ -105,7 +116,7 @@ public class GenerateTGLst {
 
                 } else if (currVal.equals("else") || currVal.equals("sinon")) {
                     // VARIABLES
-                    err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
+                    err = new InvalidElseDeclare(curr.getStart(), curr.getEnd(), currVal);
 
                     // Lots of error checking
                     if (newLst.size() == 0
@@ -124,7 +135,7 @@ public class GenerateTGLst {
                     int j = i + 1;
                     while (lst.get(j).getType() != TokenType.LCBRACE) {
                         if (lst.get(j).getType() != TokenType.NEWLINE) {
-                            err = new InvalidIfDeclare(
+                            err = new InvalidElseDeclare(
                                     lst.get(j).getStart(), lst.get(j).getEnd(), lst.get(j).getValue());
                             return new Pair<>(null, err);
                         }
@@ -228,8 +239,10 @@ public class GenerateTGLst {
     }
 
     //============================== HELPER =============================
-    private static Trio<List<Token>, Integer, Error> generateTokensLst(int index, List<Token> lst,
-                                                                       List<String> vars, List<String> functions) {
+    private static Trio<List<Token>, Integer, Error> generateTokensLst(int index,
+                                                                       List<Token> lst,
+                                                                       List<String> vars,
+                                                                       List<String> functions) {
         /*
         print(10 == 10) => (10 == 10), extracts tokens list for prints
         and var declares
@@ -239,6 +252,7 @@ public class GenerateTGLst {
          */
         Error err;
         List<Token> fnl = new ArrayList<>();
+
         while (index < lst.size() && lst.get(index).getType() != TokenType.NEWLINE
                 && lst.get(index).getType() != TokenType.RCBRACE
                 && lst.get(index).getType() != TokenType.LCBRACE) {
