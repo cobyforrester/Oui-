@@ -99,12 +99,12 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
             TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON,
-            TokenType.BOOLEAN, TokenType.LCBRACE,
+            TokenType.BOOLEAN, TokenType.LCBRACE, TokenType.HASH,
     };
 
     final private TokenType[] afterNEWLINEAdd = {
             TokenType.NEWLINE, TokenType.WORD, TokenType.LCBRACE,
-            TokenType.RCBRACE,
+            TokenType.RCBRACE, TokenType.HASH,
     };
 
     // ========================= WORD ===============================
