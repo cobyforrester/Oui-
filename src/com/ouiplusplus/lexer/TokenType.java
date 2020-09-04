@@ -15,6 +15,7 @@ public enum TokenType {
     DIV,
     EQUALS,
     CARROT,
+    MODULO,
     PLUSEQUALS,
     MINUSEQUALS,
 

@@ -284,6 +284,11 @@ public class GenerateTGLst {
                     // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
                     TokenGroup tg = new TokenGroup(TokenGroupType.VAR_ASSIGN, curr);
                     if(isPlusEq || isMinusEq) {
+                        if (!vars.contains(currVal)) {
+                            err = new UndeclaredVariableReference(curr.getStart(), curr.getEnd(), currVal);
+                            return new Pair<>(null, err);
+                        }
+
                         String deets;
                         TokenType tt;
                         if (isPlusEq) {

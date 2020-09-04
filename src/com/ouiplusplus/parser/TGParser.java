@@ -10,12 +10,16 @@ import com.ouiplusplus.lexer.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TGParser {
     private Map<String, Token> vars = new HashMap<>(); // [VAL_NAME : Token]
     private ASTExpression ast = new ASTExpression(this);
+    private long startTime;
+
 
     public TGParser() {
+        startTime = System.currentTimeMillis();
     }
 
     public Pair<String, Error> process(List<TokenGroup> tgLst) {
@@ -87,14 +91,12 @@ public class TGParser {
             } else if (tg.getType() == TokenGroupType.WHILE) {
                 // Generate resolved Token
                 boolean loop = true;
-                int noInfinites = 0;
                 while (loop) {
-                    if (noInfinites == 1000000) {
+                    if (this.isTimedOut()) {
                         Error inf = new RequestTimedOut(
                                 tg.getStartTok().getStart(), tg.getStartTok().getEnd(), "");
                         return new Pair<>(null, inf);
                     }
-                    noInfinites++;
                     val = this.ast.process(tgLst.get(i).getTokens()); // boolean val
                     if (val.getP2() != null) return new Pair<>(null, val.getP2());
                     if (val.getP1().getType() != TokenType.BOOLEAN) {
@@ -118,6 +120,11 @@ public class TGParser {
         return new Pair<>(output.toString(), null);
     }
 
+    public boolean isTimedOut () {
+        if (System.currentTimeMillis() - this.startTime > 5000) return true;
+        return false;
+    }
+
     //============================== GETTERS =============================
 
     public Map<String, Token> getVars() {
@@ -126,5 +133,9 @@ public class TGParser {
 
     public ASTExpression getAst() {
         return ast;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }

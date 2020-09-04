@@ -21,7 +21,7 @@ public class BeforeAfterLsts {
             TokenType.NULL, TokenType.MULT, TokenType.DIV,
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.COMMA, TokenType.CARROT, TokenType.NEWLINE,
-            TokenType.SEMICOLON,
+            TokenType.SEMICOLON, TokenType.MODULO, TokenType.CARROT,
     };
 
     // ========================= MINUS ===============================
@@ -39,6 +39,7 @@ public class BeforeAfterLsts {
             TokenType.NULL, TokenType.MULT, TokenType.DIV, TokenType.RPAREN,
             TokenType.RBRACKET, TokenType.RCBRACE, TokenType.COMMA, TokenType.CARROT,
             TokenType.NEWLINE,  TokenType.SEMICOLON,
+            TokenType.MODULO, TokenType.CARROT,
     };
 
     // ========================= MULT/DIV/MOD/^ ===============================
@@ -62,6 +63,7 @@ public class BeforeAfterLsts {
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.WORD, TokenType.EQUALS,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
+            TokenType.MODULO, TokenType.CARROT,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -73,6 +75,7 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.NEWLINE, TokenType.RCBRACE,
+            TokenType.MODULO, TokenType.CARROT,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -111,6 +114,7 @@ public class BeforeAfterLsts {
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
+            TokenType.MODULO, TokenType.CARROT,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -125,6 +129,8 @@ public class BeforeAfterLsts {
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
+            TokenType.MODULO, TokenType.CARROT,
+
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,

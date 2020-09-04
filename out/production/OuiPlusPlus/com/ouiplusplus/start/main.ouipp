@@ -1,10 +1,25 @@
 imprimer('#########################')
 
 
-x = 10
-x += 5 + 10
 
-print(x)
+n = 100
+i = 1
+s = ''
+while (i < n + 1) {
+    if (i % 3 == 0 && i % 5 == 0) {
+        s += 'FizzBuzz\n'
+    } elif (i % 3 == 0) {
+        s+= 'Fizz\n'
+    } elif (i % 5 == 0) {
+        s += 'Buzz\n'
+    } else {
+        s+= i + '\n'
+    }
+    i+=1
+}
+#print(s)
+#x = 5 ^ 64.01
+#print(x)
 
 
 imprimer('#########################')

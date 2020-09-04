@@ -93,6 +93,12 @@ public class Lexer {
                     case '*':
                         tokens.add(new Token(TokenType.MULT, "*", p, p));
                         break;
+                    case '%':
+                        tokens.add(new Token(TokenType.MODULO, "%", p, p));
+                        break;
+                    case '^':
+                        tokens.add(new Token(TokenType.CARROT, "^", p, p));
+                        break;
 
                     // (){}[]
                     case '(':

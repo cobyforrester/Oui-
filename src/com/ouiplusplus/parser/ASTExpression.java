@@ -52,7 +52,7 @@ public class ASTExpression {
         this.size++;
         return switch (tt) {
             case STRING, DOUBLE, INT -> casePrimitiveType(token);
-            case MULT, DIV -> caseMULTDIV(token);
+            case MULT, DIV, MODULO, CARROT -> caseMULTDIV(token);
             case PLUS, MINUS -> casePLUSMINUS(token);
             case LPAREN -> caseLPAREN(token);
             case RPAREN -> caseRPAREN(token);
@@ -215,14 +215,18 @@ public class ASTExpression {
                     return null;
                 }
             } else if (currNode.token.getType() == TokenType.MULT
-                    || currNode.token.getType() == TokenType.DIV) {
+                    || currNode.token.getType() == TokenType.DIV
+                    || currNode.token.getType() == TokenType.MODULO
+                    || currNode.token.getType() == TokenType.CARROT) {
                 TreeNode tmp = currNode.copy();
                 currNode = new TreeNode(token);
                 currNode.left = tmp;
                 this.root = currNode;
                 return null;
             }else if (currNode.right.token.getType() == TokenType.MULT
-                    || currNode.right.token.getType() == TokenType.DIV) {
+                    || currNode.right.token.getType() == TokenType.DIV
+                    || currNode.right.token.getType() == TokenType.MODULO
+                    || currNode.right.token.getType() == TokenType.CARROT) {
                 TreeNode right = currNode.right.copy();
                 currNode.right = new TreeNode(token);
                 currNode.right.left = right;
@@ -274,7 +278,9 @@ public class ASTExpression {
         return tt == TokenType.MULT
                 || tt == TokenType.DIV
                 || tt == TokenType.MINUS
-                || tt == TokenType.PLUS;
+                || tt == TokenType.PLUS
+                || tt == TokenType.MODULO
+                || tt == TokenType.CARROT;
     }
 
 

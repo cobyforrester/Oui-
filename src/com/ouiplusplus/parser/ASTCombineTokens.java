@@ -7,12 +7,48 @@ import com.ouiplusplus.lexer.Position;
 import com.ouiplusplus.lexer.Token;
 import com.ouiplusplus.lexer.TokenType;
 
+import java.lang.Math;
+
 public class ASTCombineTokens {
 
     public static Pair<Token, Error> combine(Token left, Token op, Token right, Position start, Position end) {
 
+        if (op.getType() == TokenType.CARROT) {
+            if ((left.getType() != TokenType.DOUBLE
+                    && left.getType() != TokenType.INT)
+                    || (right.getType() != TokenType.INT
+                    && right.getType() != TokenType.DOUBLE)) {
+                Error invOper = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, invOper);
+            }
+            try {
+                double rightDouble = Double.parseDouble(right.getValue());
+                double leftDouble = Double.parseDouble(left.getValue());
+                double result = Math.pow(leftDouble, rightDouble);
+                if (left.getType() == TokenType.INT && right.getType() == TokenType.INT) {
+                    Token token = new Token(TokenType.INT, "", start, end);
+                    String val = String.format("%.12f", result);
+                    String toInt = "";
+                    for (int i = 0; i < val.length() && val.charAt(i) != '.'; i++) {
+                        toInt += Character.toString(val.charAt(i));
+                    }
+                    token.setValue(toInt);
+                    return new Pair<>(token, null);
+                }
+                // For double
+                String val = String.format("%.12f", result);
+                Token token = new Token(TokenType.DOUBLE, val, start, end);
+                return new Pair<>(token, null);
+
+            } catch (Exception e) {
+                Error overflow = new OverFlow(start, end, "");
+                return new Pair<>(null, overflow);
+            }
+        }
+
+
         if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
-            Token rtnTkn = new Token(TokenType.STRING);
+            Token rtnTkn = new Token(TokenType.STRING, "", start, end);
             if (op.getType() == TokenType.PLUS) {
                 rtnTkn.setValue(left.getValue() + right.getValue());
                 return new Pair<>(rtnTkn, null);
@@ -20,11 +56,11 @@ public class ASTCombineTokens {
             else if (op.getType() == TokenType.MULT) {
                 if (left.getType() == TokenType.INT) {
                     if(left.getValue().contains("-")) {
-                        Error invOper = new InvalidOperation(start, end, "Int Neg");
+                        Error invOper = new InvalidOperation(start, end, "-int*String");
                         return new Pair<>(null, invOper);
                     } else {
                         try {
-                            int leftVal = Integer.parseInt(left.getValue());
+                            long leftVal = Long.parseLong(left.getValue());
                             String str = "";
                             for(int i = 0; i < leftVal; i++) str += right.getValue();
                             rtnTkn.setValue(str);
@@ -36,11 +72,11 @@ public class ASTCombineTokens {
                     }
                 } else if (right.getType() == TokenType.INT) {
                     if(right.getValue().contains("-")) {
-                        Error invOper = new InvalidOperation(start, end, "Int Neg");
+                        Error invOper = new InvalidOperation(start, end, "-int*String");
                         return new Pair<>(null, invOper);
                     } else {
                         try {
-                            int rightVal = Integer.parseInt(right.getValue());
+                            long rightVal = Long.parseLong(right.getValue());
                             String str = "";
                             for(int i = 0; i < rightVal; i++) str += left.getValue();
                             rtnTkn.setValue(str);
@@ -57,7 +93,7 @@ public class ASTCombineTokens {
             }
 
         } else if (left.getType() == TokenType.DOUBLE || right.getType() == TokenType.DOUBLE) {
-            Token rtnTok = new Token(TokenType.DOUBLE);
+            Token rtnTok = new Token(TokenType.DOUBLE, "", start, end);
             try {
                 double val;
                 double leftVal = Double.parseDouble(left.getValue());
@@ -85,12 +121,13 @@ public class ASTCombineTokens {
         } else if (left.getType() == TokenType.INT && right.getType() == TokenType.INT) {
             Token rtnTok = new Token(TokenType.INT);
             try{
-                int val;
-                int leftVal = Integer.parseInt(left.getValue());
-                int rightVal = Integer.parseInt(right.getValue());
+                long val;
+                long leftVal = Long.parseLong(left.getValue());
+                long rightVal = Long.parseLong(right.getValue());
                 if (op.getType() == TokenType.PLUS) val = leftVal + rightVal;
                 else if (op.getType() == TokenType.MINUS) val = leftVal - rightVal;
                 else if (op.getType() == TokenType.MULT) val = leftVal * rightVal;
+                else if (op.getType() == TokenType.MODULO) val = leftVal % rightVal;
                 else if (op.getType() == TokenType.DIV) {
                     if (rightVal == 0) {
                         Error divBy0 = new DivisionBy0(start, end, "");
@@ -102,7 +139,7 @@ public class ASTCombineTokens {
                     return new Pair<>(null, invOper);
                 }
 
-                rtnTok.setValue(Integer.toString(val));
+                rtnTok.setValue(Long.toString(val));
                 return new Pair<>(rtnTok, null);
             } catch(Exception e) {
                 Error overflow = new OverFlow(start, end, "");

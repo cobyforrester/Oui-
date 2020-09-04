@@ -63,7 +63,8 @@ public class ValidateLexTokens {
                         return err;
                     }
                 }
-            } else if (currTT == TokenType.MULT || currTT == TokenType.DIV) {
+            } else if (currTT == TokenType.MULT || currTT == TokenType.DIV
+                    || currTT == TokenType.MODULO || currTT == TokenType.CARROT ) {
                 if (i == 0 || i == tokens.size() - 1) return err;
                 else {
                     TokenType prev = tokens.get(i - 1).getType();
