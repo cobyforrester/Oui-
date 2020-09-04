@@ -250,11 +250,11 @@ public class ValidateLexTokens {
         }
         if (s.size() != 0) {
             Token t = s.pop();
+            while (s.size() != 0) t = s.pop();
+
             Position start = t.getStart();
             Position end = t.getEnd();
-            if (t.getType() == TokenType.LPAREN) return new UnclosedParenthesis(start, end, "(");
-            else if (t.getType() == TokenType.LBRACKET) return new UnclosedBracket(start, end, "[");
-            else if (t.getType() == TokenType.LCBRACE) return new UnclosedCurlyBrace(start, end, "{");
+            return new UnclosedParenthesis(start, end, t.getValue());
         }
         return null;
     }

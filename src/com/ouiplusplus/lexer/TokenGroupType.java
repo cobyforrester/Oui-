@@ -9,5 +9,7 @@ public enum TokenGroupType {
     PRINT,
 
     //ADD LOOPS AND IF STATEMENTS
-    IF;
+    IF,
+    ELIF,
+    ELSE;
 }

@@ -68,7 +68,7 @@ public class BeforeAfterLsts {
     final private TokenType[] afterINTDOUBLEAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
-            TokenType.MINUS, TokenType.NEWLINE,
+            TokenType.MINUS, TokenType.NEWLINE, TokenType.RCBRACE,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -104,7 +104,8 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeWORDAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
-            TokenType.MULT, TokenType.DIV, TokenType.PLUS, TokenType.MINUS,
+            TokenType.MULT, TokenType.DIV, TokenType.PLUS,
+            TokenType.MINUS, TokenType.RCBRACE,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -117,7 +118,7 @@ public class BeforeAfterLsts {
             TokenType.LBRACKET, TokenType.LCBRACE, TokenType.SEMICOLON,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
-            TokenType.MINUS,
+            TokenType.MINUS, TokenType.RCBRACE,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -140,6 +141,7 @@ public class BeforeAfterLsts {
     final private TokenType[] afterSTRINGAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE,
+            TokenType.RCBRACE,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,

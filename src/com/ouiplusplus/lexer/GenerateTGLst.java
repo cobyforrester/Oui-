@@ -25,11 +25,22 @@ public class GenerateTGLst {
             if (curr.getType() == TokenType.WORD) {
                 if (functions.contains(currVal)) {
                     // IMPLEMENT LATER
-                } else if (currVal.equals("if") || currVal.equals("si")) {
-                    // GENERATE TOKENS LIST
+                } else if (currVal.equals("if") || currVal.equals("si")
+                        || currVal.equals("elif") || currVal.equals("alors")) {
+                    // VARIABLES
+                    boolean isIf = currVal.equals("if") || currVal.equals("si");
+                    if (isIf)
+                        err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
+                    else err = new InvalidElifDeclare(curr.getStart(), curr.getEnd(), currVal);
+
+                    // Lots of error checking
+                    if (!isIf && (newLst.size() == 0
+                            || (newLst.get(newLst.size() - 1).getType() != TokenGroupType.IF
+                            && newLst.get(newLst.size() - 1).getType() != TokenGroupType.ELIF))) {
+                        return new Pair<>(null, err);
+                    }
                     if (i + 5 >= lst.size() ||
                             lst.get(i + 1).getType() != TokenType.LPAREN) {
-                        err = new InvalidIfDeclare(curr.getStart(), lst.get(lst.size() - 1).getEnd(), currVal);
                         return new Pair<>(null, err);
                     } else {
                         Trio<List<Token>, Integer, Error> tkns =
@@ -39,13 +50,11 @@ public class GenerateTGLst {
 
                         // CHECK IF TOKENS LIST IS VALID
                         if (tkns.getT1().size() == 0) {
-                            err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
                             return new Pair<>(null, err);
                         } else if (tkns.getT1().size() == 1) {
-                            err = new InvalidIfDeclare(curr.getStart(),
-                                    tkns.getT1().get(tkns.getT1().size() - 1).getEnd(), currVal);
                             return new Pair<>(null, err);
                         }
+
 
                         // Error message for print including last and first positions
                         err = new InvalidPrintStatement(curr.getStart(),
@@ -68,7 +77,9 @@ public class GenerateTGLst {
                         j++;
                         // sets counter to correct value
                         // ADD Tokens
-                        TokenGroup tg = new TokenGroup(TokenGroupType.IF, curr);
+                        TokenGroup tg;
+                        if (isIf) tg = new TokenGroup(TokenGroupType.IF, curr);
+                        else tg = new TokenGroup(TokenGroupType.ELIF, curr);
                         tg.setTokens(tkns.getT1());
                         // create TokenGroup List
                         List<Token> ifBodyTokens = new ArrayList<>();
@@ -77,21 +88,74 @@ public class GenerateTGLst {
                         while (st.size() != 0) {
                             if (lst.get(j).getType() == TokenType.LCBRACE) st.push(lst.get(j));
                             else if (lst.get(j).getType() == TokenType.RCBRACE) st.pop();
-                            if(st.size() != 0) {
+                            if (st.size() != 0) {
                                 ifBodyTokens.add(lst.get(j));
                             }
                             j++;
                         }
-                        j++; //to account for ending on RCBRACE
                         Pair<List<TokenGroup>, Error> rec = generateTokenGroupLst(
                                 ifBodyTokens, vars, functions);
                         if (rec.getP2() != null) return rec;
                         tg.setTokenGroups(rec.getP1());
 
-                        // setting i, adding to list
-                        i = j;
+                        // setting i
+                        i = j - 1;
                         newLst.add(tg);
                     }
+
+                } else if (currVal.equals("else") || currVal.equals("sinon")) {
+                    // VARIABLES
+                    err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
+
+                    // Lots of error checking
+                    if (newLst.size() == 0
+                            || (newLst.get(newLst.size() - 1).getType() != TokenGroupType.IF
+                            && newLst.get(newLst.size() - 1).getType() != TokenGroupType.ELIF)) {
+                        return new Pair<>(null, err);
+                    }
+                    if (i + 2 >= lst.size()) {
+                        return new Pair<>(null, err);
+                    }
+
+
+
+
+                    // SET i
+                    int j = i + 1;
+                    while (lst.get(j).getType() != TokenType.LCBRACE) {
+                        if (lst.get(j).getType() != TokenType.NEWLINE) {
+                            err = new InvalidIfDeclare(
+                                    lst.get(j).getStart(), lst.get(j).getEnd(), lst.get(j).getValue());
+                            return new Pair<>(null, err);
+                        }
+                        j++;
+                    }
+                    j++;
+
+                    // create token group
+                    TokenGroup tg;
+                    tg = new TokenGroup(TokenGroupType.ELSE, curr);
+                    // create TokenGroup List
+                    List<Token> elseBodyTokens = new ArrayList<>();
+                    Stack<Token> st = new Stack<>();
+                    st.push(new Token(TokenType.LCBRACE));
+                    while (st.size() != 0) {
+                        if (lst.get(j).getType() == TokenType.LCBRACE) st.push(lst.get(j));
+                        else if (lst.get(j).getType() == TokenType.RCBRACE) st.pop();
+                        if (st.size() != 0) {
+                            elseBodyTokens.add(lst.get(j));
+                        }
+                        j++;
+                    }
+                    Pair<List<TokenGroup>, Error> rec = generateTokenGroupLst(
+                            elseBodyTokens, vars, functions);
+                    if (rec.getP2() != null) return rec;
+                    tg.setTokenGroups(rec.getP1());
+
+                    // setting i
+                    i = j - 1;
+                    newLst.add(tg);
+
 
                 } else if (currVal.equals("print") || currVal.equals("imprimer")) {
                     // GENERATE TOKENS LIST
