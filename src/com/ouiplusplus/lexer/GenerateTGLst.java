@@ -323,8 +323,7 @@ public class GenerateTGLst {
                     i = tkns.getT2();
 
                 }
-            } else if (curr.getType() != TokenType.NEWLINE
-                    && curr.getType() != TokenType.HASH) {
+            } else if (curr.getType() != TokenType.NEWLINE) {
                 err = new UnexpectedToken(lst.get(i).getStart(),
                         lst.get(i).getEnd(), lst.get(i).getValue());
                 return new Pair<>(null, err);

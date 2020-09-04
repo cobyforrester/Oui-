@@ -153,7 +153,7 @@ public class Lexer {
                                 }
                             }
                             p = this.pos.copy();
-                            tokens.add(new Token(TokenType.HASH, "#", p, p));
+                            tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                             break;
                         }
 
@@ -173,7 +173,6 @@ public class Lexer {
                 this.advance();
             }
         }
-        System.out.println(tokens);
         Error valParen = ValidateLexTokens.validateParentheses(tokens);
         if (valParen != null) return new Pair<> (null ,valParen);
         return ValidateLexTokens.validateTokens(tokens);
