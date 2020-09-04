@@ -15,6 +15,8 @@ public enum TokenType {
     DIV,
     EQUALS,
     CARROT,
+    PLUSEQUALS,
+    MINUSEQUALS,
 
     /*
     BOOLEAN OPERATORS

@@ -10,6 +10,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforePLUSAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.STRING,
             TokenType.RPAREN,  TokenType.WORD, TokenType.EQUALS,
+            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
 
     };
     final private TokenType[] beforePLUSErr = {
@@ -40,12 +41,14 @@ public class BeforeAfterLsts {
             TokenType.NEWLINE,  TokenType.SEMICOLON,
     };
 
-    // ========================= MULT/DIV ===============================
+    // ========================= MULT/DIV/MOD/^ ===============================
     final private TokenType[] beforeMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING,
     };
+
+
 
     final private TokenType[] afterMULTDIVAdd = {
             TokenType.INT, TokenType.DOUBLE,
@@ -58,6 +61,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.WORD, TokenType.EQUALS,
+            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -106,6 +110,7 @@ public class BeforeAfterLsts {
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
+            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -119,6 +124,7 @@ public class BeforeAfterLsts {
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
+            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -131,6 +137,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeSTRINGAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
             TokenType.PLUS, TokenType.WORD, TokenType.EQUALS,
+            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,

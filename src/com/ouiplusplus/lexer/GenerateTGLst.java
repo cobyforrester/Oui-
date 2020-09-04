@@ -30,7 +30,7 @@ public class GenerateTGLst {
                         && lst.get(i + 1).getValue().toLowerCase().equals("que")))) {
                     // VARIABLES
                     err = new InvalidWhileLoopDeclare(
-                                curr.getStart(), curr.getEnd(), currVal);
+                            curr.getStart(), curr.getEnd(), currVal);
 
 
                     if (i + 5 >= lst.size() ||
@@ -48,8 +48,6 @@ public class GenerateTGLst {
                         } else if (tkns.getT1().size() == 1) {
                             return new Pair<>(null, err);
                         }
-
-
 
                         if (tkns.getT1().get(0).getType() != TokenType.LPAREN
                                 || tkns.getT1().get(tkns.getT1().size() - 1).getType() != TokenType.RPAREN)
@@ -109,8 +107,7 @@ public class GenerateTGLst {
                             err = new InvalidElifDeclare(
                                     curr.getStart(), curr.getEnd(), "else if");
                             i++;
-                        }
-                        else err = new InvalidElifDeclare(
+                        } else err = new InvalidElifDeclare(
                                 curr.getStart(), curr.getEnd(), currVal);
                     }
 
@@ -135,7 +132,6 @@ public class GenerateTGLst {
                         } else if (tkns.getT1().size() == 1) {
                             return new Pair<>(null, err);
                         }
-
 
 
                         if (tkns.getT1().get(0).getType() != TokenType.LPAREN
@@ -194,9 +190,6 @@ public class GenerateTGLst {
                     if (i + 2 >= lst.size()) {
                         return new Pair<>(null, err);
                     }
-
-
-
 
                     // SET i
                     int j = i + 1;
@@ -275,26 +268,55 @@ public class GenerateTGLst {
 
                 } else {
                     err = new InvalidVariableAssignment(curr.getStart(), curr.getEnd(), currVal);
-                    if (i + 2 >= lst.size() || lst.get(i + 1).getType() != TokenType.EQUALS) {
+                    if (i + 2 >= lst.size() || (lst.get(i + 1).getType() != TokenType.EQUALS
+                            && lst.get(i + 1).getType() != TokenType.PLUSEQUALS
+                            && lst.get(i + 1).getType() != TokenType.MINUSEQUALS)) {
                         return new Pair<>(null, err);
-                    } else {
-
-                        // GENERATE TOKENS LIST
-                        Trio<List<Token>, Integer, Error> tkns =
-                                generateTokensLst(i + 2, lst, vars, functions);
-                        Error tknsErr = tkns.getT3();
-                        if (tknsErr != null) return new Pair<>(null, tknsErr);
-
-                        // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
-                        TokenGroup tg = new TokenGroup(TokenGroupType.VAR_ASSIGN, curr);
-                        tg.setTokens(tkns.getT1());
-                        newLst.add(tg);
-
-                        // Add to vars if not already added
-                        if (!vars.contains(currVal)) vars.add(tg.getStartTok().getValue());
-
-                        i = tkns.getT2();
                     }
+                    boolean isPlusEq = lst.get(i + 1).getType() == TokenType.PLUSEQUALS;
+                    boolean isMinusEq = lst.get(i + 1).getType() == TokenType.MINUSEQUALS;
+                    // GENERATE TOKENS LIST
+                    Trio<List<Token>, Integer, Error> tkns =
+                            generateTokensLst(i + 2, lst, vars, functions);
+                    Error tknsErr = tkns.getT3();
+                    if (tknsErr != null) return new Pair<>(null, tknsErr);
+
+                    // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
+                    TokenGroup tg = new TokenGroup(TokenGroupType.VAR_ASSIGN, curr);
+                    if(isPlusEq || isMinusEq) {
+                        String deets;
+                        TokenType tt;
+                        if (isPlusEq) {
+                            deets = "+";
+                            tt = TokenType.PLUS;
+                        } else {
+                            deets = "-";
+                            tt = TokenType.MINUS;
+                        }
+                        // x += 10 => x = x + (10)
+                        tkns.getT1().add(0, new Token(TokenType.LPAREN, "(",
+                                        lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
+
+                        tkns.getT1().add(tkns.getT1().size(),
+                                new Token(TokenType.RPAREN,
+                                ")", lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
+
+                        tkns.getT1().add(0,
+                                new Token(tt, deets, lst.get(i + 1).getStart(),
+                                        lst.get(i + 1).getEnd()));
+
+                        tkns.getT1().add(0, new Token(TokenType.VAR, curr.getValue(),
+                                curr.getStart(), curr.getEnd()));
+
+                    }
+                    tg.setTokens(tkns.getT1());
+                    newLst.add(tg);
+
+                    // Add to vars if not already added
+                    if (!vars.contains(currVal)) vars.add(tg.getStartTok().getValue());
+
+                    i = tkns.getT2();
+
                 }
             } else if (curr.getType() != TokenType.NEWLINE) {
                 err = new UnexpectedToken(lst.get(i).getStart(),

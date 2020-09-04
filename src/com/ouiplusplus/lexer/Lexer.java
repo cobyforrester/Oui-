@@ -54,26 +54,27 @@ public class Lexer {
                 tokens.add(boolPair.getP1());
             } else if(plusMinus.indexOf(this.currChar) > -1) { //Boolean Operators
                 Position first = this.pos.copy();
-                String deets;
-                TokenType tt;
+                String deets, deetsEQ;
+                TokenType tt, ttEQ;
                 if (this.currChar == '+') {
                     deets = "+";
+                    deetsEQ = "+=";
                     tt = TokenType.PLUS;
+                    ttEQ = TokenType.PLUSEQUALS;
                 } else {
                     deets = "-";
+                    deetsEQ = "-=";
                     tt = TokenType.MINUS;
+                    ttEQ = TokenType.MINUSEQUALS;
                 }
                     this.advance();
                     Position next = this.pos.copy();
                     if (this.currChar == '=' && tokens.size() != 0
                             && tokens.get(tokens.size() - 1).getType() == TokenType.WORD) {
-                        Token tmp = tokens.get(tokens.size() - 1);
-                        tokens.add(new Token(TokenType.EQUALS, "=", next, next));
-                        tokens.add(tmp.copy());
-                        tokens.add(new Token(tt, deets,first , first));
+                        tokens.add(new Token(ttEQ, deetsEQ, first , first));
                         this.advance();
                     } else {
-                        tokens.add(new Token(TokenType.PLUS, "+", first, first));
+                        tokens.add(new Token(tt, deets, first, first));
                     }
                 }
 
@@ -86,12 +87,6 @@ public class Lexer {
                         break;
 
                     // OPERATIONS AND RELATED TO MATH
-                    case '+':
-                        tokens.add(new Token(TokenType.PLUS, "+", p, p));
-                        break;
-                    case '-':
-                        tokens.add(new Token(TokenType.MINUS, "-", p, p));
-                        break;
                     case '/':
                         tokens.add(new Token(TokenType.DIV, "/", p, p));
                         break;
