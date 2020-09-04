@@ -29,9 +29,10 @@ public class ASTBoolean {
         Removes outer parentheses, and ! operators
         (5) => 5 with isNeg = false
         -(5) => 5 with isNeg = true (so they will be added on before AST)
-        !(true) => true with isNot = true
+        !(true) => true with globalIsNot = true
          */
-        boolean isNot = false;
+        boolean globalIsNot = false;
+        boolean localIsNot = false;
         boolean isNeg = false;
         while ((lst.get(0).getType() == TokenType.LPAREN
                 && lst.get(lst.size() - 1).getType() == TokenType.RPAREN
@@ -40,8 +41,19 @@ public class ASTBoolean {
             start = lst.get(0).getStart();
             end = lst.get(lst.size() - 1).getEnd();
             if (lst.get(0).getType() == TokenType.NOT) {
-                lst = lst.subList(1, lst.size());
-                isNot = !isNot;
+                if (lst.size() <= 1) {
+                    Error err = new InvalidOperation(start, end, "!");
+                    return new Pair<>(null, err);
+                }
+                if (lst.get(1).getType() == TokenType.LPAREN
+                        && lst.get(lst.size() - 1).getType() == TokenType.RPAREN
+                        && ValidateLexTokens.validateParentheses(lst.subList(2, lst.size() - 1)) == null) {
+                    lst = lst.subList(1, lst.size());
+                    globalIsNot = !globalIsNot;
+                } else {
+                    lst = lst.subList(1, lst.size());
+                    localIsNot = !localIsNot;
+                }
             } else{
                 if (lst.get(0).isNeg()) isNeg = !isNeg;
                 lst = lst.subList(1, lst.size() - 1);
@@ -75,7 +87,10 @@ public class ASTBoolean {
                 // process MUST return boolean
                 Pair<Token, Error> rtnPair = this.process(lst.subList(indexOrAnd, i));
                 if (rtnPair.getP2() != null) return rtnPair;
-                if (indexOrAnd == 0) bool = rtnPair.getP1().getBoolVal();
+                if (indexOrAnd == 0) {
+                    bool = rtnPair.getP1().getBoolVal();
+                    if (localIsNot) bool = !bool;
+                }
                 else if (lst.get(i).getType() == TokenType.AND) {
                     Pair<Boolean, Error> boolPair = BooleanTokenOps.boolValue(rtnPair.getP1());
                     if (boolPair.getP2() != null) return new Pair<>(null, boolPair.getP2());
@@ -110,11 +125,12 @@ public class ASTBoolean {
                 return new Pair<>(null, err);
             }
             Token tmp = new Token(TokenType.BOOLEAN, Boolean.toString(bool), start, end);
-            if (isNot) tmp.setBoolVal(!bool);
+            if (globalIsNot) tmp.setBoolVal(!bool);
             else tmp.setBoolVal(bool);
 
             return new Pair<>(tmp, null);
         } else {
+            if (localIsNot) globalIsNot = !globalIsNot;
             /*
             FOR ==, !=, <, <=, >, >=
             Cuts up the list into little pieces and processes them
@@ -163,7 +179,7 @@ public class ASTBoolean {
                     Error err = new InvalidOperation(start, end, "-");
                     return new Pair<>(null, err);
                 }
-                if (isNot) compPair.getP1().setBoolVal(!compPair.getP1().getBoolVal());
+                if (globalIsNot) compPair.getP1().setBoolVal(!compPair.getP1().getBoolVal());
                 return compPair;
             } else {
                 if (lst.size() == 1) {
@@ -186,10 +202,10 @@ public class ASTBoolean {
                         Error err = new InvalidOperation(start, end, "-");
                         return new Pair<>(null, err);
                     } else if (isNeg) token.setNeg(!token.isNeg());
-                    if (isNot && token.getType() != TokenType.BOOLEAN) {
+                    if (globalIsNot && token.getType() != TokenType.BOOLEAN) {
                         Error err = new InvalidOperation(start, end, "-");
                         return new Pair<>(null, err);
-                    } else if (isNot) token.setBoolVal(!token.getBoolVal());
+                    } else if (globalIsNot) token.setBoolVal(!token.getBoolVal());
                     return new Pair<>(token, null);
                 } else {
                 /*
@@ -227,7 +243,7 @@ public class ASTBoolean {
                     // else put into ast if not a boolean, because by here we are with an expression
                     // adding on () if isNeg == true and then sending
                     // send to ast and then return token
-                    if (isNot) {
+                    if (globalIsNot) {
                         Error err = new InvalidOperation(start, end, "!");
                         return new Pair<>(null, err);
                     }

@@ -90,16 +90,17 @@ public class GenerateTGLst {
                         newLst.add(tg);
                     }
 
-                } else if (currVal.equals("if") || currVal.equals("si")
-                        || currVal.equals("elif") || currVal.equals("alors")
+                } else if (currVal.equals("if") || currVal.equals("si") || currVal.equals("elif")
                         || (currVal.equals("else")
                         && (i + 1 < lst.size()
-                        && lst.get(i + 1).getValue().toLowerCase().equals("if")))) {
+                        && lst.get(i + 1).getValue().toLowerCase().equals("if")))
+                        || (currVal.equals("autre")
+                        && (i + 1 < lst.size()
+                        && lst.get(i + 1).getValue().toLowerCase().equals("si")))) {
                     // VARIABLES
                     boolean isIf = currVal.equals("if") || currVal.equals("si");
-                    boolean isElseIf = (currVal.equals("else")
-                            && (i + 1 < lst.size()
-                            && lst.get(i + 1).getValue().toLowerCase().equals("if")));
+                    boolean isElseIf = !(currVal.equals("if") || currVal.equals("si")
+                            || currVal.equals("elif"));
                     if (isIf)
                         err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
                     else {
