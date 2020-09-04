@@ -1,15 +1,10 @@
 imprimer('#########################')
 
 
-if (!true) {
+x = 10
+x -= 5
 
-} elif (!true) {
-
-} else if (!true) {
-}
-else {
-    print('yo')
-}
+print(x)
 
 
 imprimer('#########################')

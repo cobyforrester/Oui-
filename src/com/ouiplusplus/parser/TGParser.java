@@ -2,6 +2,8 @@ package com.ouiplusplus.parser;
 
 import com.ouiplusplus.error.Error;
 import com.ouiplusplus.error.InvalidConditional;
+import com.ouiplusplus.error.InvalidWhileLoopDeclare;
+import com.ouiplusplus.error.RequestTimedOut;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TGParser {
-    private Map<String,Token> vars = new HashMap<>(); // [VAL_NAME : Token]
+    private Map<String, Token> vars = new HashMap<>(); // [VAL_NAME : Token]
     private ASTExpression ast = new ASTExpression(this);
 
     public TGParser() {
@@ -46,7 +48,7 @@ public class TGParser {
             } else if (tg.getType() == TokenGroupType.VAR_ASSIGN) {
                 // Generate resolved Token
                 val = this.ast.process(tg.getTokens());
-                if(val.getP2() != null) return new Pair<>(null, val.getP2());
+                if (val.getP2() != null) return new Pair<>(null, val.getP2());
 
                 // If no errors add to vars hashmap
                 this.vars.put(tg.getStartTok().getValue(), val.getP1());
@@ -82,8 +84,36 @@ public class TGParser {
                     }
                     i++;
                 }
+            } else if (tg.getType() == TokenGroupType.WHILE) {
+                // Generate resolved Token
+                boolean loop = true;
+                int noInfinites = 0;
+                while (loop) {
+                    if (noInfinites == 1000000) {
+                        Error inf = new RequestTimedOut(
+                                tg.getStartTok().getStart(), tg.getStartTok().getEnd(), "");
+                        return new Pair<>(null, inf);
+                    }
+                    noInfinites++;
+                    val = this.ast.process(tgLst.get(i).getTokens()); // boolean val
+                    if (val.getP2() != null) return new Pair<>(null, val.getP2());
+                    if (val.getP1().getType() != TokenType.BOOLEAN) {
+                        Error inv =
+                                new InvalidWhileLoopDeclare(
+                                        val.getP1().getStart(), val.getP1().getEnd(), "");
+                        return new Pair<>(null, inv);
+                    }
+
+                    if (val.getP1().getBoolVal()) { // if statement true run it
+                        Pair<String, Error> rec = this.process(tgLst.get(i).getTokenGroups());
+                        if (rec.getP2() != null) return rec;
+                        output.append(rec.getP1());
+                    } else loop = false;
+
+                }
             }
         }
+
 
         return new Pair<>(output.toString(), null);
     }

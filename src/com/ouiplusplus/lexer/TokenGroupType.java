@@ -8,8 +8,11 @@ public enum TokenGroupType {
     VAR_ASSIGN,
     PRINT,
 
-    //ADD LOOPS AND IF STATEMENTS
+    //CONDITIONALS
     IF,
     ELIF,
-    ELSE;
+    ELSE,
+
+    //Loops
+    WHILE;
 }

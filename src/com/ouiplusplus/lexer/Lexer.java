@@ -37,6 +37,7 @@ public class Lexer {
         String nums = "0123456789";
         String quotes = "\'\"";
         String boolOps = "=><&|!";
+        String plusMinus = "+-";
         while (this.currChar != 0) {
             if (nums.indexOf(this.currChar) > -1) { // Numbers
                 tokens.add(this.makeNumberToken());
@@ -51,7 +52,30 @@ public class Lexer {
                 Pair<Token, Error> boolPair = makeBoolOppToken();
                 if (boolPair.getP2() != null) return new Pair<>(null, boolPair.getP2());
                 tokens.add(boolPair.getP1());
-            }
+            } else if(plusMinus.indexOf(this.currChar) > -1) { //Boolean Operators
+                Position first = this.pos.copy();
+                String deets;
+                TokenType tt;
+                if (this.currChar == '+') {
+                    deets = "+";
+                    tt = TokenType.PLUS;
+                } else {
+                    deets = "-";
+                    tt = TokenType.MINUS;
+                }
+                    this.advance();
+                    Position next = this.pos.copy();
+                    if (this.currChar == '=' && tokens.size() != 0
+                            && tokens.get(tokens.size() - 1).getType() == TokenType.WORD) {
+                        Token tmp = tokens.get(tokens.size() - 1);
+                        tokens.add(new Token(TokenType.EQUALS, "=", next, next));
+                        tokens.add(tmp.copy());
+                        tokens.add(new Token(tt, deets,first , first));
+                        this.advance();
+                    } else {
+                        tokens.add(new Token(TokenType.PLUS, "+", first, first));
+                    }
+                }
 
             else {
                 Position p = this.pos.copy();
