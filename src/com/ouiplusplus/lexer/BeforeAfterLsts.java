@@ -182,13 +182,14 @@ public class BeforeAfterLsts {
             TokenType.INT, TokenType.DOUBLE,
              TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING, TokenType.BOOLEAN,
+            TokenType.LBRACKET, TokenType.RBRACKET,
     };
 
     final private TokenType[] afterBOOL_COMP_Add = {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
-            TokenType.BOOLEAN,
+            TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
     };
 
     // ========================= AND_OR_OPS ===============================
@@ -196,7 +197,7 @@ public class BeforeAfterLsts {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING, TokenType.BOOLEAN,
-            TokenType.BOOLEAN,
+            TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
     };
 
     final private TokenType[] afterAND_OR_Add = {
@@ -204,6 +205,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
             TokenType.BOOLEAN, TokenType.NOT,
+            TokenType.LBRACKET, TokenType.RBRACKET,
     };
 
     // ========================= NOT_OP ===============================
@@ -217,7 +219,7 @@ public class BeforeAfterLsts {
             TokenType.INT, TokenType.DOUBLE,
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
-            TokenType.BOOLEAN,
+            TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
     };
 
     // ========================= BOOLEAN ===============================

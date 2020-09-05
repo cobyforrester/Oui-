@@ -12,7 +12,9 @@ public class Token {
     //specific
     private boolean isNeg; // for if INT/DOUBLE/LPAREN/VAR/FUNCCALL are negative
     private boolean boolVal;
-    private List<List<Token>> arrElements = new ArrayList<>();
+    // for arrays
+    private List<List<Token>> initialArrayElems = new ArrayList<>(); // for initial values
+    private List<Token> arrElements = null;
 
     //======================== CONSTRUCTORS ========================
     public Token(TokenType type, String value, Position start, Position end) {//for when initialized with a value
@@ -29,7 +31,7 @@ public class Token {
 
     public Token(TokenType type, String value,
                  Position start, Position end, boolean boolVal,
-                 List<List<Token>> arrElements) {//for when initialized with a value
+                 List<Token> arrElements) {//for when initialized with a value
         this.type = type;
         this.start = start;
         this.end = end;
@@ -52,13 +54,9 @@ public class Token {
     //======================== CLASS METHODS ========================
     public Token copy () {
         if(type == TokenType.LIST) {
-            List<List<Token>> copyArrOuter = new ArrayList<>();
-            for(List<Token> innerLst: this.arrElements) {
-                List<Token> copyArrInner = new ArrayList<>();
-                for(Token t: innerLst) {
-                    copyArrInner.add(t.copy());
-                }
-                copyArrOuter.add(copyArrInner);
+            List<Token> copyArrOuter = new ArrayList<>();
+            for(Token token: this.arrElements) {
+                copyArrOuter.add(token.copy());
             }
             return new Token(type, getValue(), start, end, boolVal, copyArrOuter);
         }
@@ -86,8 +84,19 @@ public class Token {
 
     public String getValue() {
         if (this.type == TokenType.LIST) {
-            return this.arrElements.toString();
+            if(this.arrElements != null) {
+                StringBuilder str = new StringBuilder("[");
+                for(Token token: this.arrElements) {
+                    str.append(token.getValue()).append(", ");
+                }
+                if (str.length() == 1) return str + "]";
+                str = new StringBuilder(str.substring(0, str.length() - 2));
+                str.append("]");
+                return str.toString();
+            }
+            else return this.initialArrayElems.toString();
         }
+
         if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
                 || this.type == TokenType.DOUBLE)) return "-" + value;
         if (this.type == TokenType.BOOLEAN) {
@@ -137,11 +146,19 @@ public class Token {
         this.boolVal = boolVal;
     }
 
-    public List<List<Token>> getArrElements() {
+    public List<List<Token>> getInitialArrayElems() {
+        return initialArrayElems;
+    }
+
+    public void setInitialArrayElems(List<List<Token>> initialArrayElems) {
+        this.initialArrayElems = initialArrayElems;
+    }
+
+    public List<Token> getArrElements() {
         return arrElements;
     }
 
-    public void setArrElements(List<List<Token>> arrElements) {
+    public void setArrElements(List<Token> arrElements) {
         this.arrElements = arrElements;
     }
 }

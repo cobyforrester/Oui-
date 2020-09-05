@@ -19,6 +19,17 @@ public class BooleanTokenOps {
         Error err;
         Token token = new Token(TokenType.BOOLEAN, "", start, end);
         Pair<Token, Error> fnlTokenPair = new Pair<>(token, null);
+
+        if (left.getType() == TokenType.LIST && right.getType() == TokenType.LIST) {
+            if(op.getType() != TokenType.DOUBLE_EQUALS) {
+                err = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, err);
+            }
+            fnlTokenPair.getP1().setBoolVal(left.getValue().equals(right.getValue()));
+            return fnlTokenPair;
+
+        }
+
         double ld = 0, rd = 0;
         int li = 0, ri = 0;
         boolean lInt = false, rInt = false;

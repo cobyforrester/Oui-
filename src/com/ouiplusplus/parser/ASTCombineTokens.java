@@ -61,8 +61,8 @@ public class ASTCombineTokens {
             }
             if (op.getType() == TokenType.PLUS) {
                 Token rtnTok = new Token(TokenType.LIST, "[]", start, end);
-                List<List<Token>> lst = right.getArrElements();
-                lst.addAll(left.getArrElements());
+                List<Token> lst = left.getArrElements();
+                lst.addAll(right.getArrElements());
                 rtnTok.setArrElements(lst);
                 return new Pair<>(rtnTok, null);
             }

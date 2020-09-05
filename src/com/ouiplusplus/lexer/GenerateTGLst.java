@@ -388,7 +388,7 @@ public class GenerateTGLst {
                     err = new UnexpectedToken(lst.get(index).getStart(),
                             lst.get(index).getEnd(), lst.get(index).getValue());
                     if (st.size() != 0) return new Trio<>(null, null, err);
-                    Pair<Token, Error> arrPair = makeArrayToken(arrTokens);
+                    Pair<Token, Error> arrPair = makeArrayToken(arrTokens, vars, functions);
                     if (arrPair.getP2() != null) return new Trio<>(null, null, arrPair.getP2());
                     fnl.add(arrPair.getP1());
                 } else if (lst.get(index).getType() != TokenType.SEMICOLON) fnl.add(lst.get(index));
@@ -401,14 +401,28 @@ public class GenerateTGLst {
         return new Trio<>(fnl, index, null); //plus 1 because of semicolon or newline
     }
 
-    public static Pair<Token, Error> makeArrayToken(List<Token> tokens) {
+    public static Pair<Token, Error> makeArrayToken(List<Token> tokens, List<String> vars,
+                                                    List<String> functions) {
         // assuming input is relatively valid
         Position start = tokens.get(0).getStart();
         Position end = tokens.get(tokens.size() - 1).getEnd();
         List<Token> elem = new ArrayList<>();
         List<List<Token>> arrElems = new ArrayList<>();
         for (int i = 1; i < tokens.size(); i++) {
-            if (tokens.get(i).getType() == TokenType.COMMA
+            if (tokens.get(i).getType() == TokenType.WORD) {
+                if (vars.contains(tokens.get(i).getValue())) {
+                    Token tmp = new Token(TokenType.VAR, tokens.get(i).getValue(),
+                            tokens.get(i).getStart(), tokens.get(i).getEnd());
+                    tmp.setNeg(tokens.get(i).isNeg());
+                    elem.add(tmp);
+                } else if (functions.contains(tokens.get(i).getValue())) {
+                    // DO THIS LATER and increment index everytime
+                } else {
+                    Error err = new UndeclaredVariableReference(tokens.get(i).getStart(),
+                            tokens.get(i).getEnd(), tokens.get(i).getValue());
+                    return new Pair<>(null, err);
+                }
+            } else if (tokens.get(i).getType() == TokenType.COMMA
                     || tokens.get(i).getType() == TokenType.RBRACKET) {
                 arrElems.add(elem);
                 elem = new ArrayList<>();
@@ -435,7 +449,7 @@ public class GenerateTGLst {
                 Error err = new UnexpectedToken(tokens.get(i).getStart(),
                         tokens.get(i).getEnd(), tokens.get(i).getValue());
                 if (st.size() != 0) return new Pair<>(null, err);
-                Pair<Token, Error> arrPair = makeArrayToken(newArrTokens);
+                Pair<Token, Error> arrPair = makeArrayToken(newArrTokens, vars, functions);
                 if (arrPair.getP2() != null) return new Pair<>(null, arrPair.getP2());
                 elem.add(arrPair.getP1());
             } else {
@@ -444,7 +458,7 @@ public class GenerateTGLst {
         }
 
         Token token = new Token(TokenType.LIST, "[]", start, end);
-        token.setArrElements(arrElems);
+        token.setInitialArrayElems(arrElems);
         return new Pair<>(token, null);
     }
 }

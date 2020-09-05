@@ -4,12 +4,7 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-
-
-import java.util.List;
+import java.util.*;
 
 public class ASTExpression {
     /* DETAILS
@@ -62,11 +57,18 @@ public class ASTExpression {
 
     public Pair<Token, Error> process(List<Token> tokens) {
         Error err;
+
+        // processes array elements into tokens, ie initializes arreyElems
+        Error arr = processArrays(tokens);
+        if (arr != null) return new Pair<>(null, arr);
+
         // checks if boolean
         if (isBoolTok(tokens)) {
             ASTBoolean astBool = new ASTBoolean(this, this.tgparser);
             return astBool.process(tokens);
         }
+
+
         if (!tokens.isEmpty()) {
             this.start = tokens.get(0).getStart();
             this.end = tokens.get(tokens.size() - 1).getEnd();
@@ -354,6 +356,22 @@ public class ASTExpression {
         return false;
     }
 
+    public Error processArrays(List<Token> lst) {
+        for(Token t: lst) {
+            if (t.getType() == TokenType.LIST && t.getArrElements() == null) {
+                List<Token> newElems = new ArrayList<>();
+                for(List<Token> elem: t.getInitialArrayElems()) {
+                    if(elem.size() != 0) {
+                        Pair<Token, Error> pair = this.process(elem);
+                        if (pair.getP2() != null) return pair.getP2();
+                        newElems.add(pair.getP1());
+                    }
+                }
+                t.setArrElements(newElems);
+            }
+        }
+        return null;
+    }
     // ################### END HELPER METHODS #####################
 
 
