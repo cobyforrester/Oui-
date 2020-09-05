@@ -64,7 +64,7 @@ public class ValidateLexTokens {
                     }
                 }
             } else if (currTT == TokenType.MULT || currTT == TokenType.DIV
-                    || currTT == TokenType.MODULO || currTT == TokenType.CARROT ) {
+                    || currTT == TokenType.MODULO || currTT == TokenType.CARROT) {
                 if (i == 0 || i == tokens.size() - 1) return err;
                 else {
                     TokenType prev = tokens.get(i - 1).getType();
@@ -91,6 +91,17 @@ public class ValidateLexTokens {
                         return err;
                     }
                 }
+            } else if (currTT == TokenType.COMMA) {
+                if (i == 0 || i == tokens.size() - 1) return err;
+                TokenType prev = tokens.get(i - 1).getType();
+                TokenType next = tokens.get(i + 1).getType();
+                if (isInLst(prev, ba.getBeforeCOMMAAdd())
+                        && isInLst(next, ba.getAfterCOMMAAdd())) {
+                    lst.add(tokens.get(i));
+                } else {
+                    return err;
+                }
+
             } else if (currTT == TokenType.BOOLEAN) {
                 if (i == 0) return err;
                 TokenType prev = tokens.get(i - 1).getType();

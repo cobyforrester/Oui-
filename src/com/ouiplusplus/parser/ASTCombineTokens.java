@@ -8,6 +8,7 @@ import com.ouiplusplus.lexer.Token;
 import com.ouiplusplus.lexer.TokenType;
 
 import java.lang.Math;
+import java.util.List;
 
 public class ASTCombineTokens {
 
@@ -44,8 +45,30 @@ public class ASTCombineTokens {
             }
         }
 
+        if (left.getType() == TokenType.LIST || right.getType() == TokenType.LIST) {
+            // IMPLEMENT == IN THE FUTURE
+            if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
+                Error invOper = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, invOper);
+            }
+            if (left.isNeg() || right.isNeg()) {
+                Error invOper = new InvalidOperation(start, end, "-");
+                return new Pair<>(null, invOper);
+            }
+            if (op.getType() != TokenType.PLUS) {
+                Error invOper = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, invOper);
+            }
+            if (op.getType() == TokenType.PLUS) {
+                Token rtnTok = new Token(TokenType.LIST, "[]", start, end);
+                List<List<Token>> lst = right.getArrElements();
+                lst.addAll(left.getArrElements());
+                rtnTok.setArrElements(lst);
+                return new Pair<>(rtnTok, null);
+            }
 
-        if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
+
+        } else if (left.getType() == TokenType.STRING || right.getType() == TokenType.STRING) {
             Token rtnTkn = new Token(TokenType.STRING, "", start, end);
             if (op.getType() == TokenType.PLUS) {
                 rtnTkn.setValue(left.getValue() + right.getValue());

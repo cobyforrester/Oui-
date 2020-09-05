@@ -10,8 +10,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforePLUSAdd = {
             TokenType.INT, TokenType.DOUBLE, TokenType.STRING,
             TokenType.RPAREN,  TokenType.WORD, TokenType.EQUALS,
-            TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
-
+            TokenType.RBRACKET,
     };
     final private TokenType[] beforePLUSErr = {
             TokenType.NULL, TokenType.BOOLEAN, TokenType.SEMICOLON,
@@ -28,8 +27,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeMINUSAdd = {
              TokenType.INT, TokenType.DOUBLE,
             TokenType.RPAREN,  TokenType.WORD,
-
-
+            TokenType.RBRACKET,
     };
     final private TokenType[] beforeMINUSErr = {
             TokenType.NULL, TokenType.BOOLEAN, TokenType.SEMICOLON,
@@ -63,7 +61,8 @@ public class BeforeAfterLsts {
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.WORD, TokenType.EQUALS,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
-            TokenType.MODULO, TokenType.CARROT,
+            TokenType.MODULO, TokenType.CARROT, TokenType.COMMA,
+            TokenType.LBRACKET,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -75,7 +74,7 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.NEWLINE, TokenType.RCBRACE,
-            TokenType.MODULO, TokenType.CARROT,
+            TokenType.MODULO, TokenType.CARROT, TokenType.COMMA,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -107,6 +106,21 @@ public class BeforeAfterLsts {
             TokenType.RCBRACE, TokenType.HASH,
     };
 
+    // ========================= COMMA ===============================
+    final private TokenType[] beforeCOMMAAdd = {
+            TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
+            TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
+            TokenType.WORD,  TokenType.SEMICOLON,
+            TokenType.BOOLEAN, TokenType.LCBRACE,
+    };
+
+    final private TokenType[] afterCOMMAAdd = {
+            TokenType.LPAREN, TokenType.LBRACKET,
+            TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
+            TokenType.WORD, TokenType.BOOLEAN, TokenType.LCBRACE,
+            TokenType.NOT, TokenType.MINUS, TokenType.PLUS,
+    };
+
     // ========================= WORD ===============================
     final private TokenType[] beforeWORDAdd = {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE,
@@ -114,7 +128,7 @@ public class BeforeAfterLsts {
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
-            TokenType.MODULO, TokenType.CARROT,
+            TokenType.MODULO, TokenType.CARROT, TokenType.COMMA,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -124,12 +138,12 @@ public class BeforeAfterLsts {
 
     final private TokenType[] afterWORDAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.LPAREN,
-            TokenType.LBRACKET, TokenType.LCBRACE, TokenType.SEMICOLON,
+            TokenType.LCBRACE, TokenType.SEMICOLON,
             TokenType.WORD, TokenType.NEWLINE, TokenType.EQUALS,
             TokenType.MULT, TokenType.DIV, TokenType.PLUS,
             TokenType.MINUS, TokenType.RCBRACE,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
-            TokenType.MODULO, TokenType.CARROT,
+            TokenType.MODULO, TokenType.CARROT, TokenType.COMMA,
 
 
             //BOOLEAN COMP OPERATORS
@@ -144,6 +158,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.LBRACKET, TokenType.LCBRACE, TokenType.MULT,
             TokenType.PLUS, TokenType.WORD, TokenType.EQUALS,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
+            TokenType.COMMA,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -154,7 +169,7 @@ public class BeforeAfterLsts {
     final private TokenType[] afterSTRINGAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.SEMICOLON,
             TokenType.MULT, TokenType.PLUS, TokenType.NEWLINE,
-            TokenType.RCBRACE,
+            TokenType.RCBRACE, TokenType.COMMA,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -195,6 +210,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeNOTAdd = {
             TokenType.LPAREN, TokenType.EQUALS,
             TokenType.AND, TokenType.OR,
+            TokenType.LBRACKET,
     };
 
     final private TokenType[] afterNOTAdd = {
@@ -206,7 +222,8 @@ public class BeforeAfterLsts {
 
     // ========================= BOOLEAN ===============================
     final private TokenType[] beforeBOOLEANAdd = {
-            TokenType.LPAREN, TokenType.EQUALS,
+            TokenType.LPAREN, TokenType.EQUALS, TokenType.COMMA,
+            TokenType.LBRACKET,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -216,6 +233,7 @@ public class BeforeAfterLsts {
 
     final private TokenType[] afterBOOLEANAdd = {
             TokenType.NEWLINE, TokenType.SEMICOLON, TokenType.RPAREN,
+            TokenType.COMMA, TokenType.RBRACKET,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -332,5 +350,13 @@ public class BeforeAfterLsts {
 
     public TokenType[] getAfterBOOLEANAdd() {
         return afterBOOLEANAdd;
+    }
+
+    public TokenType[] getBeforeCOMMAAdd() {
+        return beforeCOMMAAdd;
+    }
+
+    public TokenType[] getAfterCOMMAAdd() {
+        return afterCOMMAAdd;
     }
 }

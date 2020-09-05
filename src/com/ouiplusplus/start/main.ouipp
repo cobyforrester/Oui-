@@ -1,12 +1,11 @@
-imprimer('#########################')
+#imprimer('#########################')
 
 x = 10
 
-if (! 'str' == 'str') {
-    print('in if')
-} autre si (1==1) {
-    print('here')
-}
+# x = ['true', -10, +10, x, [10, 100, [10]]] + [10] causing error
+x = [true] + ["yo"]
+print(x)
+
 
 ###
 n = 100

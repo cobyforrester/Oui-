@@ -284,7 +284,7 @@ public class GenerateTGLst {
 
                     // IF NO ERRORS ADD TG AND VARIABLE NAME, SET i
                     TokenGroup tg = new TokenGroup(TokenGroupType.VAR_ASSIGN, curr);
-                    if(isPlusEq || isMinusEq) {
+                    if (isPlusEq || isMinusEq) {
                         if (!vars.contains(currVal)) {
                             err = new UndeclaredVariableReference(curr.getStart(), curr.getEnd(), currVal);
                             return new Pair<>(null, err);
@@ -301,11 +301,11 @@ public class GenerateTGLst {
                         }
                         // x += 10 => x = x + (10)
                         tkns.getT1().add(0, new Token(TokenType.LPAREN, "(",
-                                        lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
+                                lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
 
                         tkns.getT1().add(tkns.getT1().size(),
                                 new Token(TokenType.RPAREN,
-                                ")", lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
+                                        ")", lst.get(i + 1).getStart(), lst.get(i + 1).getEnd()));
 
                         tkns.getT1().add(0,
                                 new Token(tt, deets, lst.get(i + 1).getStart(),
@@ -364,15 +364,88 @@ public class GenerateTGLst {
                             lst.get(index).getEnd(), lst.get(index).getValue());
                     return new Trio<>(null, null, err);
                 }
-            } else {
-                if (lst.get(index).getType() != TokenType.SEMICOLON) fnl.add(lst.get(index));
-            }
+            } else if (lst.get(index).getType() == TokenType.LBRACKET) {
+                    // FOR ADDING AN ARRAY AND TURNING IT INTO A TOKEN
+                    List<Token> arrTokens = new ArrayList<>();
+                    Stack<Token> st = new Stack<>();
+                    st.push(lst.get(index));
+                    arrTokens.add(lst.get(index));
+                    index++;
+                    while (index < lst.size() && st.size() != 0) {
+                        if (lst.get(index).getType() == TokenType.NEWLINE) {
+                            err = new UnexpectedToken(lst.get(index).getStart(),
+                                    lst.get(index).getEnd(), lst.get(index).getValue());
+                            return new Trio<>(null, null, err);
+                        } else {
+                            if (lst.get(index).getType() == TokenType.LBRACKET)
+                                st.push(lst.get(index));
+                            else if (lst.get(index).getType() == TokenType.RBRACKET)
+                                st.pop();
+                            arrTokens.add(lst.get(index));
+                        }
+                        if (st.size() != 0) index++;
+                    }
+                    err = new UnexpectedToken(lst.get(index).getStart(),
+                            lst.get(index).getEnd(), lst.get(index).getValue());
+                    if (st.size() != 0) return new Trio<>(null, null, err);
+                    Pair<Token, Error> arrPair = makeArrayToken(arrTokens);
+                    if (arrPair.getP2() != null) return new Trio<>(null, null, arrPair.getP2());
+                    fnl.add(arrPair.getP1());
+                } else if (lst.get(index).getType() != TokenType.SEMICOLON) fnl.add(lst.get(index));
+
             index++;
         }
 
         Error parenErr = ValidateLexTokens.validateParentheses(fnl);
         if (parenErr != null) return new Trio<>(null, null, parenErr);
         return new Trio<>(fnl, index, null); //plus 1 because of semicolon or newline
+    }
+
+    public static Pair<Token, Error> makeArrayToken(List<Token> tokens) {
+        // assuming input is relatively valid
+        Position start = tokens.get(0).getStart();
+        Position end = tokens.get(tokens.size() - 1).getEnd();
+        List<Token> elem = new ArrayList<>();
+        List<List<Token>> arrElems = new ArrayList<>();
+        for (int i = 1; i < tokens.size(); i++) {
+            if (tokens.get(i).getType() == TokenType.COMMA
+                    || tokens.get(i).getType() == TokenType.RBRACKET) {
+                arrElems.add(elem);
+                elem = new ArrayList<>();
+            } else if (tokens.get(i).getType() == TokenType.LBRACKET) {
+                List<Token> newArrTokens = new ArrayList<>();
+                Stack<Token> st = new Stack<>();
+                st.push(tokens.get(i));
+                newArrTokens.add(tokens.get(i));
+                i++;
+                while (i < tokens.size() && st.size() != 0) {
+                    if (tokens.get(i).getType() == TokenType.NEWLINE) {
+                        Error err = new UnexpectedToken(tokens.get(i).getStart(),
+                                tokens.get(i).getEnd(), tokens.get(i).getValue());
+                        return new Pair<>(null, err);
+                    } else {
+                        if (tokens.get(i).getType() == TokenType.LBRACKET)
+                            st.push(tokens.get(i));
+                        else if (tokens.get(i).getType() == TokenType.RBRACKET)
+                            st.pop();
+                        newArrTokens.add(tokens.get(i));
+                    }
+                    if (st.size() != 0) i++;
+                }
+                Error err = new UnexpectedToken(tokens.get(i).getStart(),
+                        tokens.get(i).getEnd(), tokens.get(i).getValue());
+                if (st.size() != 0) return new Pair<>(null, err);
+                Pair<Token, Error> arrPair = makeArrayToken(newArrTokens);
+                if (arrPair.getP2() != null) return new Pair<>(null, arrPair.getP2());
+                elem.add(arrPair.getP1());
+            } else {
+                elem.add(tokens.get(i));
+            }
+        }
+
+        Token token = new Token(TokenType.LIST, "[]", start, end);
+        token.setArrElements(arrElems);
+        return new Pair<>(token, null);
     }
 }
 

@@ -51,7 +51,7 @@ public class ASTExpression {
         TokenType tt = token.getType();
         this.size++;
         return switch (tt) {
-            case STRING, DOUBLE, INT -> casePrimitiveType(token);
+            case STRING, DOUBLE, INT, LIST -> casePrimitiveType(token);
             case MULT, DIV, MODULO, CARROT -> caseMULTDIV(token);
             case PLUS, MINUS -> casePLUSMINUS(token);
             case LPAREN -> caseLPAREN(token);
@@ -309,7 +309,12 @@ public class ASTExpression {
             tmp = this.dfsResolveVal(node.left);
             err = tmp.getP2();
             if(err != null) return new Pair<>(null, err);
-            if(node.token.isNeg()) tmp.getP1().setNeg(!tmp.getP1().isNeg());
+            if(node.token.isNeg()) {
+                if (tmp.getP1().getType() == TokenType.LIST) {
+                    err = new InvalidOperation(node.token.getStart(), tmp.getP1().getEnd(), "-");
+                }
+                tmp.getP1().setNeg(!tmp.getP1().isNeg());
+            }
         }
         else return new Pair<>(node.token, null);
         return tmp;

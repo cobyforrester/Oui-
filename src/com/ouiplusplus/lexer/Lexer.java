@@ -113,6 +113,12 @@ public class Lexer {
                     case '}':
                         tokens.add(new Token(TokenType.RCBRACE, "}", p, p));
                         break;
+                    case '[':
+                        tokens.add(new Token(TokenType.LBRACKET, "[", p, p));
+                        break;
+                    case ']':
+                        tokens.add(new Token(TokenType.RBRACKET, "]", p, p));
+                        break;
 
                     //SPECIAL CHARACTERS
                     case ';':
@@ -120,6 +126,9 @@ public class Lexer {
                         break;
                     case '\n':
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
+                        break;
+                    case ',':
+                        tokens.add(new Token(TokenType.COMMA, ",", p, p));
                         break;
                     case '#':
                         String multiLine = "#";
@@ -156,7 +165,6 @@ public class Lexer {
                             tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                             break;
                         }
-
                         while (this.currChar != '\n' && this.currChar != 0) this.advance();
                         if (this.currChar != 0) {
                             p = this.pos.copy();

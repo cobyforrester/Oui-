@@ -7,6 +7,7 @@ public enum TokenType {
     DOUBLE,
     BOOLEAN,
     STRING,
+    LIST,
 
     // OPERATIONS AND RELATED TO MATH
     PLUS,
