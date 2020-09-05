@@ -9,7 +9,8 @@ import java.util.*;
 
 public class GenerateTGLst {
     public static Pair<List<TokenGroup>, Error> generateTokenGroupLst(
-            List<Token> lst, List<String> vars, List<String> functions) {
+            List<Token> lst, List<String> vars, Map<String, List<String>> functions) {
+
         /*
         Generates list of TokenGroups
         Currently works for:
@@ -21,7 +22,7 @@ public class GenerateTGLst {
             Token curr = lst.get(i);
             String currVal = curr.getValue().toLowerCase();
             if (curr.getType() == TokenType.WORD) {
-                if (functions.contains(currVal)) {
+                if (functions.containsKey(currVal)) {
                     // IMPLEMENT LATER
                 } else if (currVal.equals("def")) {
                     // VARIABLES
@@ -37,11 +38,11 @@ public class GenerateTGLst {
                     err = new InvalidFunctionDeclaration(
                             lst.get(i + 1).getStart(), lst.get(i + 1).getEnd(), currVal);
 
-                    TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_DECLARE, lst.get(i+1));
-                    functions.add(lst.get(i + 1).getValue());
+                    TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_DECLARE, lst.get(i + 1));
+                    String funcName = lst.get(i + 1).getValue();
                     i = i + 3;
-                    Map<String,Token> params = new HashMap<>();
-                    while(lst.get(i).getType() != TokenType.RPAREN) {
+                    Map<String, TokenGroup> params = new HashMap<>();
+                    while (lst.get(i).getType() != TokenType.RPAREN) {
                         if (lst.get(i).getType() != TokenType.COMMA
                                 && lst.get(i).getType() != TokenType.WORD) {
                             return new Pair<>(null, err);
@@ -51,8 +52,9 @@ public class GenerateTGLst {
                             return new Pair<>(null, err);
                         }
                         if (lst.get(i).getType() == TokenType.WORD) {
-                            if (functions.contains(lst.get(i).getValue())
-                                    || params.containsKey(lst.get(i).getValue())) {
+                            if (functions.containsKey(lst.get(i).getValue())
+                                    || params.containsKey(lst.get(i).getValue())
+                                    || lst.get(i).getValue().equals(funcName)) {
                                 err = new NameAlreadyInUse(lst.get(i).getStart(),
                                         lst.get(i).getEnd(), lst.get(i).getValue());
                                 return new Pair<>(null, err);
@@ -62,8 +64,13 @@ public class GenerateTGLst {
                         i++;
                     }
                     i++;
-
                     tg.setFuncVariables(params);
+                    List<String> funcVars = new ArrayList<>();
+                    for (Map.Entry<String, TokenGroup> mapElement : params.entrySet()) {
+                        String k = (mapElement.getKey());
+                        funcVars.add(k);
+                    }
+                    functions.put(funcName, funcVars);
 
 
                     while (lst.get(i).getType() != TokenType.LCBRACE) {
@@ -90,7 +97,7 @@ public class GenerateTGLst {
                         i++;
                     }
                     Pair<List<TokenGroup>, Error> rec = generateTokenGroupLst(
-                            funcBodyTokens, vars, functions);
+                            funcBodyTokens, functions.get(funcName), functions);
                     if (rec.getP2() != null) return rec;
                     tg.setTokenGroups(rec.getP1());
 
@@ -307,6 +314,26 @@ public class GenerateTGLst {
                     newLst.add(tg);
 
 
+                } else if (currVal.equals("return") || currVal.equals("revenir")) {
+                    // GENERATE TOKENS LIST
+                    if (i + 1 >= lst.size()) {
+                        err = new InvalidPrintStatement(curr.getStart(), lst.get(lst.size() - 1).getEnd(), currVal);
+                        return new Pair<>(null, err);
+                    }
+                    Trio<List<Token>, Integer, Error> tkns =
+                            generateTokensLst(i + 1, lst, vars, functions);
+                    Error tknsErr = tkns.getT3();
+                    if (tknsErr != null) return new Pair<>(null, tknsErr);
+
+
+                    i = tkns.getT2();
+
+                    // ADD TG
+                    TokenGroup tg = new TokenGroup(TokenGroupType.RETURN, curr);
+                    tg.setTokens(tkns.getT1());
+                    newLst.add(tg);
+
+
                 } else if (currVal.equals("print") || currVal.equals("imprimer")) {
                     // GENERATE TOKENS LIST
                     if (i + 2 >= lst.size()) {
@@ -415,7 +442,7 @@ public class GenerateTGLst {
     private static Trio<List<Token>, Integer, Error> generateTokensLst(int index,
                                                                        List<Token> lst,
                                                                        List<String> vars,
-                                                                       List<String> functions) {
+                                                                       Map<String, List<String>> functions) {
         /*
         print(10 == 10) => (10 == 10), extracts tokens list for prints
         and var declares
@@ -435,7 +462,7 @@ public class GenerateTGLst {
                             lst.get(index).getStart(), lst.get(index).getEnd());
                     tmp.setNeg(lst.get(index).isNeg());
                     fnl.add(tmp);
-                } else if (functions.contains(lst.get(index).getValue())) {
+                } else if (functions.containsKey(lst.get(index).getValue())) {
                     // DO THIS LATER and increment index everytime
                 } else {
                     err = new UndeclaredVariableReference(lst.get(index).getStart(),
@@ -480,7 +507,7 @@ public class GenerateTGLst {
     }
 
     public static Pair<Token, Error> makeArrayToken(List<Token> tokens, List<String> vars,
-                                                    List<String> functions) {
+                                                    Map<String, List<String>> functions) {
         // assuming input is relatively valid
         Position start = tokens.get(0).getStart();
         Position end = tokens.get(tokens.size() - 1).getEnd();
@@ -493,7 +520,7 @@ public class GenerateTGLst {
                             tokens.get(i).getStart(), tokens.get(i).getEnd());
                     tmp.setNeg(tokens.get(i).isNeg());
                     elem.add(tmp);
-                } else if (functions.contains(tokens.get(i).getValue())) {
+                } else if (functions.containsKey(tokens.get(i).getValue())) {
                     // DO THIS LATER and increment index everytime
                 } else {
                     Error err = new UndeclaredVariableReference(tokens.get(i).getStart(),

@@ -7,6 +7,7 @@ public enum TokenGroupType {
     FUNC_CALL,
     VAR_ASSIGN,
     PRINT,
+    RETURN,
 
     //CONDITIONALS
     IF,

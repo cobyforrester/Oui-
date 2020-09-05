@@ -162,6 +162,12 @@ public class ASTExpression {
             this.root = new TreeNode(token);
             return null;
         }
+        if (!isOp(this.root.token.getType())
+                && this.root.token.getType() != TokenType.LPAREN
+                && this.root.token.getType() != TokenType.CLOSEDPAREN) {
+            return new UnexpectedToken(this.root.token.getStart(),
+                    token.getEnd(), token.getValue());
+        }
 
         //setting currNode
         TreeNode currNode;
@@ -177,6 +183,9 @@ public class ASTExpression {
         //finding entry point and adding in value
         // Traverses down right side of tree until null right leaf found
         while (true) {
+            if (currNode == null) {
+                return new UnexpectedToken(token.getStart(), token.getEnd(), token.getValue());
+            }
             if (currNode.right == null && isOp(currNode.token.getType())) {
                 currNode.right = new TreeNode(token);
                 return null;

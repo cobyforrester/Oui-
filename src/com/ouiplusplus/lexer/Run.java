@@ -4,7 +4,9 @@ import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.parser.TGParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Run {
     public Run() {
@@ -22,7 +24,7 @@ public class Run {
         if(error != null) return new Pair<>(null, error);
         // GROUPING TOKENS
         List<String> vars = new ArrayList<>();
-        List<String> functions = new ArrayList<>();
+        Map<String, List<String>> functions = new HashMap<>();
         Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenGroupLst
                 (lexerPair.getP1(), vars, functions);
         error = tgPair.getP2();

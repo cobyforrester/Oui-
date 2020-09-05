@@ -2,13 +2,20 @@
 
 x = 10
 
-x = 10 ^ 5.1
+x = (10 ^ 5.1 + (x + x))
 
 print([x * 10]+[15])
 
-def hello(what, yes, yes) {
-    h = 10
-    print(h)
+if (10==10) {
+
+} else if (10) {
+
+}
+
+def hello(yes, yo) {
+    if(10) {
+        return yes + 10 - 11
+    }
 }
 
 ###
