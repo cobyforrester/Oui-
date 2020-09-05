@@ -2,9 +2,14 @@
 
 x = 10
 
-x = [x]
-print(![10]==[10])
+x = 10 ^ 5.1
 
+print([x * 10]+[15])
+
+def hello(what, yes, yes) {
+    h = 10
+    print(h)
+}
 
 ###
 n = 100
@@ -23,8 +28,6 @@ s = ''
     i+=1
 }
 print(s)
-x = 5 ^ 64.01
-print(x)
 ###
 
 imprimer('#########################')

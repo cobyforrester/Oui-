@@ -25,19 +25,13 @@ public class ASTCombineTokens {
                 double rightDouble = Double.parseDouble(right.getValue());
                 double leftDouble = Double.parseDouble(left.getValue());
                 double result = Math.pow(leftDouble, rightDouble);
+                long ifInt = (long) result;
                 if (left.getType() == TokenType.INT && right.getType() == TokenType.INT) {
-                    Token token = new Token(TokenType.INT, "", start, end);
-                    String val = String.format("%.12f", result);
-                    String toInt = "";
-                    for (int i = 0; i < val.length() && val.charAt(i) != '.'; i++) {
-                        toInt += Character.toString(val.charAt(i));
-                    }
-                    token.setValue(toInt);
+                    Token token = new Token(TokenType.INT, Long.toString(ifInt), start, end);
                     return new Pair<>(token, null);
                 }
                 // For double
-                String val = String.format("%.12f", result);
-                Token token = new Token(TokenType.DOUBLE, val, start, end);
+                Token token = new Token(TokenType.DOUBLE, Double.toString(result), start, end);
                 return new Pair<>(token, null);
             } catch (Exception e) {
                 Error overflow = new OverFlow(start, end, "");

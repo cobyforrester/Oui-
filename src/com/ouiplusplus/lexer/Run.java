@@ -27,6 +27,7 @@ public class Run {
                 (lexerPair.getP1(), vars, functions);
         error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
+        System.out.println(tgPair.getP1());
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN
         TGParser tgparser = new TGParser();
         return tgparser.process(tgPair.getP1());
