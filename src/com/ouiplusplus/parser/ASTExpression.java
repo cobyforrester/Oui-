@@ -395,8 +395,8 @@ public class ASTExpression {
                 Map<String, Token> tmpVars = new HashMap<>();
                 List<String> order = new ArrayList<>();
                 tg.getFuncVariables().forEach((k, v) -> order.add(k));
-                System.out.println(t.getInitialElems().size());
-                if (tmpVars.size() != t.getInitialElems().size())
+                System.out.println(order);
+                if (order.size() != t.getInitialElems().size())
                     return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
                 for(int j = 0; j < t.getInitialElems().size(); j++) {
                     List<Token> l = t.getInitialElems().get(j);

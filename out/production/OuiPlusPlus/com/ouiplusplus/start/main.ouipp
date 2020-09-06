@@ -3,12 +3,12 @@ imprimer('#########################')
 x = 100
 
 
-def hello(y, c, x){
+def hello(z, a){
 
     print()
 }
 
-hello()
+hello(10, 11, 'true')
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');
 
 
