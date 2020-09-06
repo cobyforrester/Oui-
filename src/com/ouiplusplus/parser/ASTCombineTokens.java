@@ -14,6 +14,11 @@ public class ASTCombineTokens {
 
     public static Pair<Token, Error> combine(Token left, Token op, Token right, Position start, Position end) {
 
+        if (left.getType() == TokenType.NULL || right.getType() == TokenType.NULL) {
+            Error nullOp = new NullOperation(start, end, op.getValue());
+            return new Pair<>(null, nullOp);
+        }
+
         if (op.getType() == TokenType.CARROT) {
             if ((left.getType() != TokenType.DOUBLE
                     && left.getType() != TokenType.INT)
@@ -55,9 +60,9 @@ public class ASTCombineTokens {
             }
             if (op.getType() == TokenType.PLUS) {
                 Token rtnTok = new Token(TokenType.LIST, "[]", start, end);
-                List<Token> lst = left.getArrElements();
-                lst.addAll(right.getArrElements());
-                rtnTok.setArrElements(lst);
+                List<Token> lst = left.getElements();
+                lst.addAll(right.getElements());
+                rtnTok.setElements(lst);
                 return new Pair<>(rtnTok, null);
             }
 

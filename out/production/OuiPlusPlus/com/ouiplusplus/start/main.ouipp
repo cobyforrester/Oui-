@@ -1,41 +1,17 @@
-#imprimer('#########################')
+imprimer('#########################')
 
-x = 10
+x = 100
 
-x = (10 ^ 5.1 + (x + x))
 
-print([x * 10]+[15])
+def hello(y, c, x){
 
-if (10==10) {
-
-} else if (10) {
-
+    print()
 }
 
-def hello(yes, yo) {
-    if(10) {
-        return yes + 10 - 11
-    }
-}
+hello()
+#hello(hello(10, hello([10, 11, hello()])), 10,'yes');
 
-###
-n = 100
-i = 1
-s = ''
- while (i < n + 1) {
-    if (i % 3 == 0 && i % 5 == 0) {
-        s += 'FizzBuzz\n'
-    } elif (i % 3 == 0) {
-        s+= 'Fizz\n'
-    } elif (i % 5 == 0) {
-        s += 'Buzz\n'
-    } else {
-        s+= i + '\n'
-    }
-    i+=1
-}
-print(s)
-###
+
 
 imprimer('#########################')
 

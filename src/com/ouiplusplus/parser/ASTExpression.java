@@ -46,7 +46,7 @@ public class ASTExpression {
         TokenType tt = token.getType();
         this.size++;
         return switch (tt) {
-            case STRING, DOUBLE, INT, LIST -> casePrimitiveType(token);
+            case STRING, DOUBLE, INT, LIST, NULL -> casePrimitiveType(token);
             case MULT, DIV, MODULO, CARROT -> caseMULTDIV(token);
             case PLUS, MINUS -> casePLUSMINUS(token);
             case LPAREN -> caseLPAREN(token);
@@ -59,8 +59,11 @@ public class ASTExpression {
         Error err;
 
         // processes array elements into tokens, ie initializes arreyElems
-        Error arr = processArrays(tokens);
-        if (arr != null) return new Pair<>(null, arr);
+        err = processArrays(tokens);
+        if (err != null) return new Pair<>(null, err);
+
+        err = processFunctions(tokens);
+        if (err != null) return new Pair<>(null, err);
 
         // checks if boolean
         if (isBoolTok(tokens)) {
@@ -367,16 +370,53 @@ public class ASTExpression {
 
     public Error processArrays(List<Token> lst) {
         for(Token t: lst) {
-            if (t.getType() == TokenType.LIST && t.getArrElements() == null) {
+            if (t.getType() == TokenType.LIST && t.getElements() == null) {
                 List<Token> newElems = new ArrayList<>();
-                for(List<Token> elem: t.getInitialArrayElems()) {
+                for(List<Token> elem: t.getInitialElems()) {
                     if(elem.size() != 0) {
                         Pair<Token, Error> pair = this.process(elem);
                         if (pair.getP2() != null) return pair.getP2();
                         newElems.add(pair.getP1());
                     }
                 }
-                t.setArrElements(newElems);
+                t.setElements(newElems);
+            }
+        }
+        return null;
+    }
+    public Error processFunctions(List<Token> lst) {
+        // built in functions later!!
+        for(int i = 0; i < lst.size(); i++) {
+            Token t = lst.get(i);
+            if (t.getType() == TokenType.FUNCCALL
+                    && this.tgparser.getFunctions().containsKey(t.getValue())) {
+                TokenGroup tg = this.tgparser.getFunctions().get(t.getValue());
+                Map<String, Token> vars = this.tgparser.getVars();
+                Map<String, Token> tmpVars = new HashMap<>();
+                List<String> order = new ArrayList<>();
+                tg.getFuncVariables().forEach((k, v) -> order.add(k));
+                System.out.println(t.getInitialElems().size());
+                if (tmpVars.size() != t.getInitialElems().size())
+                    return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+                for(int j = 0; j < t.getInitialElems().size(); j++) {
+                    List<Token> l = t.getInitialElems().get(j);
+                    if (l.size() == 0) {
+                        return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+                    }
+                    Pair<Token, Error> p = this.process(l);
+                    if (p.getP2() != null) return p.getP2();
+                    tmpVars.put(order.get(j), p.getP1());
+                }
+                this.tgparser.setVars(tmpVars);
+                Pair<Token, Error> p = this.tgparser.process(tg.getTokenGroups());
+                if (p.getP2() != null) return p.getP2();
+                if (p.getP1() != null) lst.set(i, p.getP1());
+                else {
+                    Token nul = new Token(TokenType.NULL, "NULL", t.getStart(), t.getEnd());
+                    lst.set(i, nul);
+                }
+
+                this.tgparser.setVars(vars);
             }
         }
         return null;

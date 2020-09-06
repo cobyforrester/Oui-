@@ -23,11 +23,33 @@ public class GenerateTGLst {
             String currVal = curr.getValue().toLowerCase();
             if (curr.getType() == TokenType.WORD) {
                 if (functions.containsKey(currVal)) {
-                    // IMPLEMENT LATER
+                    err = new InvalidFunctionCall(curr.getStart(),
+                            curr.getEnd(), curr.getValue());
+                    if (i + 2 >= lst.size() || lst.get(i+1).getType() != TokenType.LPAREN) {
+                        return new Pair<>(null, err);
+                    }
+
+                    Trio<List<Token>, Integer, Error> tkns =
+                            generateTokensLst(i, lst, vars, functions);
+                    Error tknsErr = tkns.getT3();
+                    if (tknsErr != null) return new Pair<>(null, tknsErr);
+
+                    // CHECK IF TOKENS LIST IS VALID
+                    if (tkns.getT1().size() != 1
+                            || tkns.getT1().get(0).getType() != TokenType.FUNCCALL) {
+                        return new Pair<>(null, err);
+                    }
+
+                    i = tkns.getT2();
+                    if (tkns.getT1().get(0).getInitialElems().size() == 1
+                            && tkns.getT1().get(0).getInitialElems().get(0).size() == 0) {
+                        tkns.getT1().get(0).setInitialElems(new ArrayList<>());
+                    }
+                    TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_CALL, tkns.getT1().get(0));
+                    newLst.add(tg);
+
                 } else if (currVal.equals("def")) {
                     // VARIABLES
-
-
                     if (i + 5 >= lst.size() ||
                             lst.get(i + 1).getType() != TokenType.WORD
                             || lst.get(i + 2).getType() != TokenType.LPAREN) {
@@ -41,7 +63,7 @@ public class GenerateTGLst {
                     TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_DECLARE, lst.get(i + 1));
                     String funcName = lst.get(i + 1).getValue();
                     i = i + 3;
-                    Map<String, TokenGroup> params = new HashMap<>();
+                    Map<String, Token> params = new HashMap<>();
                     while (lst.get(i).getType() != TokenType.RPAREN) {
                         if (lst.get(i).getType() != TokenType.COMMA
                                 && lst.get(i).getType() != TokenType.WORD) {
@@ -66,12 +88,11 @@ public class GenerateTGLst {
                     i++;
                     tg.setFuncVariables(params);
                     List<String> funcVars = new ArrayList<>();
-                    for (Map.Entry<String, TokenGroup> mapElement : params.entrySet()) {
+                    for (Map.Entry<String, Token> mapElement : params.entrySet()) {
                         String k = (mapElement.getKey());
                         funcVars.add(k);
                     }
                     functions.put(funcName, funcVars);
-
 
                     while (lst.get(i).getType() != TokenType.LCBRACE) {
                         if (lst.get(i).getType() != TokenType.NEWLINE) {
@@ -82,7 +103,6 @@ public class GenerateTGLst {
                         i++;
                     }
                     i++;
-
 
                     // create TokenGroup List
                     List<Token> funcBodyTokens = new ArrayList<>();
@@ -463,7 +483,58 @@ public class GenerateTGLst {
                     tmp.setNeg(lst.get(index).isNeg());
                     fnl.add(tmp);
                 } else if (functions.containsKey(lst.get(index).getValue())) {
-                    // DO THIS LATER and increment index everytime
+                    err = new UnexpectedToken(lst.get(index).getStart(),
+                            lst.get(index).getEnd(), lst.get(index).getValue());
+                    if (index + 2 >= lst.size()
+                            || lst.get(index + 1).getType() != TokenType.LPAREN) {
+                        return new Trio<>(null, null, err);
+                    }
+                    Token func = lst.get(index);
+                    List<List<Token>> params = new ArrayList<>();
+                    List<Token> param = new ArrayList<>();
+                    Stack<Token> st = new Stack<>();
+                    st.push(lst.get(index));
+                    index += 2;
+                    while (index < lst.size() && st.size() != 0) {
+                        if (lst.get(index).getType() == TokenType.NEWLINE) {
+                            err = new UnexpectedToken(lst.get(index).getStart(),
+                                    lst.get(index).getEnd(), lst.get(index).getValue());
+                            return new Trio<>(null, null, err);
+                        }
+                        if (lst.get(index).getType() == TokenType.LPAREN
+                                || lst.get(index).getType() == TokenType.LBRACKET
+                                || lst.get(index).getType() == TokenType.LCBRACE) {
+                            st.push(lst.get(index));
+                            param.add(lst.get(index));
+                        }  else if (lst.get(index).getType() == TokenType.RBRACKET
+                                || lst.get(index).getType() == TokenType.RCBRACE) {
+                            st.pop();
+                            param.add(lst.get(index));
+                        } else if (lst.get(index).getType() == TokenType.RPAREN) {
+                            st.pop();
+                            if (st.size() == 0) {
+                                params.add(param);
+                            } else {
+                                param.add(lst.get(index));
+                            }
+                        } else if (lst.get(index).getType() == TokenType.COMMA && st.size() == 1) {
+                            params.add(param);
+                            param = new ArrayList<>();
+                        } else {
+                            param.add(lst.get(index));
+                        }
+                        if (st.size() != 0) index++;
+                    }
+                    Token token = new Token(TokenType.FUNCCALL, func.getValue(),
+                            func.getStart(), lst.get(index).getEnd());
+                    List<List<Token>> el = new ArrayList<>();
+                    for(List<Token> l: params) {
+                        Trio<List<Token>, Integer, Error> trio = generateTokensLst(0, l, vars, functions);
+                        if (trio.getT3() != null) return trio;
+                        el.add(trio.getT1());
+                    }
+                    token.setInitialElems(el);
+                    fnl.add(token);
                 } else {
                     err = new UndeclaredVariableReference(lst.get(index).getStart(),
                             lst.get(index).getEnd(), lst.get(index).getValue());
@@ -563,7 +634,7 @@ public class GenerateTGLst {
         }
 
         Token token = new Token(TokenType.LIST, "[]", start, end);
-        token.setInitialArrayElems(arrElems);
+        token.setInitialElems(arrElems);
         return new Pair<>(token, null);
     }
 }

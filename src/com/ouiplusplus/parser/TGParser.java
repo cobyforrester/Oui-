@@ -7,6 +7,7 @@ import com.ouiplusplus.error.RequestTimedOut;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,21 +15,22 @@ import java.util.concurrent.TimeUnit;
 
 public class TGParser {
     private Map<String, Token> vars = new HashMap<>(); // [VAL_NAME : Token]
+    private Map<String, TokenGroup> functions = new HashMap<>(); // [FUNC_NAME : TokenGroup]
     private ASTExpression ast = new ASTExpression(this);
     private long startTime;
-
+    private String output;
 
     public TGParser() {
+        this.output = "";
         startTime = System.currentTimeMillis();
     }
 
-    public Pair<String, Error> process(List<TokenGroup> tgLst) {
+    public Pair<Token, Error> process(List<TokenGroup> tgLst) {
         /*
         PROCESS TokenGroup VALUES TO FIND OUTPUT WITH ASTExpression
          */
 
         // DECLARING VARS
-        StringBuilder output = new StringBuilder();
         Pair<Token, Error> val;
 
         for (int i = 0; i < tgLst.size(); i++) {
@@ -41,14 +43,29 @@ public class TGParser {
                 else end = tg.getStartTok().getEnd();
 
                 if (tg.getTokens().size() == 2) { // for ()
-                    output.append('\n');
+                    this.output += '\n';
                 } else {
                     // Generate resolved Token
                     val = this.ast.process(tg.getTokens());
                     if (val.getP2() != null) return new Pair<>(null, val.getP2());
 
-                    output.append(val.getP1().getValue()).append('\n');
+                    this.output += val.getP1().getValue() + "\n";
                 }
+            } else if (tg.getType() == TokenGroupType.RETURN) {
+                // Generate resolved Token
+                if (tg.getTokens().size() == 0) return new Pair<>(null, null);
+                val = this.ast.process(tg.getTokens());
+                if (val.getP2() != null) return new Pair<>(null, val.getP2());
+                return new Pair<>(val.getP1(), null);
+            } else if (tg.getType() == TokenGroupType.FUNC_CALL) {
+                // Generate resolved Token
+                List<Token> tmp = new ArrayList<>();
+                tmp.add(tg.getStartTok());
+                val = this.ast.process(tmp);
+                if (val.getP2() != null) return new Pair<>(null, val.getP2());
+            } else if (tg.getType() == TokenGroupType.FUNC_DECLARE) {
+                // Generate resolved Token
+                functions.put(tg.getStartTok().getValue(), tg);
             } else if (tg.getType() == TokenGroupType.VAR_ASSIGN) {
                 // Generate resolved Token
                 val = this.ast.process(tg.getTokens());
@@ -75,15 +92,13 @@ public class TGParser {
                             return new Pair<>(null, inv);
                         }
                         if (val.getP1().getBoolVal()) { // if statement true run it
-                            Pair<String, Error> rec = this.process(tgLst.get(i).getTokenGroups());
+                            Pair<Token, Error> rec = this.process(tgLst.get(i).getTokenGroups());
                             if (rec.getP2() != null) return rec;
-                            output.append(rec.getP1());
                             break;
                         }
                     } else {
-                        Pair<String, Error> rec = this.process(tgLst.get(i).getTokenGroups());
+                        Pair<Token, Error> rec = this.process(tgLst.get(i).getTokenGroups());
                         if (rec.getP2() != null) return rec;
-                        output.append(rec.getP1());
                         break;
                     }
                     i++;
@@ -107,9 +122,8 @@ public class TGParser {
                     }
 
                     if (val.getP1().getBoolVal()) { // if statement true run it
-                        Pair<String, Error> rec = this.process(tgLst.get(i).getTokenGroups());
+                        Pair<Token, Error> rec = this.process(tgLst.get(i).getTokenGroups());
                         if (rec.getP2() != null) return rec;
-                        output.append(rec.getP1());
                     } else loop = false;
 
                 }
@@ -117,12 +131,11 @@ public class TGParser {
         }
 
 
-        return new Pair<>(output.toString(), null);
+        return new Pair<>(null, null);
     }
 
-    public boolean isTimedOut () {
-        if (System.currentTimeMillis() - this.startTime > 5000) return true;
-        return false;
+    public boolean isTimedOut() {
+        return System.currentTimeMillis() - this.startTime > 5000;
     }
 
     //============================== GETTERS =============================
@@ -137,5 +150,21 @@ public class TGParser {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public String getOutput() {
+        return output;
+    }
+
+    public Map<String, TokenGroup> getFunctions() {
+        return functions;
+    }
+
+    public void setVars(Map<String, Token> vars) {
+        this.vars = vars;
+    }
+
+    public void setFunctions(Map<String, TokenGroup> functions) {
+        this.functions = functions;
     }
 }
