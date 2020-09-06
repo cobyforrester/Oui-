@@ -144,6 +144,8 @@ public class BeforeAfterLsts {
             TokenType.MINUS, TokenType.RCBRACE,
             TokenType.MINUSEQUALS, TokenType.PLUSEQUALS,
             TokenType.MODULO, TokenType.CARROT, TokenType.COMMA,
+            TokenType.INT, TokenType.BOOLEAN, TokenType.DOUBLE,
+            TokenType.STRING, TokenType.NULL,
 
 
             //BOOLEAN COMP OPERATORS

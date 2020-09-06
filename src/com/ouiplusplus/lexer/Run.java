@@ -30,7 +30,6 @@ public class Run {
         error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN
-        //System.out.println(tgPair.getP1());
         TGParser tgparser = new TGParser();
         Pair<Token, Error> parsPair =  tgparser.process(tgPair.getP1());
         if (parsPair.getP2() != null) return new Pair<>(null, parsPair.getP2());

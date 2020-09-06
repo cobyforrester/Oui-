@@ -63,7 +63,7 @@ public class GenerateTGLst {
                     TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_DECLARE, lst.get(i + 1));
                     String funcName = lst.get(i + 1).getValue();
                     i = i + 3;
-                    Map<String, Token> params = new HashMap<>();
+                    LinkedHashMap<String, Token> params = new LinkedHashMap<>();
                     while (lst.get(i).getType() != TokenType.RPAREN) {
                         if (lst.get(i).getType() != TokenType.COMMA
                                 && lst.get(i).getType() != TokenType.WORD) {
@@ -592,7 +592,59 @@ public class GenerateTGLst {
                     tmp.setNeg(tokens.get(i).isNeg());
                     elem.add(tmp);
                 } else if (functions.containsKey(tokens.get(i).getValue())) {
-                    // DO THIS LATER and increment index everytime
+                    Error err;
+                    err = new UnexpectedToken(tokens.get(i).getStart(),
+                            tokens.get(i).getEnd(), tokens.get(i).getValue());
+                    if (i + 2 >= tokens.size()
+                            || tokens.get(i+1).getType() != TokenType.LPAREN) {
+                        return new Pair<>(null, err);
+                    }
+                    Token func = tokens.get(i);
+                    List<List<Token>> params = new ArrayList<>();
+                    List<Token> param = new ArrayList<>();
+                    Stack<Token> st = new Stack<>();
+                    st.push(tokens.get(i));
+                    i += 2;
+                    while (i < tokens.size() && st.size() != 0) {
+                        if (tokens.get(i).getType() == TokenType.NEWLINE) {
+                            err = new UnexpectedToken(tokens.get(i).getStart(),
+                                    tokens.get(i).getEnd(), tokens.get(i).getValue());
+                            return new Pair<>(null, err);
+                        }
+                        if (tokens.get(i).getType() == TokenType.LPAREN
+                                || tokens.get(i).getType() == TokenType.LBRACKET
+                                || tokens.get(i).getType() == TokenType.LCBRACE) {
+                            st.push(tokens.get(i));
+                            param.add(tokens.get(i));
+                        }  else if (tokens.get(i).getType() == TokenType.RBRACKET
+                                || tokens.get(i).getType() == TokenType.RCBRACE) {
+                            st.pop();
+                            param.add(tokens.get(i));
+                        } else if (tokens.get(i).getType() == TokenType.RPAREN) {
+                            st.pop();
+                            if (st.size() == 0) {
+                                params.add(param);
+                            } else {
+                                param.add(tokens.get(i));
+                            }
+                        } else if (tokens.get(i).getType() == TokenType.COMMA && st.size() == 1) {
+                            params.add(param);
+                            param = new ArrayList<>();
+                        } else {
+                            param.add(tokens.get(i));
+                        }
+                        if (st.size() != 0) i++;
+                    }
+                    Token token = new Token(TokenType.FUNCCALL, func.getValue(),
+                            func.getStart(), tokens.get(i).getEnd());
+                    List<List<Token>> el = new ArrayList<>();
+                    for(List<Token> l: params) {
+                        Trio<List<Token>, Integer, Error> trio = generateTokensLst(0, l, vars, functions);
+                        if (trio.getT3() != null) return new Pair<>(null, trio.getT3());
+                        el.add(trio.getT1());
+                    }
+                    token.setInitialElems(el);
+                    elem.add(token);
                 } else {
                     Error err = new UndeclaredVariableReference(tokens.get(i).getStart(),
                             tokens.get(i).getEnd(), tokens.get(i).getValue());

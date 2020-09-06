@@ -1,5 +1,6 @@
 package com.ouiplusplus.lexer;
 
+import java.awt.image.TileObserver;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,13 @@ public class Token {
 
     public Token(TokenType type, String value,
                  Position start, Position end, boolean boolVal,
-                 List<Token> arrElements) {//for when initialized with a value
+                 List<Token> arrElements, List<List<Token>> initialElems) {//for when initialized with a value
         this.type = type;
         this.start = start;
         this.end = end;
         this.boolVal = boolVal;
         this.elements = arrElements;
+        this.initialElems = initialElems;
 
         if (value.indexOf ('-') == 0 && (type == TokenType.INT || type == TokenType.DOUBLE)) {
             this.isNeg = true;
@@ -56,15 +58,34 @@ public class Token {
     //======================== CLASS METHODS ========================
     public Token copy () {
         if(type == TokenType.LIST) {
+            return new Token(type, getValue(), start, end, boolVal, copy1DLst(), initialElems);
+        }
+        if (type == TokenType.FUNCCALL) {
+            return new Token(type, getValue(), start, end, boolVal, elements, copy2DLst());
+        }
+
+        return new Token(type, getValue(), start, end, boolVal, elements, initialElems);
+    }
+    private List<List<Token>> copy2DLst () {
+        List<List<Token>> bigLst = new ArrayList<>();
+        for (List<Token> l: this.initialElems) {
+            List<Token> copyArrOuter = new ArrayList<>();
+            for(Token token: l) {
+                copyArrOuter.add(token.copy());
+            }
+            bigLst.add(copyArrOuter);
+        }
+        return bigLst;
+    }
+
+    private List<Token> copy1DLst() {
             List<Token> copyArrOuter = new ArrayList<>();
             for(Token token: this.elements) {
                 copyArrOuter.add(token.copy());
             }
-            return new Token(type, getValue(), start, end, boolVal, copyArrOuter);
-        }
-
-        return new Token(type, getValue(), start, end, boolVal, elements);
+        return copyArrOuter;
     }
+
 
     @Override
     public String toString() {

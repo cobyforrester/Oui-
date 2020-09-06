@@ -58,25 +58,31 @@ public class ASTExpression {
     public Pair<Token, Error> process(List<Token> tokens) {
         Error err;
 
+        // Copy lst for deep recursion on same tokens
+        List<Token> copyTkns = new ArrayList<>();
+        for (Token t: tokens) {
+            copyTkns.add(t.copy());
+        }
+
         // processes array elements into tokens, ie initializes arreyElems
-        err = processArrays(tokens);
+        err = processArrays(copyTkns);
         if (err != null) return new Pair<>(null, err);
 
-        err = processFunctions(tokens);
+        err = processFunctions(copyTkns);
         if (err != null) return new Pair<>(null, err);
 
         // checks if boolean
-        if (isBoolTok(tokens)) {
+        if (isBoolTok(copyTkns)) {
             ASTBoolean astBool = new ASTBoolean(this, this.tgparser);
-            return astBool.process(tokens);
+            return astBool.process(copyTkns);
         }
 
 
-        if (!tokens.isEmpty()) {
-            this.start = tokens.get(0).getStart();
-            this.end = tokens.get(tokens.size() - 1).getEnd();
+        if (!copyTkns.isEmpty()) {
+            this.start = copyTkns.get(0).getStart();
+            this.end = copyTkns.get(tokens.size() - 1).getEnd();
         }
-        for(Token tok: tokens) {
+        for(Token tok: copyTkns) {
             err = this.addVal(tok);
             if (err != null) {
                 return new Pair<>(null, err);
@@ -386,40 +392,41 @@ public class ASTExpression {
     }
     public Error processFunctions(List<Token> lst) {
         // built in functions later!!
-        for(int i = 0; i < lst.size(); i++) {
-            Token t = lst.get(i);
-            if (t.getType() == TokenType.FUNCCALL
-                    && this.tgparser.getFunctions().containsKey(t.getValue())) {
-                TokenGroup tg = this.tgparser.getFunctions().get(t.getValue());
-                Map<String, Token> vars = this.tgparser.getVars();
-                Map<String, Token> tmpVars = new HashMap<>();
-                List<String> order = new ArrayList<>();
-                tg.getFuncVariables().forEach((k, v) -> order.add(k));
-                System.out.println(order);
-                if (order.size() != t.getInitialElems().size())
-                    return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
-                for(int j = 0; j < t.getInitialElems().size(); j++) {
-                    List<Token> l = t.getInitialElems().get(j);
-                    if (l.size() == 0) {
-                        return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+            for (int i = 0; i < lst.size(); i++) {
+                Token t = lst.get(i);
+                if (t.getType() == TokenType.FUNCCALL
+                        && this.tgparser.getFunctions().containsKey(t.getValue())) {
+                    if (tgparser.isTimedOut()) {
+                        return new RequestTimedOut(t.getStart(), t.getEnd(), t.getValue());
                     }
-                    Pair<Token, Error> p = this.process(l);
+                    TokenGroup tg = this.tgparser.getFunctions().get(t.getValue());
+                    Map<String, Token> vars = this.tgparser.getVars();
+                    Map<String, Token> tmpVars = new HashMap<>();
+                    List<String> order = new ArrayList<>();
+                    tg.getFuncVariables().forEach((k, v) -> order.add(k));
+                    if (order.size() != t.getInitialElems().size())
+                        return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+                    for (int j = 0; j < t.getInitialElems().size(); j++) {
+                        List<Token> l = t.getInitialElems().get(j);
+                        if (l.size() == 0) {
+                            return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+                        }
+                        Pair<Token, Error> p = this.process(l);
+                        if (p.getP2() != null) return p.getP2();
+                        tmpVars.put(order.get(j), p.getP1());
+                    }
+                    this.tgparser.setVars(tmpVars);
+                    Pair<Token, Error> p = this.tgparser.process(tg.getTokenGroups());
                     if (p.getP2() != null) return p.getP2();
-                    tmpVars.put(order.get(j), p.getP1());
+                    if (p.getP1() != null) lst.set(i, p.getP1());
+                    else {
+                        Token nul = new Token(TokenType.NULL, "NULL", t.getStart(), t.getEnd());
+                        lst.set(i, nul);
+                    }
+                    this.tgparser.setVars(vars);
                 }
-                this.tgparser.setVars(tmpVars);
-                Pair<Token, Error> p = this.tgparser.process(tg.getTokenGroups());
-                if (p.getP2() != null) return p.getP2();
-                if (p.getP1() != null) lst.set(i, p.getP1());
-                else {
-                    Token nul = new Token(TokenType.NULL, "NULL", t.getStart(), t.getEnd());
-                    lst.set(i, nul);
-                }
-
-                this.tgparser.setVars(vars);
             }
-        }
-        return null;
+            return null;
     }
     // ################### END HELPER METHODS #####################
 
