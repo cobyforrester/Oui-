@@ -14,7 +14,7 @@ import java.util.List;
 public class PreBuiltFunctions {
 
     public static List<String> getFunctions () {
-        return Arrays.asList("len", "set", "get", "substring", "add");
+        return Arrays.asList("len", "set", "get", "sub", "add");
     }
     public static Pair<Token, Error> call (Token token) {
 
@@ -44,8 +44,26 @@ public class PreBuiltFunctions {
                         token.getEnd());
                 return new Pair<>(t, null);
             }
-        } else if (token.getValue().equals("get")) {
+        } else if (token.getValue().equals("sub")) {
+            if (token.getInitialElems().size() != 3) return err;
+            if (token.getInitialElems().get(0).get(0).getType() != TokenType.LIST
+                    && token.getInitialElems().get(0).get(0).getType() != TokenType.STRING)
+                return err;
+            else if (token.getInitialElems().get(0).get(0).getType() != TokenType.INT)
 
+            if (token.getInitialElems().get(0).get(0).getType() == TokenType.LIST) {
+                String length = Integer.toString(
+                        token.getInitialElems().get(0).get(0).getElements().size());
+                Token t = new Token(TokenType.INT, length,
+                        token.getStart(), token.getEnd());
+                return new Pair<>(t, null);
+            } else {
+                String length = Integer.toString(
+                        token.getInitialElems().get(0).get(0).getValue().length());
+                Token t = new Token(TokenType.STRING, length, token.getStart(),
+                        token.getEnd());
+                return new Pair<>(t, null);
+            }
         }
 
         return err;

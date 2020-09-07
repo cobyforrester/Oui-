@@ -52,7 +52,7 @@ public class Token {
 
     public Token(TokenType type) { //for when mutated in syntax trees
         this.type = type;
-        this.value = null;
+        this.value = "";
     }
 
     //======================== CLASS METHODS ========================

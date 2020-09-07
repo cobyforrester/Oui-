@@ -15,5 +15,6 @@ public enum TokenGroupType {
     ELSE,
 
     //Loops
-    WHILE;
+    WHILE,
+    FOR;
 }

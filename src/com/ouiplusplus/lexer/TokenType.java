@@ -51,6 +51,7 @@ public enum TokenType {
     HASH,
     NEWLINE,
     SEMICOLON,
+    RIGHTCARROT,
 
     // FUNCTIONS
     FUNCCALL,

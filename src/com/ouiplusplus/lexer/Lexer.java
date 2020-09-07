@@ -130,6 +130,9 @@ public class Lexer {
                     case ',':
                         tokens.add(new Token(TokenType.COMMA, ",", p, p));
                         break;
+                    case '>':
+                        tokens.add(new Token(TokenType.RIGHTCARROT, ">", p, p));
+                        break;
                     case '#':
                         String multiLine = "#";
                         this.advance();

@@ -1,3 +1,4 @@
+###
 imprimer('#########################')
 
 x = null
@@ -5,8 +6,10 @@ x = null
 func yes() {
     print('NULL 9')
 }
+###
 
-print(len())
+for i -> (-100 + 100, 15) {
+    print(i)}
 
 
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');

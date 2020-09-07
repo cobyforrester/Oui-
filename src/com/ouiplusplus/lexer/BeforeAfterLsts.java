@@ -37,7 +37,7 @@ public class BeforeAfterLsts {
             TokenType.NULL, TokenType.MULT, TokenType.DIV, TokenType.RPAREN,
             TokenType.RBRACKET, TokenType.RCBRACE, TokenType.COMMA, TokenType.CARROT,
             TokenType.NEWLINE,  TokenType.SEMICOLON,
-            TokenType.MODULO, TokenType.CARROT,
+            TokenType.MODULO,
     };
 
     // ========================= MULT/DIV/MOD/^ ===============================
@@ -187,7 +187,7 @@ public class BeforeAfterLsts {
              TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING, TokenType.BOOLEAN,
             TokenType.LBRACKET, TokenType.RBRACKET,
-            TokenType.NULL,
+            TokenType.NULL, TokenType.MINUS,
     };
 
     final private TokenType[] afterBOOL_COMP_Add = {

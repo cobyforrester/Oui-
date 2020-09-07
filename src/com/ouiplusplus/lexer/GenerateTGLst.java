@@ -25,7 +25,7 @@ public class GenerateTGLst {
                 if (functions.containsKey(currVal)) {
                     err = new InvalidFunctionCall(curr.getStart(),
                             curr.getEnd(), curr.getValue());
-                    if (i + 2 >= lst.size() || lst.get(i+1).getType() != TokenType.LPAREN) {
+                    if (i + 2 >= lst.size() || lst.get(i + 1).getType() != TokenType.LPAREN) {
                         return new Pair<>(null, err);
                     }
 
@@ -124,6 +124,102 @@ public class GenerateTGLst {
                     // setting i
                     i = i - 1;
                     newLst.add(tg);
+                } else if (currVal.equals("pour") || currVal.equals("for")) {
+                    // VARIABLES
+                    err = new InvalidForDeclare(
+                            curr.getStart(), curr.getEnd(), currVal);
+
+                    if (i + 10 >= lst.size() ||
+                            lst.get(i + 1).getType() != TokenType.WORD
+                            || lst.get(i + 2).getType() != TokenType.MINUS
+                            || lst.get(i + 3).getType() != TokenType.GREATER_THAN
+                            || lst.get(i + 4).getType() != TokenType.LPAREN) {
+                        return new Pair<>(null, err);
+                    }
+                    Token var = lst.get(i + 1);
+                    vars.add(var.getValue());
+                    i += 5;
+                    List<Token> arg1 = new ArrayList<>();
+                    List<Token> arg2 = new ArrayList<>();
+                    boolean onArg1 = true;
+                    Stack<Token> s = new Stack<>();
+                    s.push(new Token(TokenType.LPAREN));
+                    while (i < lst.size() && s.size() != 0) {
+                        if (lst.get(i).getType() == TokenType.COMMA) {
+                            onArg1 = false;
+                        } else if (lst.get(i).getType() == TokenType.LPAREN)
+                            s.push(lst.get(i));
+                        else if (lst.get(i).getType() == TokenType.RPAREN) s.pop();
+                        else if (lst.get(i).getType() == TokenType.NEWLINE) {
+                            return new Pair<>(null, err);
+                        } else {
+                            if(onArg1) arg1.add(lst.get(i));
+                            else arg2.add(lst.get(i));
+                        }
+                        i++;
+                    }
+                    List<List<Token>> args = new ArrayList<>();
+
+                    Trio<List<Token>, Integer, Error> tkns1 =
+                            generateTokensLst(0, arg1, vars, functions);
+                    Error tknsErr = tkns1.getT3();
+                    if (tknsErr != null) return new Pair<>(null, tknsErr);
+
+                    // CHECK IF TOKENS LIST IS VALID
+                    if (tkns1.getT1().size() == 0) {
+                        return new Pair<>(null, err);
+                    }
+
+                    Trio<List<Token>, Integer, Error> tkns2 =
+                            generateTokensLst(0, arg2, vars, functions);
+                    tknsErr = tkns1.getT3();
+                    if (tknsErr != null) return new Pair<>(null, tknsErr);
+
+                    // CHECK IF TOKENS LIST IS VALID
+                    if (tkns2.getT1().size() == 0) {
+                        return new Pair<>(null, err);
+                    }
+
+
+
+
+                    // SET i
+                    while (lst.get(i).getType() != TokenType.LCBRACE) {
+                        if (lst.get(i).getType() != TokenType.NEWLINE) {
+                            err = new InvalidForDeclare(
+                                    lst.get(i).getStart(), lst.get(i).getEnd(), lst.get(i).getValue());
+                            return new Pair<>(null, err);
+                        }
+                        i++;
+                    }
+                    i++;
+                    // sets counter to correct value
+                    // ADD Tokens
+                    TokenGroup tg = new TokenGroup(TokenGroupType.FOR, curr);
+                    tg.setForArgs(new Pair<List<Token>, List<Token>>(tkns1.getT1(),
+                            tkns2.getT1()));
+
+                    // create TokenGroup List
+                    List<Token> forBodyTokens = new ArrayList<>();
+                    Stack<Token> st = new Stack<>();
+                    st.push(new Token(TokenType.LCBRACE));
+                    while (st.size() != 0) {
+                        if (lst.get(i).getType() == TokenType.LCBRACE) st.push(lst.get(i));
+                        else if (lst.get(i).getType() == TokenType.RCBRACE) st.pop();
+                        if (st.size() != 0) {
+                            forBodyTokens.add(lst.get(i));
+                        }
+                        if(st.size() != 0) i++;
+                    }
+                    Pair<List<TokenGroup>, Error> rec = generateTokenGroupLst(
+                            forBodyTokens, vars, functions);
+                    if (rec.getP2() != null) return rec;
+                    tg.setTokenGroups(rec.getP1());
+                    tg.setStartTok(var);
+                    // setting i
+                    newLst.add(tg);
+
+
                 } else if (currVal.equals("while") || (currVal.equals("tant")
                         && (i + 1 < lst.size()
                         && lst.get(i + 1).getValue().toLowerCase().equals("que")))) {
@@ -208,17 +304,17 @@ public class GenerateTGLst {
                             && lst.get(i + 1).getValue().toLowerCase().equals("if")));
                     if (isIf)
                         err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
-                    else if(isElseIf) {
-                            err = new InvalidElifDeclare(
-                                    curr.getStart(), curr.getEnd(),
-                                    curr.getValue()+" "+ lst.get(i + 1));
-                            i++;
+                    else if (isElseIf) {
+                        err = new InvalidElifDeclare(
+                                curr.getStart(), curr.getEnd(),
+                                curr.getValue() + " " + lst.get(i + 1));
+                        i++;
                     } else {
                         err = new InvalidElifDeclare(
                                 curr.getStart(), curr.getEnd(),
                                 curr.getValue() + " "
                                         + lst.get(i + 1) + " " + lst.get(i + 2));
-                        i+=2;
+                        i += 2;
                     }
 
                     // Lots of error checking
@@ -510,7 +606,7 @@ public class GenerateTGLst {
                                 || lst.get(index).getType() == TokenType.LCBRACE) {
                             st.push(lst.get(index));
                             param.add(lst.get(index));
-                        }  else if (lst.get(index).getType() == TokenType.RBRACKET
+                        } else if (lst.get(index).getType() == TokenType.RBRACKET
                                 || lst.get(index).getType() == TokenType.RCBRACE) {
                             st.pop();
                             param.add(lst.get(index));
@@ -532,7 +628,7 @@ public class GenerateTGLst {
                     Token token = new Token(TokenType.FUNCCALL, func.getValue(),
                             func.getStart(), lst.get(index).getEnd());
                     List<List<Token>> el = new ArrayList<>();
-                    for(List<Token> l: params) {
+                    for (List<Token> l : params) {
                         Trio<List<Token>, Integer, Error> trio = generateTokensLst(0, l, vars, functions);
                         if (trio.getT3() != null) return trio;
                         el.add(trio.getT1());
@@ -604,7 +700,7 @@ public class GenerateTGLst {
                     err = new UnexpectedToken(tokens.get(i).getStart(),
                             tokens.get(i).getEnd(), tokens.get(i).getValue());
                     if (i + 2 >= tokens.size()
-                            || tokens.get(i+1).getType() != TokenType.LPAREN) {
+                            || tokens.get(i + 1).getType() != TokenType.LPAREN) {
                         return new Pair<>(null, err);
                     }
                     Token func = tokens.get(i);
@@ -624,7 +720,7 @@ public class GenerateTGLst {
                                 || tokens.get(i).getType() == TokenType.LCBRACE) {
                             st.push(tokens.get(i));
                             param.add(tokens.get(i));
-                        }  else if (tokens.get(i).getType() == TokenType.RBRACKET
+                        } else if (tokens.get(i).getType() == TokenType.RBRACKET
                                 || tokens.get(i).getType() == TokenType.RCBRACE) {
                             st.pop();
                             param.add(tokens.get(i));
@@ -646,7 +742,7 @@ public class GenerateTGLst {
                     Token token = new Token(TokenType.FUNCCALL, func.getValue(),
                             func.getStart(), tokens.get(i).getEnd());
                     List<List<Token>> el = new ArrayList<>();
-                    for(List<Token> l: params) {
+                    for (List<Token> l : params) {
                         Trio<List<Token>, Integer, Error> trio = generateTokensLst(0, l, vars, functions);
                         if (trio.getT3() != null) return new Pair<>(null, trio.getT3());
                         el.add(trio.getT1());

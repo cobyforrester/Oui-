@@ -1,5 +1,7 @@
 package com.ouiplusplus.lexer;
 
+import com.ouiplusplus.helper.Pair;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ public class TokenGroup {
     private List<TokenGroup> tokenGroups; //for if statements for loops functions
     private Token startTok;
     private LinkedHashMap<String, Token> funcVariables; // for functions
+    private Pair<List<Token>, List<Token>> forArgs;
 
 
     public TokenGroup(TokenGroupType type, Token startTok) { //for variables and no shell expressions
@@ -70,5 +73,13 @@ public class TokenGroup {
 
     public void setFuncVariables(LinkedHashMap<String, Token> funcVariables) {
         this.funcVariables = funcVariables;
+    }
+
+    public Pair<List<Token>, List<Token>> getForArgs() {
+        return forArgs;
+    }
+
+    public void setForArgs(Pair<List<Token>, List<Token>> forArgs) {
+        this.forArgs = forArgs;
     }
 }
