@@ -231,8 +231,7 @@ public class Lexer {
             tmp.setBoolVal(false);
             return tmp;
         } else if (word.toLowerCase().equals("null")) {
-            Token tmp = new Token(TokenType.NULL, "null", start, end);
-            return tmp;
+            return new Token(TokenType.NULL, "null", start, end);
         }
         return new Token(TokenType.WORD, word, start, end);
     }

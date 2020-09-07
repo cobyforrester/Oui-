@@ -48,7 +48,7 @@ public class GenerateTGLst {
                     TokenGroup tg = new TokenGroup(TokenGroupType.FUNC_CALL, tkns.getT1().get(0));
                     newLst.add(tg);
 
-                } else if (currVal.equals("def")) {
+                } else if (currVal.equals("fonc") || currVal.equals("func")) {
                     // VARIABLES
                     if (i + 5 >= lst.size() ||
                             lst.get(i + 1).getType() != TokenType.WORD
@@ -124,8 +124,6 @@ public class GenerateTGLst {
                     // setting i
                     i = i - 1;
                     newLst.add(tg);
-
-
                 } else if (currVal.equals("while") || (currVal.equals("tant")
                         && (i + 1 < lst.size()
                         && lst.get(i + 1).getValue().toLowerCase().equals("que")))) {

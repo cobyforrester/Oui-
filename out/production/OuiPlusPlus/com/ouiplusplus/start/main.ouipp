@@ -2,11 +2,11 @@ imprimer('#########################')
 
 x = null
 
-def yes() {
-
+func yes() {
+    print('NULL 9')
 }
 
-print(x == yes())
+print(len())
 
 
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');

@@ -3,6 +3,7 @@ import com.ouiplusplus.error.*;
 import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.*;
+import com.ouiplusplus.prebuiltfunctions.PreBuiltFunctions;
 
 import java.util.*;
 
@@ -424,6 +425,24 @@ public class ASTExpression {
                         lst.set(i, nul);
                     }
                     this.tgparser.setVars(vars);
+                } else if (t.getType() == TokenType.FUNCCALL
+                        && PreBuiltFunctions.getFunctions().contains(t.getValue())) {
+                    if (tgparser.isTimedOut()) {
+                        return new RequestTimedOut(t.getStart(), t.getEnd(), t.getValue());
+                    }
+                    List<List<Token>> big = new ArrayList<>();
+                    for (List<Token> l: t.getInitialElems()) {
+                        if (l.size() == 0) {
+                            return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
+                        }
+                        Pair<Token, Error> p = this.process(l);
+                        if (p.getP2() != null) return p.getP2();
+                        big.add(Collections.singletonList(p.getP1()));
+                    }
+                    t.setInitialElems(big);
+                    Pair<Token, Error> p = PreBuiltFunctions.call(t);
+                    if (p.getP2() != null) return p.getP2();
+                    lst.set(i, p.getP1());
                 }
             }
             return null;
