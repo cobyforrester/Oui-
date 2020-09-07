@@ -200,21 +200,27 @@ public class GenerateTGLst {
                         && (i + 1 < lst.size()
                         && lst.get(i + 1).getValue().toLowerCase().equals("if")))
                         || (currVal.equals("ou")
-                        && (i + 1 < lst.size()
-                        && lst.get(i + 1).getValue().toLowerCase().equals("bien")))) {
+                        && (i + 2 < lst.size()
+                        && lst.get(i + 1).getValue().toLowerCase().equals("bien")
+                        && lst.get(i + 2).getValue().toLowerCase().equals("si")))) {
                     // VARIABLES
                     boolean isIf = currVal.equals("if") || currVal.equals("si");
-                    boolean isElseIf = !(currVal.equals("if") || currVal.equals("si")
-                            || currVal.equals("elif"));
+                    boolean isElseIf = (currVal.equals("else")
+                            && (i + 1 < lst.size()
+                            && lst.get(i + 1).getValue().toLowerCase().equals("if")));
                     if (isIf)
                         err = new InvalidIfDeclare(curr.getStart(), curr.getEnd(), currVal);
-                    else {
-                        if (isElseIf) {
+                    else if(isElseIf) {
                             err = new InvalidElifDeclare(
-                                    curr.getStart(), curr.getEnd(), "else if");
+                                    curr.getStart(), curr.getEnd(),
+                                    curr.getValue()+" "+ lst.get(i + 1));
                             i++;
-                        } else err = new InvalidElifDeclare(
-                                curr.getStart(), curr.getEnd(), currVal);
+                    } else {
+                        err = new InvalidElifDeclare(
+                                curr.getStart(), curr.getEnd(),
+                                curr.getValue() + " "
+                                        + lst.get(i + 1) + " " + lst.get(i + 2));
+                        i+=2;
                     }
 
                     // Lots of error checking

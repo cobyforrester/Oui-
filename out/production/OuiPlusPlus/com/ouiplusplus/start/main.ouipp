@@ -4,12 +4,12 @@ x = 100
 
 
 def hello(n) {
-
     if(n <= 1) {
         return n
+    } ou bien si(4 == 4) {
+
     }
     return hello(n - 1) + hello(n - 2)
-
 }
 
 x = hello(8)
