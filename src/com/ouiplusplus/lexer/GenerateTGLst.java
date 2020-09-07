@@ -539,7 +539,11 @@ public class GenerateTGLst {
                         if (trio.getT3() != null) return trio;
                         el.add(trio.getT1());
                     }
-                    token.setInitialElems(el);
+                    if (el.size() == 1
+                            && el.get(0).size() == 0) {
+                        List<List<Token>> tmp = new ArrayList<>();
+                        token.setInitialElems(tmp);
+                    } else token.setInitialElems(el);
                     fnl.add(token);
                 } else {
                     err = new UndeclaredVariableReference(lst.get(index).getStart(),

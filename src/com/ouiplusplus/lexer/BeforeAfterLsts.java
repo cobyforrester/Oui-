@@ -99,6 +99,7 @@ public class BeforeAfterLsts {
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
             TokenType.WORD, TokenType.NEWLINE, TokenType.SEMICOLON,
             TokenType.BOOLEAN, TokenType.LCBRACE, TokenType.HASH,
+            TokenType.NULL,
     };
 
     final private TokenType[] afterNEWLINEAdd = {
@@ -111,7 +112,7 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
             TokenType.WORD,  TokenType.SEMICOLON,
-            TokenType.BOOLEAN, TokenType.LCBRACE,
+            TokenType.BOOLEAN, TokenType.LCBRACE, TokenType.NULL,
     };
 
     final private TokenType[] afterCOMMAAdd = {
@@ -119,6 +120,7 @@ public class BeforeAfterLsts {
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
             TokenType.WORD, TokenType.BOOLEAN, TokenType.LCBRACE,
             TokenType.NOT, TokenType.MINUS, TokenType.PLUS,
+            TokenType.NULL,
     };
 
     // ========================= WORD ===============================
@@ -185,6 +187,7 @@ public class BeforeAfterLsts {
              TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING, TokenType.BOOLEAN,
             TokenType.LBRACKET, TokenType.RBRACKET,
+            TokenType.NULL,
     };
 
     final private TokenType[] afterBOOL_COMP_Add = {
@@ -192,6 +195,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
             TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
+            TokenType.NULL,
     };
 
     // ========================= AND_OR_OPS ===============================
@@ -200,6 +204,7 @@ public class BeforeAfterLsts {
             TokenType.RPAREN, TokenType.WORD,
             TokenType.STRING, TokenType.BOOLEAN,
             TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
+            TokenType.NULL,
     };
 
     final private TokenType[] afterAND_OR_Add = {
@@ -208,6 +213,7 @@ public class BeforeAfterLsts {
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
             TokenType.BOOLEAN, TokenType.NOT,
             TokenType.LBRACKET, TokenType.RBRACKET,
+            TokenType.NULL,
     };
 
     // ========================= NOT_OP ===============================
@@ -222,6 +228,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
             TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
+            TokenType.NULL,
     };
 
     // ========================= BOOLEAN ===============================

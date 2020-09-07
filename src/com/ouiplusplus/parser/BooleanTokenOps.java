@@ -20,12 +20,29 @@ public class BooleanTokenOps {
         Token token = new Token(TokenType.BOOLEAN, "", start, end);
         Pair<Token, Error> fnlTokenPair = new Pair<>(token, null);
 
-        if (left.getType() == TokenType.LIST && right.getType() == TokenType.LIST) {
+        if (left.getType() == TokenType.LIST || right.getType() == TokenType.LIST) {
             if(op.getType() != TokenType.DOUBLE_EQUALS) {
                 err = new InvalidOperation(start, end, op.getValue());
                 return new Pair<>(null, err);
             }
+            if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
+                fnlTokenPair.getP1().setBoolVal(false);
+                return fnlTokenPair;
+            }
             fnlTokenPair.getP1().setBoolVal(left.getValue().equals(right.getValue()));
+            return fnlTokenPair;
+
+        }
+        if (left.getType() == TokenType.NULL || right.getType() == TokenType.NULL) {
+            if(op.getType() != TokenType.DOUBLE_EQUALS) {
+                err = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, err);
+            }
+            if (left.getType() != TokenType.NULL || right.getType() != TokenType.NULL) {
+                fnlTokenPair.getP1().setBoolVal(false);
+                return fnlTokenPair;
+            }
+            fnlTokenPair.getP1().setBoolVal(true);
             return fnlTokenPair;
 
         }

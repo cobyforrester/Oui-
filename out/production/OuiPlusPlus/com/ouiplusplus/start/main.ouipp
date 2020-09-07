@@ -1,19 +1,14 @@
 imprimer('#########################')
 
-x = 100
+x = null
 
+def yes() {
 
-def hello(n) {
-    if(n <= 1) {
-        return n
-    } ou bien si(4 == 4) {
-
-    }
-    return hello(n - 1) + hello(n - 2)
 }
 
-x = hello(8)
-print(x)
+print(x == yes())
+
+
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');
 
 

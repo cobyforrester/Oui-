@@ -57,7 +57,7 @@ public class Token {
 
     //======================== CLASS METHODS ========================
     public Token copy () {
-        if(type == TokenType.LIST) {
+        if(type == TokenType.LIST && elements != null) {
             return new Token(type, getValue(), start, end, boolVal, copy1DLst(), initialElems);
         }
         if (type == TokenType.FUNCCALL) {
