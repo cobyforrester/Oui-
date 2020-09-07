@@ -86,7 +86,7 @@ public class BeforeAfterLsts {
     final private TokenType[] beforeSEMICOLONAdd = {
             TokenType.RPAREN, TokenType.RBRACKET, TokenType.RCBRACE,
             TokenType.DOUBLE, TokenType.INT, TokenType.STRING,
-            TokenType.WORD, TokenType.BOOLEAN,
+            TokenType.WORD, TokenType.BOOLEAN, TokenType.NULL,
     };
 
     final private TokenType[] afterSEMICOLONAdd = {

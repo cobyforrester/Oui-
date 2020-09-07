@@ -21,28 +21,44 @@ public class BooleanTokenOps {
         Pair<Token, Error> fnlTokenPair = new Pair<>(token, null);
 
         if (left.getType() == TokenType.LIST || right.getType() == TokenType.LIST) {
-            if(op.getType() != TokenType.DOUBLE_EQUALS) {
+            if(op.getType() != TokenType.DOUBLE_EQUALS && op.getType() != TokenType.NOT_EQUAL) {
                 err = new InvalidOperation(start, end, op.getValue());
                 return new Pair<>(null, err);
             }
-            if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
-                fnlTokenPair.getP1().setBoolVal(false);
-                return fnlTokenPair;
+            if(op.getType() == TokenType.DOUBLE_EQUALS) {
+                if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
+                    fnlTokenPair.getP1().setBoolVal(false);
+                    return fnlTokenPair;
+                }
+                fnlTokenPair.getP1().setBoolVal(left.getValue().equals(right.getValue()));
+            } else {
+                if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
+                    fnlTokenPair.getP1().setBoolVal(true);
+                    return fnlTokenPair;
+                }
+                fnlTokenPair.getP1().setBoolVal(!left.getValue().equals(right.getValue()));
             }
-            fnlTokenPair.getP1().setBoolVal(left.getValue().equals(right.getValue()));
             return fnlTokenPair;
 
         }
         if (left.getType() == TokenType.NULL || right.getType() == TokenType.NULL) {
-            if(op.getType() != TokenType.DOUBLE_EQUALS) {
+            if(op.getType() != TokenType.DOUBLE_EQUALS && op.getType() != TokenType.NOT_EQUAL) {
                 err = new InvalidOperation(start, end, op.getValue());
                 return new Pair<>(null, err);
             }
-            if (left.getType() != TokenType.NULL || right.getType() != TokenType.NULL) {
+            if(op.getType() == TokenType.DOUBLE_EQUALS) {
+                if (left.getType() != TokenType.NULL || right.getType() != TokenType.NULL) {
+                    fnlTokenPair.getP1().setBoolVal(false);
+                    return fnlTokenPair;
+                }
+                fnlTokenPair.getP1().setBoolVal(true);
+            } else {
+                if (left.getType() != TokenType.NULL || right.getType() != TokenType.NULL) {
+                    fnlTokenPair.getP1().setBoolVal(true);
+                    return fnlTokenPair;
+                }
                 fnlTokenPair.getP1().setBoolVal(false);
-                return fnlTokenPair;
             }
-            fnlTokenPair.getP1().setBoolVal(true);
             return fnlTokenPair;
 
         }

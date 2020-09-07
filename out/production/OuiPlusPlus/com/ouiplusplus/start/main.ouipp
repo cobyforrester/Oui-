@@ -7,9 +7,9 @@ func yes() {
     print('NULL 9')
 }
 ###
-
-for i -> (-100 + 100, 15) {
-    print(i)}
+if (null == null) {
+    print(null)
+}
 
 
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');
