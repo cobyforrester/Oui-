@@ -69,12 +69,6 @@ public class Token {
 
     //======================== CLASS METHODS ========================
     public Token copy () {
-        if(elements != null) {
-            return new Token(type, getValue(), start, end, boolVal,
-                    copy1DLst(elements), copy2DLst(initialElems),
-                    copy2DMap(initialMap), copy1DMap(map));
-        }
-
         return new Token(type, getValue(), start, end, boolVal,
                 elements, copy2DLst(initialElems),
                 copy2DMap(initialMap), copy1DMap(map));

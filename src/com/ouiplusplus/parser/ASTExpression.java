@@ -407,7 +407,14 @@ public class ASTExpression {
                     if (pK.getP2() != null) return pK.getP2();
                     Pair<Token, Error>  pV = this.process(bigMap.getValue());
                     if (pV.getP2() != null) return pV.getP2();
-                    m.put(pK.getP1(), pV.getP1());
+                    LinkedHashMap<Token, Token> tmp = new LinkedHashMap<>();
+                    m.forEach((k, v) -> {
+                        if (k.getType() != pK.getP1().getType() || !k.getValue().equals(pK.getP1().getValue())) {
+                            tmp.put(k, v);
+                        }
+                    });
+                    tmp.put(pK.getP1(), pV.getP1());
+                    m = tmp;
                 }
                 t.setMap(m);
                 t.setInitialMap(new LinkedHashMap<>());
@@ -456,16 +463,16 @@ public class ASTExpression {
                     if (tgparser.isTimedOut()) {
                         return new RequestTimedOut(t.getStart(), t.getEnd(), t.getValue());
                     }
-                    List<List<Token>> big = new ArrayList<>();
+                    List<Token> elems = new ArrayList<>();
                     for (List<Token> l: t.getInitialElems()) {
                         if (l.size() == 0) {
                             return new InvalidFunctionCall(t.getStart(), t.getEnd(), t.getValue());
                         }
                         Pair<Token, Error> p = this.process(l);
                         if (p.getP2() != null) return p.getP2();
-                        big.add(Collections.singletonList(p.getP1()));
+                        elems.add(p.getP1());
                     }
-                    t.setInitialElems(big);
+                    t.setElements(elems);
                     Pair<Token, Error> p = PreBuiltFunctions.call(t);
                     if (p.getP2() != null) return p.getP2();
                     lst.set(i, p.getP1());

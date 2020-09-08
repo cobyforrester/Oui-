@@ -244,7 +244,7 @@ public class BeforeAfterLsts {
     // ========================= BOOLEAN ===============================
     final private TokenType[] beforeBOOLEANAdd = {
             TokenType.LPAREN, TokenType.EQUALS, TokenType.COMMA,
-            TokenType.LBRACKET, TokenType.MAPSTART,
+            TokenType.LBRACKET, TokenType.MAPSTART, TokenType.COLON,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
@@ -255,6 +255,7 @@ public class BeforeAfterLsts {
     final private TokenType[] afterBOOLEANAdd = {
             TokenType.NEWLINE, TokenType.SEMICOLON, TokenType.RPAREN,
             TokenType.COMMA, TokenType.RBRACKET, TokenType.MAPEND,
+            TokenType.COLON,
 
             //BOOLEAN COMP OPERATORS
             TokenType.DOUBLE_EQUALS, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUALS,
