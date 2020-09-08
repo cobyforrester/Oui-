@@ -124,6 +124,18 @@ public class Lexer {
                     case ';':
                         tokens.add(new Token(TokenType.SEMICOLON, ";", p, p));
                         break;
+                    case ':':
+                        tokens.add(new Token(TokenType.COLON, ":", p, p));
+                        break;
+                    case '$':
+                        this.advance();
+                        p = this.pos.copy();
+                        if (this.currChar != '|') {
+                            UnexpectedChar err = new UnexpectedChar(p, p, "$");
+                            return new Pair<>(null, err);
+                        }
+                        tokens.add(new Token(TokenType.MAPSTART, "$|", p, p));
+                        break;
                     case '\n':
                         tokens.add(new Token(TokenType.NEWLINE, "newline", p, p));
                         break;
@@ -302,8 +314,7 @@ public class Lexer {
                     token = new Token(TokenType.OR, "||",  start, end);
                     this.advance();
                 } else {
-                    Error err = new InvalidOperation(start, end, "|");
-                    return new Pair<>(null, err);
+                    token = new Token(TokenType.MAPEND, "|",  start, end);
                 }
                 break;
 

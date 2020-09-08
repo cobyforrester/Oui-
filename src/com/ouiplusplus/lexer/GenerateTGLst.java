@@ -671,6 +671,92 @@ public class GenerateTGLst {
                 Pair<Token, Error> arrPair = makeArrayToken(arrTokens, vars, functions);
                 if (arrPair.getP2() != null) return new Trio<>(null, null, arrPair.getP2());
                 fnl.add(arrPair.getP1());
+            } else if (lst.get(index).getType() == TokenType.MAPSTART) {
+                // FOR ADDING AN ARRAY AND TURNING IT INTO A TOKEN
+                List<List<Token>> keys = new ArrayList<>();
+                List<List<Token>> vals = new ArrayList<>();
+                List<Token> tmp = new ArrayList<>();
+                boolean expectingColon = true;
+                Stack<Token> st = new Stack<>();
+                st.push(lst.get(index));
+                Position start = lst.get(index).getStart();
+                index++;
+                if (index < lst.size() && lst.get(index).getType() == TokenType.MAPEND) {
+                    st.pop();
+                }
+                while (index < lst.size() && st.size() != 0) {
+                    if (lst.get(index).getType() == TokenType.NEWLINE) {
+                        err = new UnexpectedToken(lst.get(index).getStart(),
+                                lst.get(index).getEnd(), lst.get(index).getValue());
+                        return new Trio<>(null, null, err);
+                    }
+                    if (lst.get(index).getType() == TokenType.MAPSTART
+                            || lst.get(index).getType() == TokenType.LPAREN
+                            || lst.get(index).getType() == TokenType.LBRACKET)
+                        st.push(lst.get(index));
+                    else if (lst.get(index).getType() == TokenType.MAPEND
+                            || lst.get(index).getType() == TokenType.RPAREN
+                            || lst.get(index).getType() == TokenType.RBRACKET) {
+                        st.pop();
+                        if (st.size() == 0) {
+                            if (expectingColon || tmp.size() == 0) {
+                                err = new InvalidMapDeclare(lst.get(index).getStart(),
+                                        lst.get(index).getEnd(), "$||");
+                                return new Trio<>(null, null, err);
+                            }
+                            vals.add(tmp);
+                            expectingColon = true;
+                        }
+                    }
+
+                    if (st.size() != 0) {
+                        if (lst.get(index).getType() == TokenType.COLON && st.size() == 1) {
+                            if (!expectingColon || tmp.size() == 0) {
+                                err = new InvalidMapDeclare(lst.get(index).getStart(),
+                                        lst.get(index).getEnd(), "$||");
+                                return new Trio<>(null, null, err);
+                            }
+
+                            Trio<List<Token>, Integer, Error> p =
+                                    generateTokensLst(0, tmp, vars, functions);
+                            if (p.getT3() != null) return p;
+                            keys.add(p.getT1());
+                            tmp = new ArrayList<>();
+                            expectingColon = false;
+                        } else if (lst.get(index).getType() == TokenType.COMMA
+                                && st.size() == 1) {
+                            if (expectingColon || tmp.size() == 0) {
+                                err = new InvalidMapDeclare(lst.get(index).getStart(),
+                                        lst.get(index).getEnd(), "$||");
+                                return new Trio<>(null, null, err);
+                            }
+                            Trio<List<Token>, Integer, Error> p =
+                                    generateTokensLst(0, tmp, vars, functions);
+                            if (p.getT3() != null) return p;
+                            vals.add(p.getT1());
+                            tmp = new ArrayList<>();
+                            expectingColon = true;
+                        } else {
+                            tmp.add(lst.get(index));
+                        }
+                        index++;
+                    }
+                }
+                if (!expectingColon || keys.size() != vals.size()) {
+                    err = new InvalidMapDeclare(lst.get(index).getStart(),
+                            lst.get(index).getEnd(), "$||");
+                    return new Trio<>(null, null, err);
+                }
+
+                err = new UnexpectedToken(lst.get(index).getStart(),
+                        lst.get(index).getEnd(), lst.get(index).getValue());
+                Token token = new Token(TokenType.MAP, "$||", start, lst.get(index).getEnd());
+                LinkedHashMap<List<Token>, List<Token>> initialMap = new LinkedHashMap<>();
+                for(int i = 0; i < keys.size(); i++) {
+                    initialMap.put(keys.get(i), vals.get(i));
+                }
+                token.setInitialMap(initialMap);
+                fnl.add(token);
             } else if (lst.get(index).getType() != TokenType.SEMICOLON) fnl.add(lst.get(index));
 
             index++;

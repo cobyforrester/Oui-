@@ -1,8 +1,12 @@
 package com.ouiplusplus.lexer;
 
-import java.awt.image.TileObserver;
+import com.ouiplusplus.error.Error;
+import com.ouiplusplus.helper.Pair;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Token {
     private TokenType type;
@@ -17,6 +21,10 @@ public class Token {
     // for arrays and functions
     private List<List<Token>> initialElems = new ArrayList<>(); // for initial values
     private List<Token> elements = null;
+
+    // for map
+    private LinkedHashMap<List<Token>, List<Token>> initialMap = new LinkedHashMap<>();
+    private LinkedHashMap<Token, Token> map = new LinkedHashMap<>();
 
 
     //======================== CONSTRUCTORS ========================
@@ -34,13 +42,17 @@ public class Token {
 
     public Token(TokenType type, String value,
                  Position start, Position end, boolean boolVal,
-                 List<Token> arrElements, List<List<Token>> initialElems) {//for when initialized with a value
+                 List<Token> arrElements, List<List<Token>> initialElems,
+                 LinkedHashMap<List<Token>, List<Token>> initialMap,
+                 LinkedHashMap<Token, Token> map) {//for when initialized with a value
         this.type = type;
         this.start = start;
         this.end = end;
         this.boolVal = boolVal;
         this.elements = arrElements;
         this.initialElems = initialElems;
+        this.initialMap = initialMap;
+        this.map = map;
 
         if (value.indexOf ('-') == 0 && (type == TokenType.INT || type == TokenType.DOUBLE)) {
             this.isNeg = true;
@@ -57,30 +69,47 @@ public class Token {
 
     //======================== CLASS METHODS ========================
     public Token copy () {
-        if(type == TokenType.LIST && elements != null) {
-            return new Token(type, getValue(), start, end, boolVal, copy1DLst(), initialElems);
-        }
-        if (type == TokenType.FUNCCALL) {
-            return new Token(type, getValue(), start, end, boolVal, elements, copy2DLst());
+        if(elements != null) {
+            return new Token(type, getValue(), start, end, boolVal,
+                    copy1DLst(elements), copy2DLst(initialElems),
+                    copy2DMap(initialMap), copy1DMap(map));
         }
 
-        return new Token(type, getValue(), start, end, boolVal, elements, initialElems);
+        return new Token(type, getValue(), start, end, boolVal,
+                elements, copy2DLst(initialElems),
+                copy2DMap(initialMap), copy1DMap(map));
     }
-    private List<List<Token>> copy2DLst () {
+    private List<List<Token>> copy2DLst (List<List<Token>> lst) {
         List<List<Token>> bigLst = new ArrayList<>();
-        for (List<Token> l: this.initialElems) {
-            List<Token> copyArrOuter = new ArrayList<>();
-            for(Token token: l) {
-                copyArrOuter.add(token.copy());
-            }
-            bigLst.add(copyArrOuter);
+        for (List<Token> l: lst) {
+            List<Token> copyLst = copy1DLst(l);
+            bigLst.add(copyLst);
         }
         return bigLst;
     }
 
-    private List<Token> copy1DLst() {
+    private LinkedHashMap<List<Token>, List<Token>> copy2DMap (
+            LinkedHashMap<List<Token>, List<Token>> m) {
+        LinkedHashMap<List<Token>, List<Token>> bigMap = new LinkedHashMap<>();
+        m.forEach((k, v) -> {
+            bigMap.put(copy1DLst(k), copy1DLst(v));
+        });
+        return bigMap;
+    }
+
+    private LinkedHashMap<Token, Token> copy1DMap (
+            LinkedHashMap<Token, Token> m) {
+        LinkedHashMap<Token, Token> littleMap = new LinkedHashMap<>();
+        m.forEach((k, v) -> {
+            littleMap.put(k.copy(), v.copy());
+        });
+        return littleMap;
+    }
+
+
+    private List<Token> copy1DLst(List<Token> lst) {
             List<Token> copyArrOuter = new ArrayList<>();
-            for(Token token: this.elements) {
+            for(Token token: lst) {
                 copyArrOuter.add(token.copy());
             }
         return copyArrOuter;
@@ -118,6 +147,18 @@ public class Token {
                 return str.toString();
             }
             else return this.initialElems.toString();
+        }
+        if (this.type == TokenType.MAP) {
+            String str = "$|";
+            for (Map.Entry<Token, Token> m : this.map.entrySet()) {
+                str += m.getKey().getValue();
+                str+= ":";
+                str += m.getValue().getValue();
+                str+=", ";
+            }
+            if(!str.equals("$|")) str = str.substring(0, str.length()-2);
+            str += "|";
+            return str;
         }
 
         if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
@@ -183,5 +224,21 @@ public class Token {
 
     public void setElements(List<Token> elements) {
         this.elements = elements;
+    }
+
+    public LinkedHashMap<List<Token>, List<Token>> getInitialMap() {
+        return initialMap;
+    }
+
+    public void setInitialMap(LinkedHashMap<List<Token>, List<Token>> initialMap) {
+        this.initialMap = initialMap;
+    }
+
+    public void setMap(LinkedHashMap<Token, Token> map) {
+        this.map = map;
+    }
+
+    public LinkedHashMap<Token, Token> getMap() {
+        return map;
     }
 }

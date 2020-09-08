@@ -8,6 +8,7 @@ public enum TokenType {
     BOOLEAN,
     STRING,
     LIST,
+    MAP,
 
     // OPERATIONS AND RELATED TO MATH
     PLUS,
@@ -44,6 +45,8 @@ public enum TokenType {
     LCBRACE,
     RCBRACE,
     CLOSEDPAREN, // for ASTExpression
+    MAPEND, // for maps: x = $|10: 10|
+    MAPSTART,
 
     //SPECIAL CHARACTERS
     COMMA,
@@ -52,6 +55,7 @@ public enum TokenType {
     NEWLINE,
     SEMICOLON,
     RIGHTCARROT,
+    COLON,
 
     // FUNCTIONS
     FUNCCALL,

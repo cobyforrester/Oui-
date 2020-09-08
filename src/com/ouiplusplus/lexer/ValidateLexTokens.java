@@ -238,6 +238,7 @@ public class ValidateLexTokens {
                 case LPAREN:
                 case LCBRACE:
                 case LBRACKET:
+                case MAPSTART:
                     s.push(t);
                     break;
                 case RPAREN:
@@ -257,6 +258,12 @@ public class ValidateLexTokens {
                         tok = s.pop();
                         if (tok.getType() != TokenType.LCBRACE) return new UnexpectedChar(start, end, "}");
                     } else return new UnclosedCurlyBrace(start, end, "}");
+                    break;
+                case MAPEND:
+                    if (s.size() != 0) {
+                        tok = s.pop();
+                        if (tok.getType() != TokenType.MAPSTART) return new UnexpectedChar(start, end, "|");
+                    } else return new UnclosedCurlyBrace(start, end, "|");
                     break;
             }
         }

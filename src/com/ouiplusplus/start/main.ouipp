@@ -1,16 +1,15 @@
 ###
 imprimer('#########################')
 
-x = null
+x = ||
 
 func yes() {
     print('NULL 9')
 }
 ###
-if (null == null) {
-    print(null)
-}
+x = $|10:10, 200: 10, 10:!true|
 
+print(x)
 
 #hello(hello(10, hello([10, 11, hello()])), 10,'yes');
 

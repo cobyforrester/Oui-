@@ -47,7 +47,7 @@ public class ASTExpression {
         TokenType tt = token.getType();
         this.size++;
         return switch (tt) {
-            case STRING, DOUBLE, INT, LIST, NULL -> casePrimitiveType(token);
+            case STRING, DOUBLE, INT, LIST, NULL, MAP -> casePrimitiveType(token);
             case MULT, DIV, MODULO, CARROT -> caseMULTDIV(token);
             case PLUS, MINUS -> casePLUSMINUS(token);
             case LPAREN -> caseLPAREN(token);
@@ -64,6 +64,10 @@ public class ASTExpression {
         for (Token t: tokens) {
             copyTkns.add(t.copy());
         }
+
+        // processes map into tokens, ie initializes map
+        err = processMaps(copyTkns);
+        if (err != null) return new Pair<>(null, err);
 
         // processes array elements into tokens, ie initializes arreyElems
         err = processArrays(copyTkns);
@@ -331,7 +335,8 @@ public class ASTExpression {
             err = tmp.getP2();
             if(err != null) return new Pair<>(null, err);
             if(node.token.isNeg()) {
-                if (tmp.getP1().getType() == TokenType.LIST) {
+                if (tmp.getP1().getType() == TokenType.LIST ||
+                        tmp.getP1().getType() == TokenType.MAP) {
                     err = new InvalidOperation(node.token.getStart(), tmp.getP1().getEnd(), "-");
                 }
                 tmp.getP1().setNeg(!tmp.getP1().isNeg());
@@ -391,6 +396,26 @@ public class ASTExpression {
         }
         return null;
     }
+
+    public Error processMaps(List<Token> lst) {
+        for(Token t: lst) {
+            if (t.getType() == TokenType.MAP && t.getMap().size() == 0) {
+                LinkedHashMap<Token, Token> m = new LinkedHashMap<>();
+                for (Map.Entry<List<Token>, List<Token>> bigMap : t.getInitialMap().entrySet()) {
+                    Pair<Token, Error> pK = this.process(bigMap.getKey());
+                    if (pK.getP2() != null) return pK.getP2();
+                    Pair<Token, Error>  pV = this.process(bigMap.getValue());
+                    if (pV.getP2() != null) return pV.getP2();
+                    m.put(pK.getP1(), pV.getP1());
+                }
+                t.setMap(m);
+                t.setInitialMap(new LinkedHashMap<>());
+            }
+        }
+
+        return null;
+    }
+
     public Error processFunctions(List<Token> lst) {
         // built in functions later!!
             for (int i = 0; i < lst.size(); i++) {
