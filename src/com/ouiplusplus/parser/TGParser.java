@@ -98,7 +98,7 @@ public class TGParser {
                     }
                     i++;
                 }
-                if(!(tgLst.get(i).getType() == TokenGroupType.IF
+                if(i < tgLst.size() && !(tgLst.get(i).getType() == TokenGroupType.IF
                         || tgLst.get(i).getType() == TokenGroupType.ELIF
                         || tgLst.get(i).getType() == TokenGroupType.ELSE)) i--;
             } else if (tg.getType() == TokenGroupType.FOR) {

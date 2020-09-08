@@ -1,12 +1,15 @@
 imprimer('#########################')
 
 
-x = $|10:100, true==true:10|
-y = 'hello'
-#z = [1,2,3,4,5,6,7]
-#tmp = get(y, 0)
-x = getKeys(x)
-print(x)
+fonc julie(n) {
+    print(n)
+    if (n > 0) {
+        julie(n-1)
+    }
+}
+
+julie(10)
+
 
 
 
