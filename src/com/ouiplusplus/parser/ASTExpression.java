@@ -382,7 +382,7 @@ public class ASTExpression {
 
     public Error processArrays(List<Token> lst) {
         for(Token t: lst) {
-            if (t.getType() == TokenType.LIST && t.getElements() == null) {
+            if (t.getType() == TokenType.LIST && t.getInitialElems().size() != 0) {
                 List<Token> newElems = new ArrayList<>();
                 for(List<Token> elem: t.getInitialElems()) {
                     if(elem.size() != 0) {
@@ -391,6 +391,7 @@ public class ASTExpression {
                         newElems.add(pair.getP1());
                     }
                 }
+                t.setInitialElems(new ArrayList<>());
                 t.setElements(newElems);
             }
         }
@@ -399,7 +400,7 @@ public class ASTExpression {
 
     public Error processMaps(List<Token> lst) {
         for(Token t: lst) {
-            if (t.getType() == TokenType.MAP && t.getMap().size() == 0) {
+            if (t.getType() == TokenType.MAP && t.getInitialMap().size() != 0) {
                 LinkedHashMap<Token, Token> m = new LinkedHashMap<>();
                 for (Map.Entry<List<Token>, List<Token>> bigMap : t.getInitialMap().entrySet()) {
                     Pair<Token, Error> pK = this.process(bigMap.getKey());

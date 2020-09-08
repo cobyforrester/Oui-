@@ -153,7 +153,7 @@ public class GenerateTGLst {
                         else if (lst.get(i).getType() == TokenType.NEWLINE) {
                             return new Pair<>(null, err);
                         } else {
-                            if(onArg1) arg1.add(lst.get(i));
+                            if (onArg1) arg1.add(lst.get(i));
                             else arg2.add(lst.get(i));
                         }
                         i++;
@@ -179,8 +179,6 @@ public class GenerateTGLst {
                     if (tkns2.getT1().size() == 0) {
                         return new Pair<>(null, err);
                     }
-
-
 
 
                     // SET i
@@ -209,7 +207,7 @@ public class GenerateTGLst {
                         if (st.size() != 0) {
                             forBodyTokens.add(lst.get(i));
                         }
-                        if(st.size() != 0) i++;
+                        if (st.size() != 0) i++;
                     }
                     Pair<List<TokenGroup>, Error> rec = generateTokenGroupLst(
                             forBodyTokens, vars, functions);
@@ -646,31 +644,66 @@ public class GenerateTGLst {
                 }
             } else if (lst.get(index).getType() == TokenType.LBRACKET) {
                 // FOR ADDING AN ARRAY AND TURNING IT INTO A TOKEN
-                List<Token> arrTokens = new ArrayList<>();
+                List<List<Token>> initalElems = new ArrayList<>();
+                List<Token> tmp = new ArrayList<>();
                 Stack<Token> st = new Stack<>();
                 st.push(lst.get(index));
-                arrTokens.add(lst.get(index));
+                Position start = lst.get(index).getStart();
                 index++;
+                if (index < lst.size() && lst.get(index).getType() == TokenType.RBRACKET) {
+                    st.pop();
+                }
                 while (index < lst.size() && st.size() != 0) {
                     if (lst.get(index).getType() == TokenType.NEWLINE) {
                         err = new UnexpectedToken(lst.get(index).getStart(),
                                 lst.get(index).getEnd(), lst.get(index).getValue());
                         return new Trio<>(null, null, err);
-                    } else {
-                        if (lst.get(index).getType() == TokenType.LBRACKET)
-                            st.push(lst.get(index));
-                        else if (lst.get(index).getType() == TokenType.RBRACKET)
-                            st.pop();
-                        arrTokens.add(lst.get(index));
                     }
-                    if (st.size() != 0) index++;
+                    if (lst.get(index).getType() == TokenType.MAPSTART
+                            || lst.get(index).getType() == TokenType.LPAREN
+                            || lst.get(index).getType() == TokenType.LBRACKET)
+                        st.push(lst.get(index));
+                    else if (lst.get(index).getType() == TokenType.MAPEND
+                            || lst.get(index).getType() == TokenType.RPAREN
+                            || lst.get(index).getType() == TokenType.RBRACKET) {
+                        st.pop();
+                        if (st.size() == 0) {
+                            if (tmp.size() == 0) {
+                                err = new InvalidListDeclare(lst.get(index).getStart(),
+                                        lst.get(index).getEnd(), "[]");
+                                return new Trio<>(null, null, err);
+                            }
+                            Trio<List<Token>, Integer, Error> p =
+                                    generateTokensLst(0, tmp, vars, functions);
+                            if (p.getT3() != null) return p;
+                            initalElems.add(p.getT1());
+                        }
+                    }
+                    if (st.size() != 0) {
+                        if (lst.get(index).getType() == TokenType.COMMA
+                                && st.size() == 1) {
+                            if (tmp.size() == 0) {
+                                err = new InvalidListDeclare(lst.get(index).getStart(),
+                                        lst.get(index).getEnd(), "[]");
+                                return new Trio<>(null, null, err);
+                            }
+                            Trio<List<Token>, Integer, Error> p =
+                                    generateTokensLst(0, tmp, vars, functions);
+                            if (p.getT3() != null) return p;
+                            initalElems.add(p.getT1());
+                            tmp = new ArrayList<>();
+                        } else {
+                            tmp.add(lst.get(index));
+                        }
+                        index++;
+                    }
                 }
+
                 err = new UnexpectedToken(lst.get(index).getStart(),
                         lst.get(index).getEnd(), lst.get(index).getValue());
-                if (st.size() != 0) return new Trio<>(null, null, err);
-                Pair<Token, Error> arrPair = makeArrayToken(arrTokens, vars, functions);
-                if (arrPair.getP2() != null) return new Trio<>(null, null, arrPair.getP2());
-                fnl.add(arrPair.getP1());
+                Token token = new Token(TokenType.LIST, "[]", start, lst.get(index).getEnd());
+                token.setInitialElems(initalElems);
+                fnl.add(token);
             } else if (lst.get(index).getType() == TokenType.MAPSTART) {
                 // FOR ADDING AN ARRAY AND TURNING IT INTO A TOKEN
                 List<List<Token>> keys = new ArrayList<>();
@@ -708,7 +741,6 @@ public class GenerateTGLst {
                             expectingColon = true;
                         }
                     }
-
                     if (st.size() != 0) {
                         if (lst.get(index).getType() == TokenType.COLON && st.size() == 1) {
                             if (!expectingColon || tmp.size() == 0) {
@@ -752,7 +784,7 @@ public class GenerateTGLst {
                         lst.get(index).getEnd(), lst.get(index).getValue());
                 Token token = new Token(TokenType.MAP, "$||", start, lst.get(index).getEnd());
                 LinkedHashMap<List<Token>, List<Token>> initialMap = new LinkedHashMap<>();
-                for(int i = 0; i < keys.size(); i++) {
+                for (int i = 0; i < keys.size(); i++) {
                     initialMap.put(keys.get(i), vals.get(i));
                 }
                 token.setInitialMap(initialMap);
@@ -767,117 +799,4 @@ public class GenerateTGLst {
         return new Trio<>(fnl, index, null); //plus 1 because of semicolon or newline
     }
 
-    public static Pair<Token, Error> makeArrayToken(List<Token> tokens, List<String> vars,
-                                                    Map<String, List<String>> functions) {
-        // assuming input is relatively valid
-        Position start = tokens.get(0).getStart();
-        Position end = tokens.get(tokens.size() - 1).getEnd();
-        List<Token> elem = new ArrayList<>();
-        List<List<Token>> arrElems = new ArrayList<>();
-        for (int i = 1; i < tokens.size(); i++) {
-            if (tokens.get(i).getType() == TokenType.WORD) {
-                if (vars.contains(tokens.get(i).getValue())) {
-                    Token tmp = new Token(TokenType.VAR, tokens.get(i).getValue(),
-                            tokens.get(i).getStart(), tokens.get(i).getEnd());
-                    tmp.setNeg(tokens.get(i).isNeg());
-                    elem.add(tmp);
-                } else if (functions.containsKey(tokens.get(i).getValue())) {
-                    Error err;
-                    err = new UnexpectedToken(tokens.get(i).getStart(),
-                            tokens.get(i).getEnd(), tokens.get(i).getValue());
-                    if (i + 2 >= tokens.size()
-                            || tokens.get(i + 1).getType() != TokenType.LPAREN) {
-                        return new Pair<>(null, err);
-                    }
-                    Token func = tokens.get(i);
-                    List<List<Token>> params = new ArrayList<>();
-                    List<Token> param = new ArrayList<>();
-                    Stack<Token> st = new Stack<>();
-                    st.push(tokens.get(i));
-                    i += 2;
-                    while (i < tokens.size() && st.size() != 0) {
-                        if (tokens.get(i).getType() == TokenType.NEWLINE) {
-                            err = new UnexpectedToken(tokens.get(i).getStart(),
-                                    tokens.get(i).getEnd(), tokens.get(i).getValue());
-                            return new Pair<>(null, err);
-                        }
-                        if (tokens.get(i).getType() == TokenType.LPAREN
-                                || tokens.get(i).getType() == TokenType.LBRACKET
-                                || tokens.get(i).getType() == TokenType.LCBRACE) {
-                            st.push(tokens.get(i));
-                            param.add(tokens.get(i));
-                        } else if (tokens.get(i).getType() == TokenType.RBRACKET
-                                || tokens.get(i).getType() == TokenType.RCBRACE) {
-                            st.pop();
-                            param.add(tokens.get(i));
-                        } else if (tokens.get(i).getType() == TokenType.RPAREN) {
-                            st.pop();
-                            if (st.size() == 0) {
-                                params.add(param);
-                            } else {
-                                param.add(tokens.get(i));
-                            }
-                        } else if (tokens.get(i).getType() == TokenType.COMMA && st.size() == 1) {
-                            params.add(param);
-                            param = new ArrayList<>();
-                        } else {
-                            param.add(tokens.get(i));
-                        }
-                        if (st.size() != 0) i++;
-                    }
-                    Token token = new Token(TokenType.FUNCCALL, func.getValue(),
-                            func.getStart(), tokens.get(i).getEnd());
-                    List<List<Token>> el = new ArrayList<>();
-                    for (List<Token> l : params) {
-                        Trio<List<Token>, Integer, Error> trio = generateTokensLst(0, l, vars, functions);
-                        if (trio.getT3() != null) return new Pair<>(null, trio.getT3());
-                        el.add(trio.getT1());
-                    }
-                    token.setInitialElems(el);
-                    elem.add(token);
-                } else {
-                    Error err = new UndeclaredVariableReference(tokens.get(i).getStart(),
-                            tokens.get(i).getEnd(), tokens.get(i).getValue());
-                    return new Pair<>(null, err);
-                }
-            } else if (tokens.get(i).getType() == TokenType.COMMA
-                    || tokens.get(i).getType() == TokenType.RBRACKET) {
-                arrElems.add(elem);
-                elem = new ArrayList<>();
-            } else if (tokens.get(i).getType() == TokenType.LBRACKET) {
-                List<Token> newArrTokens = new ArrayList<>();
-                Stack<Token> st = new Stack<>();
-                st.push(tokens.get(i));
-                newArrTokens.add(tokens.get(i));
-                i++;
-                while (i < tokens.size() && st.size() != 0) {
-                    if (tokens.get(i).getType() == TokenType.NEWLINE) {
-                        Error err = new UnexpectedToken(tokens.get(i).getStart(),
-                                tokens.get(i).getEnd(), tokens.get(i).getValue());
-                        return new Pair<>(null, err);
-                    } else {
-                        if (tokens.get(i).getType() == TokenType.LBRACKET)
-                            st.push(tokens.get(i));
-                        else if (tokens.get(i).getType() == TokenType.RBRACKET)
-                            st.pop();
-                        newArrTokens.add(tokens.get(i));
-                    }
-                    if (st.size() != 0) i++;
-                }
-                Error err = new UnexpectedToken(tokens.get(i).getStart(),
-                        tokens.get(i).getEnd(), tokens.get(i).getValue());
-                if (st.size() != 0) return new Pair<>(null, err);
-                Pair<Token, Error> arrPair = makeArrayToken(newArrTokens, vars, functions);
-                if (arrPair.getP2() != null) return new Pair<>(null, arrPair.getP2());
-                elem.add(arrPair.getP1());
-            } else {
-                elem.add(tokens.get(i));
-            }
-        }
-
-        Token token = new Token(TokenType.LIST, "[]", start, end);
-        token.setInitialElems(arrElems);
-        return new Pair<>(token, null);
-    }
 }
-

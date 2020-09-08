@@ -8,6 +8,7 @@ import com.ouiplusplus.lexer.Token;
 import com.ouiplusplus.lexer.TokenType;
 
 import java.lang.Math;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ASTCombineTokens {
@@ -46,24 +47,69 @@ public class ASTCombineTokens {
 
         if (left.getType() == TokenType.LIST || right.getType() == TokenType.LIST) {
             // IMPLEMENT == IN THE FUTURE
-            if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
-                Error invOper = new InvalidOperation(start, end, op.getValue());
-                return new Pair<>(null, invOper);
-            }
+            Token rtnTok = new Token(TokenType.LIST, "[]", start, end);
             if (left.isNeg() || right.isNeg()) {
                 Error invOper = new InvalidOperation(start, end, "-");
                 return new Pair<>(null, invOper);
             }
-            if (op.getType() != TokenType.PLUS) {
+            if (op.getType() != TokenType.PLUS && op.getType() != TokenType.MULT) {
                 Error invOper = new InvalidOperation(start, end, op.getValue());
                 return new Pair<>(null, invOper);
             }
             if (op.getType() == TokenType.PLUS) {
-                Token rtnTok = new Token(TokenType.LIST, "[]", start, end);
+                if (left.getType() != TokenType.LIST || right.getType() != TokenType.LIST) {
+                    Error invOper = new InvalidOperation(start, end, op.getValue());
+                    return new Pair<>(null, invOper);
+                }
                 List<Token> lst = left.getElements();
                 lst.addAll(right.getElements());
                 rtnTok.setElements(lst);
                 return new Pair<>(rtnTok, null);
+            } else if (op.getType() == TokenType.MULT) {
+                if (left.getType() == TokenType.INT) {
+                    if(left.getValue().contains("-")) {
+                        Error invOper = new InvalidOperation(start, end, "-int*String");
+                        return new Pair<>(null, invOper);
+                    } else {
+                        try {
+                            long leftVal = Long.parseLong(left.getValue());
+                            List<Token> newLst = new ArrayList<>();
+                            for(int i = 0; i < leftVal; i++) {
+                                for (Token t: right.getElements()) {
+                                    newLst.add(t.copy());
+                                }
+                            }
+                            rtnTok.setElements(newLst);
+                            return new Pair<>(rtnTok, null);
+                        } catch(Exception e) {
+                            Error overflow = new OverFlow(start, end, "");
+                            return new Pair<>(null, overflow);
+                        }
+                    }
+                } else if (right.getType() == TokenType.INT) {
+                    if(right.getValue().contains("-")) {
+                        Error invOper = new InvalidOperation(start, end, "-int*String");
+                        return new Pair<>(null, invOper);
+                    } else {
+                        try {
+                            long rightVal = Long.parseLong(right.getValue());
+                            List<Token> newLst = new ArrayList<>();
+                            for(int i = 0; i < rightVal; i++) {
+                                for (Token t: left.getElements()) {
+                                    newLst.add(t.copy());
+                                }
+                            }
+                            rtnTok.setElements(newLst);
+                            return new Pair<>(rtnTok, null);
+                        } catch(Exception e) {
+                            Error overflow = new OverFlow(start, end, "");
+                            return new Pair<>(null, overflow);
+                        }
+                    }
+                } else {
+                    Error invOper = new InvalidOperation(start, end, "*");
+                    return new Pair<>(null, invOper);
+                }
             }
 
 

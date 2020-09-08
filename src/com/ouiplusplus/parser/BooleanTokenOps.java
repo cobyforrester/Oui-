@@ -60,7 +60,26 @@ public class BooleanTokenOps {
                 fnlTokenPair.getP1().setBoolVal(false);
             }
             return fnlTokenPair;
-
+        }
+        if (left.getType() == TokenType.MAP || right.getType() == TokenType.MAP) {
+            if(op.getType() != TokenType.DOUBLE_EQUALS && op.getType() != TokenType.NOT_EQUAL) {
+                err = new InvalidOperation(start, end, op.getValue());
+                return new Pair<>(null, err);
+            }
+            if(op.getType() == TokenType.DOUBLE_EQUALS) {
+                if (left.getType() != TokenType.MAP || right.getType() != TokenType.MAP) {
+                    fnlTokenPair.getP1().setBoolVal(false);
+                    return fnlTokenPair;
+                }
+                fnlTokenPair.getP1().setBoolVal(left.getValue().equals(right.getValue()));
+            } else {
+                if (left.getType() != TokenType.MAP || right.getType() != TokenType.MAP) {
+                    fnlTokenPair.getP1().setBoolVal(true);
+                    return fnlTokenPair;
+                }
+                fnlTokenPair.getP1().setBoolVal(!left.getValue().equals(right.getValue()));
+            }
+            return fnlTokenPair;
         }
 
         double ld = 0, rd = 0;

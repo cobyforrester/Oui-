@@ -20,7 +20,7 @@ public class Token {
 
     // for arrays and functions
     private List<List<Token>> initialElems = new ArrayList<>(); // for initial values
-    private List<Token> elements = null;
+    private List<Token> elements = new ArrayList<>();
 
     // for map
     private LinkedHashMap<List<Token>, List<Token>> initialMap = new LinkedHashMap<>();
