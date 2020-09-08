@@ -6,17 +6,13 @@ import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.lexer.Token;
 import com.ouiplusplus.lexer.TokenType;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 
 public class PreBuiltFunctions {
 
     public static List<String> getFunctions() {
         return Arrays.asList(
-                "len", "set", "get", "sub", "append", "addAt", "put", "remove", "getkeys"
+                "len", "set", "get", "sub", "append", "addAt", "put", "remove", "getKeys"
         );
     }
 
@@ -45,7 +41,7 @@ public class PreBuiltFunctions {
                 Token t = new Token(TokenType.INT, length,
                         token.getStart(), token.getEnd());
                 return new Pair<>(t, null);
-            } else if(arg1.getType() == TokenType.STRING){
+            } else if (arg1.getType() == TokenType.STRING) {
                 String length = Integer.toString(
                         arg1.getValue().length());
                 Token t = new Token(TokenType.INT, length, token.getStart(),
@@ -71,7 +67,7 @@ public class PreBuiltFunctions {
                 return err;
             try {
                 if (arg1.getType() == TokenType.LIST) {
-                    err.setP2(new InvalidIndex(token.getStart(), token.getEnd(), token.getValue()));
+                    err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
                     if (arg2.getType() != TokenType.INT) return err;
                     if (arg2.isNeg()) return err;
                     int a2 = Integer.parseInt(arg2.getValue());
@@ -83,7 +79,7 @@ public class PreBuiltFunctions {
                     t.setEnd(token.getEnd());
                     return new Pair<>(t, null);
                 } else if (arg1.getType() == TokenType.STRING) {
-                    err.setP2(new InvalidIndex(token.getStart(), token.getEnd(), token.getValue()));
+                    err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
                     if (arg2.getType() != TokenType.INT) return err;
                     if (arg2.isNeg()) return err;
                     int a2 = Integer.parseInt(arg2.getValue());
@@ -114,6 +110,35 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
+        } else if (token.getValue().equals("set")) {
+            /*
+            (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
+             */
+            if (token.getElements().size() != 3) return err;
+            Token arg1 = token.getElements().get(0);
+            Token arg2 = token.getElements().get(1);
+            Token arg3 = token.getElements().get(2);
+            if (arg1.getType() != TokenType.LIST)
+                return err;
+            try {
+
+                err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
+                if (arg3.getType() != TokenType.INT) return err;
+                if (arg3.isNeg()) return err;
+                int a3 = Integer.parseInt(arg3.getValue());
+
+                int length = arg1.getElements().size();
+                if (length <= a3) return err;
+                List<Token> newLst = arg1.getElements();
+                newLst.set(a3, arg2);
+                Token t = new Token(TokenType.LIST, "[]", token.getStart(),
+                        token.getEnd());
+                t.setElements(newLst);
+                return new Pair<>(t, null);
+            } catch (Exception e) {
+                err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
+                return err;
+            }
         } else if (token.getValue().equals("remove")) {
             /*
             (LIST|MAP, INDEX|ITEM) -> LIST|MAP
@@ -126,7 +151,7 @@ public class PreBuiltFunctions {
                 return err;
             try {
                 if (arg1.getType() == TokenType.LIST) {
-                    err.setP2(new InvalidIndex(token.getStart(), token.getEnd(), token.getValue()));
+                    err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
                     if (arg2.getType() != TokenType.INT) return err;
                     if (arg2.isNeg()) return err;
                     int a2 = Integer.parseInt(arg2.getValue());
@@ -166,7 +191,7 @@ public class PreBuiltFunctions {
             if (arg1.getType() != TokenType.LIST
                     && arg1.getType() != TokenType.STRING)
                 return err;
-            err.setP2(new InvalidIndex(token.getStart(), token.getEnd(), token.getValue()));
+            err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
             if (arg2.getType() != TokenType.INT || arg3.getType() != TokenType.INT) return err;
             if (arg2.isNeg() || arg3.isNeg()) return err;
             try {
@@ -205,7 +230,7 @@ public class PreBuiltFunctions {
             Token arg3 = token.getElements().get(2);
             if (arg1.getType() != TokenType.LIST)
                 return err;
-            err.setP2(new InvalidIndex(token.getStart(), token.getEnd(), token.getValue()));
+            err.setP2(new IndexOutOfBounds(token.getStart(), token.getEnd(), token.getValue()));
             if (arg3.getType() != TokenType.INT || arg3.isNeg()) return err;
             try {
                 int a3 = Integer.parseInt(arg3.getValue());
@@ -241,7 +266,7 @@ public class PreBuiltFunctions {
 
         } else if (token.getValue().equals("put")) {
             /*
-            (MAP, KEY, VALUE)
+            (MAP, KEY, VALUE) -> MAP
              */
             if (token.getElements().size() != 3) return err;
             Token arg1 = token.getElements().get(0);
@@ -259,6 +284,22 @@ public class PreBuiltFunctions {
             Token t = new Token(TokenType.MAP, "$||", token.getStart(),
                     token.getEnd());
             t.setMap(m);
+            return new Pair<>(t, null);
+        } else if (token.getValue().equals("getKeys")) {
+            /*
+            (MAP) -> LIST
+             */
+            if (token.getElements().size() != 1) return err;
+            Token arg1 = token.getElements().get(0);
+            if (arg1.getType() != TokenType.MAP)
+                return err;
+            List<Token> tmp = new ArrayList<>();
+            for (Map.Entry<Token, Token> m : arg1.getMap().entrySet()) {
+                tmp.add(m.getKey());
+            }
+            Token t = new Token(TokenType.LIST, "[]", token.getStart(),
+                    token.getEnd());
+            t.setElements(tmp);
             return new Pair<>(t, null);
         }
 

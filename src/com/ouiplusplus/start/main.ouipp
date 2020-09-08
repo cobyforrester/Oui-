@@ -3,10 +3,10 @@ imprimer('#########################')
 
 x = $|10:100, true==true:10|
 y = 'hello'
-z = [1,2,3,4,5,6,7]
-tmp = get(y, 0)
-print(remove(z, len(x)))
-
+#z = [1,2,3,4,5,6,7]
+#tmp = get(y, 0)
+x = getKeys(x)
+print(x)
 
 
 
