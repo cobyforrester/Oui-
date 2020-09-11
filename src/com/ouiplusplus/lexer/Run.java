@@ -3,6 +3,8 @@ import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
 import com.ouiplusplus.parser.TGParser;
 import com.ouiplusplus.prebuiltfunctions.PreBuiltFunctions;
+import com.ouiplusplus.start.Language;
+import com.ouiplusplus.start.Languages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,14 +25,15 @@ public class Run {
         Pair<List<Token>, Error> lexerPair = lexer.make_tokens(); //returns
         Error error = lexerPair.getP2();
         if(error != null) return new Pair<>(null, error);
-        // GROUPING TOKENS
+        List<Token> tokenLst = lexerPair.getP1();
+
         List<String> vars = new ArrayList<>();
         Map<String, List<String>> functions = new HashMap<>();
         for (String s : PreBuiltFunctions.getFunctions()) {
             functions.put(s, null);
         }
         Pair<List<TokenGroup>, Error> tgPair = GenerateTGLst.generateTokenGroupLst
-                (lexerPair.getP1(), vars, functions);
+                (tokenLst, vars, functions);
         error = tgPair.getP2();
         if (error != null) return new Pair<>(null, error);
         //PROCESS TOKENS/GENERATE OUTPUT STRING AND RETURN

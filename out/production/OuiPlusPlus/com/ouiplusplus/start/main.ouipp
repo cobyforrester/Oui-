@@ -1,17 +1,22 @@
-imprimer('#########################')
+lang:fr
+x=10
+###
+LISTS = []
+MAP = $||
+STRINGS = '' OR ""
+FUNCTION DECLARATION = fonc OR func
+TO PRINT = print() or imprimer()
+###
+# EXAMPLE PROGRAM BELOW
 
-
-fonc julie(n) {
-    print(n)
-    if (n > 0) {
-        julie(n-1)
+func fib(n) {
+    if (n <= 1) {
+        return n
     }
+    return fib(n-1) + fib(n-2)
 }
 
-julie(10)
-
-
-
-
-imprimer('#########################')
-
+for i -> (0, 8) {
+    x = fib(i)
+    print(x)
+}

@@ -1,8 +1,8 @@
 package com.ouiplusplus.error;
 import com.ouiplusplus.lexer.Position;
 public class Error {
-    final private String errorName;
-    final private String details;
+    private String errorName;
+    private final String details;
     private Position start;
     private Position end;
     public Error(String errorName) {
@@ -40,5 +40,9 @@ public class Error {
         }
 
         return result;
+    }
+
+    public void setErrorName(String errorName) {
+        this.errorName = errorName;
     }
 }

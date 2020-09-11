@@ -433,7 +433,6 @@ public class ASTExpression {
                     if (tgparser.isTimedOut()) {
                         return new RequestTimedOut(t.getStart(), t.getEnd(), t.getValue());
                     }
-                    System.out.println(this.tgparser.getVars());
                     TokenGroup tg = this.tgparser.getFunctions().get(t.getValue());
                     Map<String, Token> vars = this.tgparser.getVars();
                     Map<String, Token> tmpVars = new HashMap<>();

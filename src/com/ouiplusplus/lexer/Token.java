@@ -2,6 +2,8 @@ package com.ouiplusplus.lexer;
 
 import com.ouiplusplus.error.Error;
 import com.ouiplusplus.helper.Pair;
+import com.ouiplusplus.start.Language;
+import com.ouiplusplus.start.Languages;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -129,6 +131,7 @@ public class Token {
     }
 
     public String getValue() {
+        // FOR LIST
         if (this.type == TokenType.LIST) {
             if(this.elements != null) {
                 StringBuilder str = new StringBuilder("[");
@@ -142,6 +145,7 @@ public class Token {
             }
             else return this.initialElems.toString();
         }
+        // FOR MAP
         if (this.type == TokenType.MAP) {
             String str = "$|";
             for (Map.Entry<Token, Token> m : this.map.entrySet()) {
@@ -154,13 +158,25 @@ public class Token {
             str += "|";
             return str;
         }
+        //FOR BOOLEAN
+        if (this.type == TokenType.BOOLEAN) {
+            if(Language.language == Languages.ENGLISH) {
+                if (this.boolVal) return "true";
+                else return "false";
+            } else if (Language.language == Languages.FRENCH) {
+                if (this.boolVal) return "vrai";
+                else return "faux";
+            }
+        }
+
+        //FOR NULL
+        if (this.type == TokenType.NULL) {
+            if(Language.language == Languages.ENGLISH) return "null";
+            else if(Language.language == Languages.FRENCH) return "nul";
+        }
 
         if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
                 || this.type == TokenType.DOUBLE)) return "-" + value;
-        if (this.type == TokenType.BOOLEAN) {
-            if (this.boolVal) return "true";
-            else return "false";
-        }
         return value;
     }
 
