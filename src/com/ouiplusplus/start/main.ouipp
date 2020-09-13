@@ -1,4 +1,4 @@
-lang:fr
+lang:eng
 x=10
 ###
 LISTS = []
@@ -8,7 +8,15 @@ FUNCTION DECLARATION = fonc OR func
 TO PRINT = print() or imprimer()
 ###
 # EXAMPLE PROGRAM BELOW
+func printTruth(str) {
+    print(str)
+  }
+  printTruth('Oui++ is so great!')
 
+  func addTwo(a, b) {
+    return a + b
+  }
+  print(addTwo(10, 12))
 func fib(n) {
     if (n <= 1) {
         return n

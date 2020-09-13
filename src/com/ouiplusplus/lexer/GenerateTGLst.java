@@ -22,7 +22,7 @@ public class GenerateTGLst {
             Token curr = lst.get(i);
             String currVal = curr.getValue().toLowerCase();
             if (curr.getType() == TokenType.WORD) {
-                if (functions.containsKey(currVal)) {
+                if (functions.containsKey(curr.getValue())) {
                     err = new InvalidFunctionCall(curr.getStart(),
                             curr.getEnd(), curr.getValue());
                     if (i + 2 >= lst.size() || lst.get(i + 1).getType() != TokenType.LPAREN) {
