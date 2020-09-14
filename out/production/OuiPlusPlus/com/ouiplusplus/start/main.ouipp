@@ -1,4 +1,6 @@
-lang:eng
+###
+###
+    lang:eng # hello
 x=10
 ###
 LISTS = []
