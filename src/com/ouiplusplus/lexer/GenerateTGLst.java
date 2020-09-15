@@ -150,9 +150,9 @@ public class GenerateTGLst {
                         } else if (lst.get(i).getType() == TokenType.LPAREN)
                             s.push(lst.get(i));
                         else if (lst.get(i).getType() == TokenType.RPAREN) s.pop();
-                        else if (lst.get(i).getType() == TokenType.NEWLINE) {
+                        if (lst.get(i).getType() == TokenType.NEWLINE) {
                             return new Pair<>(null, err);
-                        } else {
+                        } else if(lst.get(i).getType() != TokenType.COMMA && s.size() != 0) {
                             if (onArg1) arg1.add(lst.get(i));
                             else arg2.add(lst.get(i));
                         }
@@ -169,10 +169,10 @@ public class GenerateTGLst {
                     if (tkns1.getT1().size() == 0) {
                         return new Pair<>(null, err);
                     }
-
                     Trio<List<Token>, Integer, Error> tkns2 =
                             generateTokensLst(0, arg2, vars, functions);
-                    tknsErr = tkns1.getT3();
+                    tknsErr = tkns2.getT3();
+
                     if (tknsErr != null) return new Pair<>(null, tknsErr);
 
                     // CHECK IF TOKENS LIST IS VALID
@@ -319,7 +319,6 @@ public class GenerateTGLst {
                                         + lst.get(i + 1) + " " + lst.get(i + 2));
                         i += 2;
                     }
-                    System.out.println(lst.get(i));
 
                     // Lots of error checking
                     if (!isIf && (newLst.size() == 0

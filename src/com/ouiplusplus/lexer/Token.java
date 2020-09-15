@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Token {
+    /*
+    I recognize using some java inheritance and polymorphism
+    is a far superior way to format this. I will hopefully be changing this soon!
+    And have the generic token class have a different object for each type.
+     */
     private TokenType type;
     private String value;
     private Position start;

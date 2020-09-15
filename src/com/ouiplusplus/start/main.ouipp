@@ -7,9 +7,4 @@ TO PRINT = print() or imprimer()
 ###
 
 lang:eng # default is french, remove or make lang:fr to change
-x = true
-  if(!x) {
-    print('In if')
-  } elif ((true == !false) && 10 == 10) {
-    print('In elif')
-  }
+

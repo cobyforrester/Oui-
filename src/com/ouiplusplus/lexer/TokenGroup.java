@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public class TokenGroup {
+    /*
+    I recognize using some java inheritance and polymorphism
+    is a far superior way to format this. I will hopefully be changing this soon!
+    And have the generic tokenGroup class have a different object for each type.
+ */
     private TokenGroupType type;
     private List<Token> tokens; //for variables, also if statements conditional, while loop cond.
     private List<TokenGroup> tokenGroups; //for if statements for loops functions
