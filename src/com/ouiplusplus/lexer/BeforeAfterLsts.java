@@ -204,7 +204,7 @@ public class BeforeAfterLsts {
             TokenType.LPAREN, TokenType.MINUS,
             TokenType.PLUS, TokenType.WORD, TokenType.STRING,
             TokenType.BOOLEAN, TokenType.LBRACKET, TokenType.RBRACKET,
-            TokenType.NULL, TokenType.MAPSTART,
+            TokenType.NULL, TokenType.MAPSTART, TokenType.NOT,
     };
 
     // ========================= AND_OR_OPS ===============================
@@ -231,6 +231,8 @@ public class BeforeAfterLsts {
             TokenType.AND, TokenType.OR,
             TokenType.LBRACKET, TokenType.COLON,
             TokenType.MAPSTART, TokenType.COMMA,
+            TokenType.DOUBLE_EQUALS, TokenType.NOT_EQUAL,
+
     };
 
     final private TokenType[] afterNOTAdd = {

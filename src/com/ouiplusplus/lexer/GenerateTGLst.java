@@ -297,6 +297,7 @@ public class GenerateTGLst {
                         && lst.get(i + 2).getValue().toLowerCase().equals("si")))) {
                     // VARIABLES
                     boolean isIf = currVal.equals("if") || currVal.equals("si");
+                    boolean isElif = currVal.equals("elif");
                     boolean isElseIf = (currVal.equals("else")
                             && (i + 1 < lst.size()
                             && lst.get(i + 1).getValue().toLowerCase().equals("if")));
@@ -307,13 +308,18 @@ public class GenerateTGLst {
                                 curr.getStart(), curr.getEnd(),
                                 curr.getValue() + " " + lst.get(i + 1));
                         i++;
-                    } else {
+                    } else if (isElif) {
+                        err = new InvalidElifDeclare(
+                                curr.getStart(), curr.getEnd(),
+                                curr.getValue() + " " + lst.get(i));
+                    }else {
                         err = new InvalidElifDeclare(
                                 curr.getStart(), curr.getEnd(),
                                 curr.getValue() + " "
                                         + lst.get(i + 1) + " " + lst.get(i + 2));
                         i += 2;
                     }
+                    System.out.println(lst.get(i));
 
                     // Lots of error checking
                     if (!isIf && (newLst.size() == 0

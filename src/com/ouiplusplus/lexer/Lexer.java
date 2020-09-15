@@ -34,13 +34,17 @@ public class Lexer {
     public Pair<List<Token>, Error> make_tokens() {
         List<Token> tokens = new ArrayList<>();
         String alph = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String nums = "0123456789";
+        String nums = "0123456789.";
         String quotes = "\'\"";
         String boolOps = "=><&|!";
         String plusMinus = "+-";
         while (this.currChar != 0) {
             if (nums.indexOf(this.currChar) > -1) { // Numbers
-                tokens.add(this.makeNumberToken());
+                Position tmp = this.pos.copy();
+                Token tok = this.makeNumberToken();
+                if (tok == null) {
+                    return new Pair<>(null, new InvalidNumber(tmp, this.pos.copy(), ""));
+                } else tokens.add(tok);
             } else if(alph.indexOf(this.currChar) > -1) { // Variables
                 tokens.add(this.makeAlphToken());
             } else if(quotes.indexOf(this.currChar) > -1) { // Strings
@@ -209,20 +213,18 @@ public class Lexer {
         while (this.currChar != 0 && "0123456789.".indexOf(this.currChar) > -1) {
             end = this.pos.copy();
             if ('.' == this.currChar) {
-                if (dotCount == 1) break; //we cant have more than one '.' in number
+                if (dotCount == 1) return null; //we cant have more than one '.' in number
                 dotCount++;
             }
             num += this.currChar; // creating number
             this.advance();
         }
-        if (num.charAt(num.length() - 1) == '.') {
-            num = num.substring(0, num.length() - 1);
-            dotCount--;
-        }
+        if (num.charAt(num.length() - 1) == '.') return null;
 
-        if (dotCount == 0) {
-            return new Token(TokenType.INT, num, start, end);
-        }
+        if (num.length()==1 && dotCount == 1) return null;
+
+        if (dotCount == 0) return new Token(TokenType.INT, num, start, end);
+
         return new Token(TokenType.DOUBLE, num, start, end);
     }
 

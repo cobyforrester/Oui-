@@ -1,32 +1,15 @@
 ###
-###
-    lang:eng # hello
-x=10
-###
 LISTS = []
 MAP = $||
 STRINGS = '' OR ""
 FUNCTION DECLARATION = fonc OR func
 TO PRINT = print() or imprimer()
 ###
-# EXAMPLE PROGRAM BELOW
-func printTruth(str) {
-    print(str)
-  }
-  printTruth('Oui++ is so great!')
 
-  func addTwo(a, b) {
-    return a + b
+lang:eng # default is french, remove or make lang:fr to change
+x = true
+  if(!x) {
+    print('In if')
+  } elif ((true == !false) && 10 == 10) {
+    print('In elif')
   }
-  print(addTwo(10, 12))
-func fib(n) {
-    if (n <= 1) {
-        return n
-    }
-    return fib(n-1) + fib(n-2)
-}
-
-for i -> (0, 8) {
-    x = fib(i)
-    print(x)
-}
