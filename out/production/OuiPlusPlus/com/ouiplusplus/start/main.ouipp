@@ -8,14 +8,3 @@ TO PRINT = print() or imprimer()
 
 lang:eng # default is french, remove or make lang:fr to change
 
- # two random functions
-  func printTruth(str) {
-    print(str)
-  }
-  func addTwo(a, b) {
-    return addTwo(a, b)
-  }
-
-  # printins result, one with function one with print()
-  printTruth('Oui++ is so great!')
-  print(addTwo(10, 12))
