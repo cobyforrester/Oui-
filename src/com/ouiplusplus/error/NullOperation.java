@@ -6,11 +6,8 @@ import com.ouiplusplus.start.Languages;
 
 
 public class NullOperation extends Error {
-    public NullOperation() {
-        super("Null Operation");
-    }
     public NullOperation(Position start, Position end, String details) {
         super(start, end, "Null Operation", details);
-        if(Language.language == Languages.FRENCH) super.setErrorName("");
+        if(Language.language == Languages.FRENCH) super.setErrorName("Opération Avec Nul/Nulle");
     }
 }

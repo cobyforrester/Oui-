@@ -174,12 +174,6 @@ public class Token {
             }
         }
 
-        //FOR NULL
-        if (this.type == TokenType.NULL) {
-            if(Language.language == Languages.ENGLISH) return "null";
-            else if(Language.language == Languages.FRENCH) return "nul";
-        }
-
         if (this.isNeg && !this.value.equals("0") && (this.type == TokenType.INT
                 || this.type == TokenType.DOUBLE)) return "-" + value;
         return value;

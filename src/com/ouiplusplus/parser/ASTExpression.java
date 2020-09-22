@@ -46,14 +46,29 @@ public class ASTExpression {
         }
         TokenType tt = token.getType();
         this.size++;
-        return switch (tt) {
-            case STRING, DOUBLE, INT, LIST, NULL, MAP -> casePrimitiveType(token);
-            case MULT, DIV, MODULO, CARROT -> caseMULTDIV(token);
-            case PLUS, MINUS -> casePLUSMINUS(token);
-            case LPAREN -> caseLPAREN(token);
-            case RPAREN -> caseRPAREN(token);
-            default -> err;
-        };
+        switch (tt) {
+            case STRING:
+            case DOUBLE:
+            case INT:
+            case LIST:
+            case NULL:
+            case MAP:
+                return casePrimitiveType(token);
+            case MULT:
+            case DIV:
+            case MODULO:
+            case CARROT:
+                return caseMULTDIV(token);
+            case PLUS:
+            case MINUS:
+                return casePLUSMINUS(token);
+            case LPAREN:
+                return caseLPAREN(token);
+            case RPAREN:
+                return caseRPAREN(token);
+            default:
+                return err;
+        }
     }
 
     public Pair<Token, Error> process(List<Token> tokens) {

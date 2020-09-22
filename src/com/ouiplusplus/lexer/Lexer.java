@@ -33,7 +33,7 @@ public class Lexer {
 
     public Pair<List<Token>, Error> make_tokens() {
         List<Token> tokens = new ArrayList<>();
-        String alph = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String alph = "abcdefghijklmnopqrstuvwxyzéàèùâêîôûçëïüABCDEFGHIJKLMNOPQRSTUVWXYZÉÀÈÙÂÊÎÔÛÇËÏÜ";
         String nums = "0123456789.";
         String quotes = "\'\"";
         String boolOps = "=><&|!";
@@ -232,7 +232,7 @@ public class Lexer {
         Position start = this.pos.copy();
         Position end = this.pos.copy();
 
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_";
+        String chars = "abcdefghijklmnopqrstuvwxyzéàèùâêîôûçëïüABCDEFGHIJKLMNOPQRSTUVWXYZÉÀÈÙÂÊÎÔÛÇËÏÜ1234567890_";
         String word = "";
         while (this.currChar != 0 && chars.indexOf(this.currChar) > -1) {
             end = this.pos.copy();
@@ -248,8 +248,9 @@ public class Lexer {
             tmp.setBoolVal(false);
             return tmp;
         } else if (word.toLowerCase().equals("null")
-                || word.toLowerCase().equals("nul")) {
-            return new Token(TokenType.NULL, "null", start, end);
+                || word.toLowerCase().equals("nul")
+                || word.toLowerCase().equals("nulle")) {
+            return new Token(TokenType.NULL, word.toLowerCase(), start, end);
         }
         return new Token(TokenType.WORD, word, start, end);
     }

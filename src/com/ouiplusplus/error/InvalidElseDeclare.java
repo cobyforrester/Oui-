@@ -6,11 +6,8 @@ import com.ouiplusplus.start.Languages;
 
 
 public class InvalidElseDeclare extends Error {
-    public InvalidElseDeclare() {
-        super("Invalid Else Declaration");
-    }
     public InvalidElseDeclare(Position start, Position end, String details) {
         super(start, end, "Invalid Else Declaration", details);
-        if(Language.language == Languages.FRENCH) super.setErrorName("");
+        if(Language.language == Languages.FRENCH) super.setErrorName("Déclaration Else Invalide");
     }
 }

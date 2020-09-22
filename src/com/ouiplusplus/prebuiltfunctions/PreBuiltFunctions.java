@@ -12,7 +12,15 @@ public class PreBuiltFunctions {
 
     public static List<String> getFunctions() {
         return Arrays.asList(
-                "len", "set", "get", "sub", "append", "addAt", "put", "remove", "getKeys"
+                "len","long",
+                "set", "remplaces",
+                "get", "obtiens",
+                "sub",
+                "append", "ajoutes",
+                "addAt", "ajoutesPos",
+                "put", "mets",
+                "remove", "retires",
+                "getKeys", "obtiensCles", "obtiensClés"
         );
     }
 
@@ -25,7 +33,7 @@ public class PreBuiltFunctions {
         if (token.getType() != TokenType.FUNCCALL) return err;
 
 
-        if (token.getValue().equals("len")) {
+        if (token.getValue().equals("len") || token.getValue().equals("long")) {
             /*
             (LIST|MAP|STRING) -> INT
              */
@@ -54,7 +62,7 @@ public class PreBuiltFunctions {
                         token.getEnd());
                 return new Pair<>(t, null);
             }
-        } else if (token.getValue().equals("get")) {
+        } else if (token.getValue().equals("get") || token.getValue().equals("obtiens")) {
             /*
             (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
              */
@@ -112,14 +120,14 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("set")) {
+        } else if (token.getValue().equals("set") || token.getValue().equals("remplaces")) {
             /*
             (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
              */
             if (token.getElements().size() != 3) return err;
-            Token arg1 = token.getElements().get(0).copy();
-            Token arg2 = token.getElements().get(1).copy();
-            Token arg3 = token.getElements().get(2).copy();
+            Token arg1 = token.getElements().get(0);
+            Token arg2 = token.getElements().get(1);
+            Token arg3 = token.getElements().get(2);
             if (arg1.getType() != TokenType.LIST)
                 return err;
             try {
@@ -143,7 +151,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("remove")) {
+        } else if (token.getValue().equals("remove") || token.getValue().equals("retires")) {
             /*
             (LIST|MAP, INDEX|ITEM) -> LIST|MAP
              */
@@ -224,7 +232,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("addAt")) {
+        } else if (token.getValue().equals("addAt") || token.getValue().equals("ajoutesPos")) {
             /*
             (LIST, ITEM, INT) -> LIST
              */
@@ -252,7 +260,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("append")) {
+        } else if (token.getValue().equals("append") || token.getValue().equals("ajoutes")) {
             /*
             (LIST, ITEM) -> LIST
              */
@@ -268,7 +276,7 @@ public class PreBuiltFunctions {
             t.setElements(arg1.getElements());
             return new Pair<>(t, null);
 
-        } else if (token.getValue().equals("put")) {
+        } else if (token.getValue().equals("put") || token.getValue().equals("mets")) {
             /*
             (MAP, KEY, VALUE) -> MAP
              */
@@ -289,7 +297,9 @@ public class PreBuiltFunctions {
                     token.getEnd());
             t.setMap(m);
             return new Pair<>(t, null);
-        } else if (token.getValue().equals("getKeys")) {
+        } else if (token.getValue().equals("getKeys")
+                || token.getValue().equals("obtiensCles")
+                || token.getValue().equals("obtiensClés")) {
             /*
             (MAP) -> LIST
              */

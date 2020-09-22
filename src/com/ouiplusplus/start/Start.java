@@ -18,7 +18,7 @@ public class Start {
             sf.useDelimiter("\\Z"); // gets whole file as one string
             String input = sf.next();
             input = input.substring(Helper.setLanguage(input));
-            Pair<String, Error> pair = run.generateOutput("main.ouipp", input);
+            Pair<String, Error> pair = run.generateOutput("Main.ouipp", input);
             Error error = pair.getP2();
             if(error != null) {
                 System.out.println(error);

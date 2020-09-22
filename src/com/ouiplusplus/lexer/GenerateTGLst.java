@@ -437,7 +437,7 @@ public class GenerateTGLst {
                     newLst.add(tg);
 
 
-                } else if (currVal.equals("return") || currVal.equals("revenir")) {
+                } else if (currVal.equals("return") || currVal.equals("rendre")) {
                     // GENERATE TOKENS LIST
                     if (i + 1 >= lst.size()) {
                         err = new InvalidPrintStatement(curr.getStart(), lst.get(lst.size() - 1).getEnd(), currVal);

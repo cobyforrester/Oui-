@@ -11,6 +11,6 @@ public class ItemNotInMap extends Error {
     }
     public ItemNotInMap(Position start, Position end, String details) {
         super(start, end, "Item Not In Map", details);
-        if(Language.language == Languages.FRENCH) super.setErrorName("");
+        if(Language.language == Languages.FRENCH) super.setErrorName("Élément Absent De La HashMap");
     }
 }
