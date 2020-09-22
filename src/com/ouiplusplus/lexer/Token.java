@@ -77,7 +77,7 @@ public class Token {
     //======================== CLASS METHODS ========================
     public Token copy () {
         return new Token(type, getValue(), start, end, boolVal,
-                elements, copy2DLst(initialElems),
+                copy1DLst(elements), copy2DLst(initialElems),
                 copy2DMap(initialMap), copy1DMap(map));
     }
     private List<List<Token>> copy2DLst (List<List<Token>> lst) {

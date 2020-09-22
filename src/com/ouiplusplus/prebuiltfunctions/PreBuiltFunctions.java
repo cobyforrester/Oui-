@@ -73,7 +73,9 @@ public class PreBuiltFunctions {
                     int a2 = Integer.parseInt(arg2.getValue());
 
                     int length = arg1.getElements().size();
-                    if (length <= a2) return err;
+                    if (length <= a2) {
+                        return err;
+                    }
                     Token t = arg1.getElements().get(a2);
                     t.setStart(token.getStart());
                     t.setEnd(token.getEnd());
@@ -115,9 +117,9 @@ public class PreBuiltFunctions {
             (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
              */
             if (token.getElements().size() != 3) return err;
-            Token arg1 = token.getElements().get(0);
-            Token arg2 = token.getElements().get(1);
-            Token arg3 = token.getElements().get(2);
+            Token arg1 = token.getElements().get(0).copy();
+            Token arg2 = token.getElements().get(1).copy();
+            Token arg3 = token.getElements().get(2).copy();
             if (arg1.getType() != TokenType.LIST)
                 return err;
             try {
@@ -128,7 +130,9 @@ public class PreBuiltFunctions {
                 int a3 = Integer.parseInt(arg3.getValue());
 
                 int length = arg1.getElements().size();
-                if (length <= a3) return err;
+                if (length <= a3) {
+                    return err;
+                }
                 List<Token> newLst = arg1.getElements();
                 newLst.set(a3, arg2);
                 Token t = new Token(TokenType.LIST, "[]", token.getStart(),

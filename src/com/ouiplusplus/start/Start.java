@@ -12,7 +12,7 @@ public class Start {
     public static void main(String[] args) throws FileNotFoundException {
         try{
             Run run = new Run();
-            String fname = "/Users/cobyforrester/Desktop/Professional/Projects/JavaProjects/out/production/OuiPlusPlus/com/ouiplusplus/start/main.ouipp";
+            String fname = "/Users/cobyforrester/Desktop/Professional/Projects/ouiplusplus/out/production/OuiPlusPlus/com/ouiplusplus/start/main.ouipp";
             File file = new File(fname);
             Scanner sf = new Scanner(file);
             sf.useDelimiter("\\Z"); // gets whole file as one string
