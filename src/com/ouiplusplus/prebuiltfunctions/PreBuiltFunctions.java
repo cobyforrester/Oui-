@@ -13,14 +13,14 @@ public class PreBuiltFunctions {
     public static List<String> getFunctions() {
         return Arrays.asList(
                 "len","long",
-                "set", "remplaces",
-                "get", "obtiens",
+                "set", "remplacer",
+                "get", "obtenir",
                 "sub",
-                "append", "ajoutes",
-                "addAt", "ajoutesPos",
-                "put", "mets",
-                "remove", "retires",
-                "getKeys", "obtiensCles", "obtiensClés"
+                "append", "ajouter",
+                "addAt", "ajoutesA", "ajoutesÀ",
+                "put", "mettre",
+                "remove", "retirer",
+                "getKeys", "obtenirCles", "obtenirClés"
         );
     }
 
@@ -62,7 +62,7 @@ public class PreBuiltFunctions {
                         token.getEnd());
                 return new Pair<>(t, null);
             }
-        } else if (token.getValue().equals("get") || token.getValue().equals("obtiens")) {
+        } else if (token.getValue().equals("get") || token.getValue().equals("obtenir")) {
             /*
             (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
              */
@@ -120,7 +120,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("set") || token.getValue().equals("remplaces")) {
+        } else if (token.getValue().equals("set") || token.getValue().equals("remplacer")) {
             /*
             (LIST|MAP|STRING, INDEX|ITEM) -> ANYTYPE
              */
@@ -151,7 +151,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("remove") || token.getValue().equals("retires")) {
+        } else if (token.getValue().equals("remove") || token.getValue().equals("retirer")) {
             /*
             (LIST|MAP, INDEX|ITEM) -> LIST|MAP
              */
@@ -232,7 +232,9 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("addAt") || token.getValue().equals("ajoutesPos")) {
+        } else if (token.getValue().equals("addAt")
+                || token.getValue().equals("ajoutesA")
+                || token.getValue().equals("ajoutesÀ")) {
             /*
             (LIST, ITEM, INT) -> LIST
              */
@@ -260,7 +262,7 @@ public class PreBuiltFunctions {
                 err.setP2(new OverFlow(token.getStart(), token.getEnd(), token.getValue()));
                 return err;
             }
-        } else if (token.getValue().equals("append") || token.getValue().equals("ajoutes")) {
+        } else if (token.getValue().equals("append") || token.getValue().equals("ajouter")) {
             /*
             (LIST, ITEM) -> LIST
              */
@@ -276,7 +278,7 @@ public class PreBuiltFunctions {
             t.setElements(arg1.getElements());
             return new Pair<>(t, null);
 
-        } else if (token.getValue().equals("put") || token.getValue().equals("mets")) {
+        } else if (token.getValue().equals("put") || token.getValue().equals("mettre")) {
             /*
             (MAP, KEY, VALUE) -> MAP
              */
@@ -298,8 +300,8 @@ public class PreBuiltFunctions {
             t.setMap(m);
             return new Pair<>(t, null);
         } else if (token.getValue().equals("getKeys")
-                || token.getValue().equals("obtiensCles")
-                || token.getValue().equals("obtiensClés")) {
+                || token.getValue().equals("obtenirCles")
+                || token.getValue().equals("obtenirClés")) {
             /*
             (MAP) -> LIST
              */
