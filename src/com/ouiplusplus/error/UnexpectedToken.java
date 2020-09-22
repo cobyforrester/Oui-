@@ -9,6 +9,6 @@ public class UnexpectedToken extends Error {
     }
     public UnexpectedToken(Position start, Position end, String details) {
         super(start, end, "Unexpected Token", details);
-        if(Language.language == Languages.FRENCH) super.setErrorName("Jeton (Token) Inattendu");
+        if(Language.language == Languages.FRENCH) super.setErrorName("Caractère Inattendu");
     }
 }
